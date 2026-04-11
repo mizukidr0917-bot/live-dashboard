@@ -1,0 +1,13 @@
+{
+  "name": "live-dashboard",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
+    "node-fetch": "^2.7.0"
+  }
+}

@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LIVE LOG Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #f4f6f9;
+    --surface: #ffffff;
+    --surface-alt: #f8fafc;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
+    --text-primary: #1a202c;
+    --text-secondary: #64748b;
+    --text-tertiary: #94a3b8;
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --accent-mid: #3b82f6;
+    --green: #059669;
+    --green-light: #d1fae5;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.09), 0 4px 8px rgba(0,0,0,0.05);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ===== TOPBAR ===== */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  }
+
+  .topbar-brand {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 8px;
+  }
+  .topbar-brand::before {
+    content: '♪';
+    font-size: 16px;
+  }
+
+  .topbar-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .filter-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .filter-btn-group {
+    display: flex;
+    gap: 4px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .filter-btn {
+    padding: 5px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .filter-btn:hover { background: var(--border-light); color: var(--text-primary); }
+  .filter-btn.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 1px 4px rgba(37,99,235,0.35);
+  }
+
+  .upload-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .upload-btn:hover { background: #1d4ed8; box-shadow: 0 2px 8px rgba(37,99,235,0.4); }
+  .upload-btn svg { width: 14px; height: 14px; }
+
+  #csv-input { display: none; }
+
+  /* ===== MAIN LAYOUT ===== */
+  .main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 24px 48px;
+  }
+
+  @media (max-width: 700px) {
+    .topbar { padding: 10px 12px; gap: 10px; }
+    .topbar-brand { font-size: 16px; }
+    .topbar-divider { display: none; }
+    .filter-group { width: 100%; align-items: flex-start; flex-direction: column; gap: 6px; }
+    .filter-btn-group { width: 100%; overflow-x: auto; padding: 4px; }
+    .filter-btn { flex: 0 0 auto; }
+    .upload-btn { width: 100%; justify-content: center; }
+    .main { padding: 16px 12px 32px; }
+    .header-title { font-size: 28px; }
+    .chart-wrap { height: 220px; }
+    .section-title { font-size: 14px; }
+    .star5-grid { grid-template-columns: 1fr; }
+    .ranking-value { min-width: 58px; font-size: 12px; }
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-left {}
+  .header-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 36px;
+    letter-spacing: 0.04em;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .header-title span {
+    color: var(--accent);
+  }
+  .header-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  /* ===== NO DATA ===== */
+  .no-data-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 16px;
+    text-align: center;
+  }
+  .no-data-icon {
+    font-size: 64px;
+    opacity: 0.3;
+  }
+  .no-data-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  .no-data-sub {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    max-width: 320px;
+  }
+  .no-data-btn {
+    margin-top: 8px;
+    padding: 10px 24px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .no-data-btn:hover { background: #1d4ed8; }
+
+  /* ===== SUMMARY CARDS ===== */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 900px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .summary-grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-light);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+  .summary-card {}
+  .summary-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  .icon-blue { background: var(--accent-light); }
+  .icon-green { background: var(--green-light); }
+  .icon-amber { background: var(--amber-light); }
+  .icon-purple { background: var(--purple-light); }
+
+  .summary-card-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-primary);
+  }
+  .summary-card-value span {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-left: 4px;
+  }
+  .summary-card-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    letter-spacing: 0.03em;
+  }
+  .summary-card-sub {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-light);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .trend-up { color: var(--green); font-weight: 600; }
+  .trend-down { color: var(--red); font-weight: 600; }
+  .trend-same { color: var(--text-tertiary); font-weight: 600; }
+
+  /* ===== SECTION TITLE ===== */
+  .section-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.03em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .section-title::before {
+    content: '';
+    width: 3px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .section-note {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-tertiary);
+    margin-left: 4px;
+  }
+
+  /* ===== CHARTS ROW ===== */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
+
+  .chart-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-light);
+  }
+  .chart-wrap {
+    position: relative;
+    height: 220px;
+  }
+
+  /* ===== ANALYSIS ===== */
+  .analysis-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 1100px) { .analysis-row { grid-template-columns: 2fr 1fr; } }
+  @media (max-width: 700px) { .analysis-row { grid-template-columns: 1fr; } }
+
+  .ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border-light);
+    transition: background 0.1s;
+  }
+  .ranking-item:last-child { border-bottom: none; }
+  .ranking-num {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    width: 22px;
+    text-align: center;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+  .ranking-num.top1 { color: #c8960c; }
+  .ranking-num.top2 { color: #9ca3af; }
+  .ranking-num.top3 { color: #cd7c3a; }
+
+  .ranking-bar-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+  .ranking-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+  }
+  .ranking-bar-bg {
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .ranking-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--accent);
+    transition: width 0.6s cubic-bezier(.25,.8,.25,1);
+  }
+  .ranking-bar-fill.green { background: var(--green); }
+  .ranking-bar-fill.purple { background: var(--purple); }
+
+  .ranking-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    min-width: 72px;
+    text-align: right;
+  }
+  .ranking-sub {
+    display: block;
+    font-size: 10px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+  }
+
+  .stars-display {
+    font-size: 10px;
+    color: var(--amber);
+    letter-spacing: -1px;
+  }
+
+  /* ===== STAR5 LIST ===== */
+  .star5-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .star5-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--amber);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .star5-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+  .star5-date {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-bottom: 6px;
+  }
+  .star5-live-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.45;
+    margin-bottom: 6px;
+  }
+  .star5-artist {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .star5-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .star5-link:hover { text-decoration: underline; }
+  .star5-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 2px 7px;
+  }
+  .star5-rating {
+    font-size: 13px;
+    color: var(--amber);
+    letter-spacing: -1px;
+  }
+
+
+  /* ===== DATA QUALITY ===== */
+  .quality-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 900px) { .quality-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .quality-grid { grid-template-columns: 1fr; } }
+  .quality-item {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .quality-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .quality-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .quality-value.good { color: var(--green); }
+  .quality-value.warn { color: var(--amber); }
+  .quality-value.bad { color: var(--red); }
+  .quality-sub {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+  }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-msg {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-tertiary);
+    font-size: 13px;
+  }
+
+  /* ===== SCROLLABLE LIST ===== */
+  .scroll-list {
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .scroll-list::-webkit-scrollbar { width: 4px; }
+  .scroll-list::-webkit-scrollbar-track { background: transparent; }
+  .scroll-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--text-primary);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.2s;
+    pointer-events: none;
+    z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ===== UTILITIES ===== */
+  .mb-6 { margin-bottom: 24px; }
+  .hidden { display: none !important; }
+
+  /* ===== MOBILE OPTIMIZATION ===== */
+  @media (max-width: 900px) {
+    .topbar {
+      padding: 10px 12px;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .topbar-divider {
+      display: none;
+    }
+
+    .filter-group {
+      width: 100%;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-btn-group {
+      flex-wrap: wrap;
+      width: 100%;
+      gap: 6px;
+      padding: 4px;
+    }
+
+    .filter-btn {
+      flex: 1 1 auto;
+      min-height: 36px;
+      font-size: 12px;
+      padding: 8px 10px;
+    }
+
+    .upload-btn {
+      width: 100%;
+      justify-content: center;
+      min-height: 40px;
+      font-size: 13px;
+    }
+
+    .main {
+      padding: 14px 12px 28px;
+    }
+
+    .header {
+      margin-bottom: 16px;
+      gap: 8px;
+    }
+
+    .header-title {
+      font-size: 28px;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      gap: 8px;
+    }
+
+    .header-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+    }
+
+    .card,
+    .chart-card,
+    .star5-card {
+      padding: 14px;
+      border-radius: 12px;
+    }
+
+    .summary-grid,
+    .analysis-row,
+    .charts-row {
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .chart-wrap {
+      height: 200px !important;
+    }
+
+    .ranking-item {
+      gap: 8px;
+      padding: 8px 0;
+    }
+
+    .ranking-name {
+      font-size: 12px;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.35;
+    }
+
+    .ranking-value {
+      font-size: 13px;
+      min-width: 44px;
+    }
+
+    .scroll-list {
+      max-height: none;
+      overflow: visible;
+      padding-right: 0;
+    }
+
+    .star5-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .star5-live-name {
+      font-size: 15px;
+    }
+
+    .star5-artist {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.4;
+    }
+
+    .star5-meta {
+      gap: 6px;
+    }
+
+    .meta-chip {
+      font-size: 10px;
+      padding: 3px 6px;
+    }
+
+    .summary-card-value {
+      font-size: 30px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    body {
+      font-size: 13px;
+    }
+
+    .topbar-brand {
+      font-size: 16px;
+    }
+
+    .header-title {
+      font-size: 24px;
+    }
+
+    .summary-card-sub {
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .chart-wrap {
+      height: 180px !important;
+    }
+
+    .filter-btn {
+      font-size: 11px;
+      min-height: 34px;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">LIVE LOG</div>
+  <div class="topbar-divider"></div>
+
+  <button class="upload-btn" onclick="document.getElementById('csv-input').click()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+    CSVを読み込む
+  </button>
+  <input type="file" id="csv-input" accept=".csv">
+
+  <div class="topbar-divider"></div>
+
+  <div class="filter-group">
+    <span class="filter-label">期間</span>
+    <div class="filter-btn-group" id="period-filter">
+      <button class="filter-btn active" data-value="all">全期間</button>
+      <button class="filter-btn" data-value="thisYear">今年</button>
+      <button class="filter-btn" data-value="lastYear">昨年</button>
+      <button class="filter-btn" data-value="last12">直近12か月</button>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <span class="filter-label">形式</span>
+    <div class="filter-btn-group" id="format-filter">
+      <button class="filter-btn active" data-value="all">全形式</button>
+      <button class="filter-btn" data-value="ワンマン">ワンマン</button>
+      <button class="filter-btn" data-value="対バン">対バン</button>
+      <button class="filter-btn" data-value="フェス">フェス</button>
+      <button class="filter-btn" data-value="サーキット">サーキット</button>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <span class="filter-label">評価</span>
+    <div class="filter-btn-group" id="rating-filter">
+      <button class="filter-btn active" data-value="all">全評価</button>
+      <button class="filter-btn" data-value="star5">★5のみ</button>
+      <button class="filter-btn" data-value="high">★4以上</button>
+      <button class="filter-btn" data-value="low">★3以下</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="main">
+  <!-- No Data Screen -->
+  <div class="no-data-screen" id="no-data-screen">
+    <div class="no-data-icon">🎵</div>
+    <div class="no-data-title">ライブログへようこそ</div>
+    <div class="no-data-sub">CSVファイルを読み込んで、あなたのライブ記録を可視化しましょう</div>
+    <button class="no-data-btn" onclick="document.getElementById('csv-input').click()">CSVを読み込む</button>
+  </div>
+
+  <!-- Dashboard (hidden until data loaded) -->
+  <div id="dashboard" class="hidden">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="header-title">LIVE <span>LOG</span></div>
+        <div class="header-subtitle">
+          <span id="header-period" style="word-break: keep-all;">対象期間：読み込み中</span>
+          <span class="header-badge" id="header-total">0 件</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid mb-6">
+      <div class="card summary-card">
+        <div class="summary-card-icon icon-blue">🎤</div>
+        <div class="summary-card-value" id="sc-total">—<span>回</span></div>
+        <div class="summary-card-label">ライブ回数</div>
+        <div class="summary-card-sub" id="sc-total-sub">—</div>
+      </div>
+      <div class="card summary-card">
+        <div class="summary-card-icon icon-green">📅</div>
+        <div class="summary-card-value" id="sc-month">—<span>回</span></div>
+        <div class="summary-card-label" id="sc-month-label">今月のライブ数</div>
+        <div class="summary-card-sub" id="sc-month-sub">—</div>
+      </div>
+      <div class="card summary-card">
+        <div class="summary-card-icon icon-amber">⭐</div>
+        <div class="summary-card-value" id="sc-star5">—<span>回</span></div>
+        <div class="summary-card-label">星5ライブ数</div>
+        <div class="summary-card-sub" id="sc-star5-sub">—</div>
+      </div>
+      <div class="card summary-card">
+        <div class="summary-card-icon icon-purple">📊</div>
+        <div class="summary-card-value" id="sc-avg">—</div>
+        <div class="summary-card-label">平均評価</div>
+        <div class="summary-card-sub" id="sc-avg-sub">—</div>
+      </div>
+    </div>
+
+    <!-- Data Quality -->
+    <div class="card mb-6">
+      <div class="section-title">データ品質チェック<span class="section-note">※読み込み元全体を確認</span></div>
+      <div id="data-quality"></div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-row mb-6">
+      <div class="chart-card">
+        <div class="section-title">月別ライブ回数<span class="section-note">※形式別の内訳込み</span></div>
+        <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="section-title">月別平均評価</div>
+        <div class="chart-wrap"><canvas id="line-chart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Analysis -->
+    <div class="analysis-row mb-6">
+      <div class="card">
+        <div class="section-title">アーティスト別回数</div>
+        <div class="scroll-list" id="artist-ranking"></div>
+      </div>
+      <div class="card">
+        <div class="section-title">アーティスト別平均評価<span class="section-note">※ワンマンのみ・3回以上</span></div>
+        <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;">平均評価はワンマンのみ集計</div>
+        <div class="scroll-list" id="artist-rating-ranking"></div>
+      </div>
+      <div class="card">
+        <div class="section-title">会場ランキング</div>
+        <div class="scroll-list" id="venue-ranking"></div>
+      </div>
+    </div>
+
+    <!-- Star5 List -->
+    <div class="mb-6">
+      <div class="section-title" style="margin-bottom:16px;">⭐⭐⭐⭐⭐ 星5ライブ一覧</div>
+      <div id="star5-list" class="star5-grid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   DATA STORE
+   ========================================================= */
+let allRecords = [];
+let barChart = null;
+let lineChart = null;
+
+/* =========================================================
+   CSV PARSER
+   ========================================================= */
+function parseCSV(text) {
+  text = text.replace(/^\uFEFF/, '');
+
+  const lines = text.split(/\r?\n/).filter(line => line.trim());
+  if (!lines.length) return [];
+
+  const headers = parseCSVLine(lines[0]).map(h => h.trim());
+
+  const findHeaderIndex = (names) => {
+    for (const name of names) {
+      const idx = headers.indexOf(name);
+      if (idx !== -1) return idx;
+    }
+    return -1;
+  };
+
+  const colIndex = {
+    liveName: findHeaderIndex(['ライブ', 'ライブ名', 'イベント名']),
+    artistRaw: findHeaderIndex(['アーティスト']),
+    setlistUrl: findHeaderIndex(['セットリスト', 'セットリストURL', 'URL']),
+    venue: findHeaderIndex(['会場']),
+    format: findHeaderIndex(['形式']),
+    dateStr: findHeaderIndex(['日付']),
+    ratingStr: findHeaderIndex(['評価'])
+  };
+
+  const records = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols = parseCSVLine(lines[i]);
+
+    const liveName = colIndex.liveName >= 0 ? (cols[colIndex.liveName] || '').trim() : '';
+    const artistRaw = colIndex.artistRaw >= 0 ? (cols[colIndex.artistRaw] || '').trim() : '';
+    const setlistUrl = colIndex.setlistUrl >= 0 ? (cols[colIndex.setlistUrl] || '').trim() : '';
+    const venue = colIndex.venue >= 0 ? (cols[colIndex.venue] || '').trim() : '';
+    const format = colIndex.format >= 0 ? (cols[colIndex.format] || '').trim() : '';
+    const dateStr = colIndex.dateStr >= 0 ? (cols[colIndex.dateStr] || '').trim() : '';
+    const ratingStr = colIndex.ratingStr >= 0 ? (cols[colIndex.ratingStr] || '').trim() : '';
+
+    const dateMatch = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+    if (!dateMatch) continue;
+
+    const date = new Date(
+      Number(dateMatch[1]),
+      Number(dateMatch[2]) - 1,
+      Number(dateMatch[3])
+    );
+
+    const rating = (ratingStr.match(/★/g) || []).length;
+    const artists = artistRaw
+      .split(',')
+      .map(a => a.trim())
+      .filter(Boolean);
+
+    records.push({
+      liveName,
+      artistRaw,
+      artists,
+      setlistUrl,
+      venue,
+      format,
+      date,
+      rating,
+      dateStr
+    });
+  }
+
+  return records;
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '';
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+      else { inQuote = !inQuote; }
+    } else if (ch === ',' && !inQuote) {
+      result.push(cur); cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  result.push(cur);
+  return result;
+}
+
+function normalizeApiRecords(apiRecords) {
+  return apiRecords
+    .map((r) => {
+      if (!r.date) return null;
+
+      const date = new Date(r.date);
+      if (Number.isNaN(date.getTime())) return null;
+
+      const artists = Array.isArray(r.artists) ? r.artists.filter(Boolean) : [];
+
+      return {
+        liveName: r.liveName || '',
+        artistRaw: artists.join(', '),
+        artists,
+        setlistUrl: r.setlistUrl || '',
+        venue: r.venue || '',
+        format: r.format || '',
+        date,
+        rating: Number(r.rating || 0),
+        dateStr: r.date || ''
+      };
+    })
+    .filter(Boolean);
+}
+
+async function loadFromApi() {
+  try {
+    const res = await fetch('/api/live-log');
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'APIの取得に失敗しました');
+    }
+
+    allRecords = normalizeApiRecords(data);
+
+    if (!allRecords.length) {
+      showToast('Notionデータは取得できましたが、表示対象がありません');
+      return;
+    }
+
+    showDashboard();
+    renderDashboard();
+    showToast(`${allRecords.length} 件のNotionデータを読み込みました`);
+  } catch (err) {
+    console.error(err);
+    showToast(`読み込み失敗: ${err.message}`);
+  }
+}
+
+/* =========================================================
+   FILTER LOGIC
+   ========================================================= */
+let currentPeriod = 'all';
+let currentFormat = 'all';
+let currentRating = 'all';
+
+function getFilteredRecords() {
+  const now = new Date();
+  const thisYear = now.getFullYear();
+  const lastYear = thisYear - 1;
+
+  return allRecords.filter(r => {
+    // Period
+    if (currentPeriod === 'thisYear') {
+      if (r.date.getFullYear() !== thisYear) return false;
+    } else if (currentPeriod === 'lastYear') {
+      if (r.date.getFullYear() !== lastYear) return false;
+    } else if (currentPeriod === 'last12') {
+      const cutoff = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+      if (r.date < cutoff) return false;
+    }
+
+    // Format
+    if (currentFormat !== 'all') {
+      if (r.format !== currentFormat) return false;
+    }
+
+    // Rating
+    if (currentRating === 'star5' && r.rating !== 5) return false;
+    if (currentRating === 'high' && r.rating < 4) return false;
+    if (currentRating === 'low' && r.rating > 3) return false;
+
+    return true;
+  });
+}
+
+function getMonthKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function buildMonthRange(records) {
+  const now = new Date();
+  const months = [];
+
+  if (currentPeriod === 'thisYear') {
+    const y = now.getFullYear();
+    for (let m = 0; m < 12; m++) months.push({ y, m });
+    return months;
+  }
+
+  if (currentPeriod === 'lastYear') {
+    const y = now.getFullYear() - 1;
+    for (let m = 0; m < 12; m++) months.push({ y, m });
+    return months;
+  }
+
+  if (currentPeriod === 'last12') {
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ y: d.getFullYear(), m: d.getMonth() });
+    }
+    return months;
+  }
+
+  if (!records.length) return months;
+
+  const sorted = [...records].sort((a, b) => a.date - b.date);
+  let y = sorted[0].date.getFullYear();
+  let m = sorted[0].date.getMonth();
+  const endY = sorted[sorted.length - 1].date.getFullYear();
+  const endM = sorted[sorted.length - 1].date.getMonth();
+
+  while (y < endY || (y === endY && m <= endM)) {
+    months.push({ y, m });
+    m++;
+    if (m > 11) {
+      m = 0;
+      y++;
+    }
+  }
+
+  return months;
+}
+
+function buildMonthlyStats(records, months) {
+  const monthMap = new Map();
+
+  records.forEach(r => {
+    const key = getMonthKey(r.date);
+    if (!monthMap.has(key)) {
+      monthMap.set(key, { count: 0, ratingTotal: 0, ratingCount: 0, star5Count: 0 });
+    }
+    const stat = monthMap.get(key);
+    stat.count += 1;
+    if (r.rating > 0) {
+      stat.ratingTotal += r.rating;
+      stat.ratingCount += 1;
+    }
+    if (r.rating === 5) stat.star5Count += 1;
+  });
+
+  return months.map(({ y, m }) => {
+    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
+    const stat = monthMap.get(key) || { count: 0, ratingTotal: 0, ratingCount: 0, star5Count: 0 };
+    return {
+      y,
+      m,
+      label: `${y}/${String(m + 1).padStart(2, '0')}`,
+      count: stat.count,
+      avgRating: stat.ratingCount ? +(stat.ratingTotal / stat.ratingCount).toFixed(2) : null,
+      star5Count: stat.star5Count
+    };
+  });
+}
+
+function formatDelta(diff, unit = '回') {
+  const sign = diff > 0 ? '+' : '';
+  const cls = diff > 0 ? 'trend-up' : diff < 0 ? 'trend-down' : 'trend-same';
+  return `<span class="${cls}">${sign}${diff}${unit}</span>`;
+}
+
+function getComparisonRecords(mode) {
+  const now = new Date();
+
+  if (mode === 'month') {
+    const curDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    return {
+      label: '先月比',
+      current: allRecords.filter(r => {
+        if (currentFormat !== 'all' && r.format !== currentFormat) return false;
+        return r.date.getFullYear() === curDate.getFullYear() && r.date.getMonth() === curDate.getMonth();
+      }),
+      previous: allRecords.filter(r => {
+        if (currentFormat !== 'all' && r.format !== currentFormat) return false;
+        return r.date.getFullYear() === prevDate.getFullYear() && r.date.getMonth() === prevDate.getMonth();
+      }),
+      previousLabel: `${prevDate.getFullYear()}年${prevDate.getMonth() + 1}月`
+    };
+  }
+
+  const currentRecords = getFilteredRecords();
+
+  if (currentPeriod === 'last12') {
+    const months = buildMonthRange(currentRecords);
+    if (!months.length) return { label: '前12か月比', current: currentRecords, previous: [], previousLabel: '前12か月' };
+    const start = new Date(months[0].y, months[0].m, 1);
+    const end = new Date(months[months.length - 1].y, months[months.length - 1].m + 1, 0);
+    const prevStart = new Date(start.getFullYear(), start.getMonth() - 12, 1);
+    const prevEnd = new Date(end.getFullYear(), end.getMonth() - 12 + 1, 0);
+    return {
+      label: '前12か月比',
+      current: currentRecords,
+      previous: allRecords.filter(r => {
+        if (currentFormat !== 'all' && r.format !== currentFormat) return false;
+        return r.date >= prevStart && r.date <= prevEnd;
+      }),
+      previousLabel: `${prevStart.getFullYear()}/${prevStart.getMonth() + 1}〜${prevEnd.getFullYear()}/${prevEnd.getMonth() + 1}`
+    };
+  }
+
+  if (currentPeriod === 'thisYear' || currentPeriod === 'lastYear') {
+    const year = currentPeriod === 'thisYear' ? now.getFullYear() : now.getFullYear() - 1;
+    const prevYear = year - 1;
+    return {
+      label: `${prevYear}年比`,
+      current: currentRecords,
+      previous: allRecords.filter(r => {
+        if (currentFormat !== 'all' && r.format !== currentFormat) return false;
+        return r.date.getFullYear() === prevYear;
+      }),
+      previousLabel: `${prevYear}年`
+    };
+  }
+
+  if (currentPeriod === 'all') {
+    const curYear = now.getFullYear();
+    const prevYear = curYear - 1;
+    return {
+      label: `${prevYear}年比`,
+      current: allRecords.filter(r => {
+        if (currentFormat !== 'all' && r.format !== currentFormat) return false;
+        return r.date.getFullYear() === curYear;
+      }),
+      previous: allRecords.filter(r => {
+        if (currentFormat !== 'all' && r.format !== currentFormat) return false;
+        return r.date.getFullYear() === prevYear;
+      }),
+      previousLabel: `${prevYear}年`
+    };
+  }
+
+  return { label: '比較', current: currentRecords, previous: [], previousLabel: '前期間' };
+}
+
+function getPeriodSummaryText(records) {
+  const dates = records.map(r => r.date).sort((a, b) => a - b);
+  if (!dates.length) return '対象期間：データなし';
+  const s = dates[0];
+  const e = dates[dates.length - 1];
+  const fmt = d => `${d.getFullYear()}年${d.getMonth() + 1}月`;
+  return `対象期間：${fmt(s)}〜${fmt(e)}`;
+}
+
+
+/* =========================================================
+   RENDER DASHBOARD
+   ========================================================= */
+function renderDashboard() {
+  const records = getFilteredRecords();
+
+  renderHeader(records);
+  renderSummary(records);
+  renderDataQuality();
+  renderCharts(records);
+  renderArtistRanking(records);
+  renderArtistRatingRanking(records);
+  renderVenueRanking(records);
+  renderStar5List(records);
+}
+
+function getComparisonLabel() {
+  if (currentPeriod === 'thisYear') return '前年同期間比';
+  if (currentPeriod === 'lastYear') return '前年差';
+  if (currentPeriod === 'last12') return '前12か月比';
+  return '昨年比';
+}
+
+function getQualityMetrics() {
+  const total = allRecords.length;
+  const missingRating = allRecords.filter(r => !r.rating).length;
+  const missingFormat = allRecords.filter(r => !r.format).length;
+  const missingVenue = allRecords.filter(r => !r.venue).length;
+
+  const uniqueKeyCount = new Set(allRecords.map(r =>
+    [r.liveName, r.dateStr, r.venue, r.format, r.artistRaw].join('|')
+  )).size;
+  const duplicateLike = Math.max(total - uniqueKeyCount, 0);
+
+  return { total, missingRating, missingFormat, missingVenue, duplicateLike };
+}
+
+function renderDataQuality() {
+  const q = getQualityMetrics();
+  const items = [
+    {
+      label: '評価なし',
+      value: q.missingRating,
+      sub: `全${q.total}件中`,
+    },
+    {
+      label: '形式なし',
+      value: q.missingFormat,
+      sub: '未分類データ',
+    },
+    {
+      label: '会場なし',
+      value: q.missingVenue,
+      sub: '空欄チェック',
+    },
+    {
+      label: '重複候補',
+      value: q.duplicateLike,
+      sub: 'ライブ名+日付などで判定',
+    }
+  ];
+
+  const judge = n => n === 0 ? 'good' : n <= 2 ? 'warn' : 'bad';
+  document.getElementById('data-quality').innerHTML = `
+    <div class="quality-grid">
+      ${items.map(item => `
+        <div class="quality-item">
+          <div class="quality-label">${item.label}</div>
+          <div class="quality-value ${judge(item.value)}">${item.value}<span style="font-size:12px;font-weight:500;margin-left:4px;">件</span></div>
+          <div class="quality-sub">${item.sub}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function buildMonthlyStats(records) {
+  const now = new Date();
+  let months = [];
+
+  if (currentPeriod === 'thisYear') {
+    const y = now.getFullYear();
+    for (let m = 0; m < 12; m++) months.push({ y, m });
+  } else if (currentPeriod === 'lastYear') {
+    const y = now.getFullYear() - 1;
+    for (let m = 0; m < 12; m++) months.push({ y, m });
+  } else if (currentPeriod === 'last12') {
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ y: d.getFullYear(), m: d.getMonth() });
+    }
+  } else {
+    if (records.length === 0) {
+      months = [];
+    } else {
+      const sorted = [...records].sort((a, b) => a.date - b.date);
+      let y = sorted[0].date.getFullYear();
+      let m = sorted[0].date.getMonth();
+      const endY = sorted[sorted.length - 1].date.getFullYear();
+      const endM = sorted[sorted.length - 1].date.getMonth();
+      while (y < endY || (y === endY && m <= endM)) {
+        months.push({ y, m });
+        m++;
+        if (m > 11) { m = 0; y++; }
+      }
+    }
+  }
+
+  const formatKeys = ['ワンマン', '対バン', 'フェス', 'サーキット'];
+  const monthMap = new Map();
+
+  months.forEach(({ y, m }) => {
+    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
+    monthMap.set(key, {
+      count: 0,
+      ratingTotal: 0,
+      ratingCount: 0,
+      star5Count: 0,
+      formats: Object.fromEntries(formatKeys.map(f => [f, 0]))
+    });
+  });
+
+  records.forEach(r => {
+    const key = `${r.date.getFullYear()}-${String(r.date.getMonth() + 1).padStart(2, '0')}`;
+    if (!monthMap.has(key)) return;
+    const row = monthMap.get(key);
+    row.count += 1;
+    if (r.rating > 0) {
+      row.ratingTotal += r.rating;
+      row.ratingCount += 1;
+    }
+    if (r.rating === 5) row.star5Count += 1;
+    if (row.formats[r.format] !== undefined) row.formats[r.format] += 1;
+  });
+
+  const labels = months.map(({ y, m }) => `${y}/${String(m + 1).padStart(2, '0')}`);
+  const stats = months.map(({ y, m }) => {
+    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
+    const row = monthMap.get(key);
+    return {
+      ...row,
+      avgRating: row.ratingCount ? +(row.ratingTotal / row.ratingCount).toFixed(2) : null
+    };
+  });
+
+  return { months, labels, stats, formatKeys };
+}
+
+function renderHeader(records) {
+  document.getElementById('header-period').textContent = getPeriodSummaryText(records);
+  document.getElementById('header-total').textContent = `総ライブ数 ${records.length} 件`;
+}
+
+function renderSummary(records) {
+  const now = new Date();
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
+
+  document.getElementById('sc-total').innerHTML = `${records.length}<span>回</span>`;
+
+  const totalComp = getComparisonRecords('period');
+  const totalDiff = totalComp.current.length - totalComp.previous.length;
+  document.getElementById('sc-total-sub').innerHTML =
+    `${totalComp.label} ${formatDelta(totalDiff)}（${totalComp.previousLabel}：${totalComp.previous.length}回）`;
+
+  const monthRecords = records.filter(r =>
+    r.date.getFullYear() === thisYear && r.date.getMonth() === thisMonth
+  );
+  const monthComp = getComparisonRecords('month');
+  const monthDiff = monthComp.current.length - monthComp.previous.length;
+
+  document.getElementById('sc-month').innerHTML = `${monthRecords.length}<span>回</span>`;
+  document.getElementById('sc-month-label').textContent = `${thisYear}年${thisMonth + 1}月のライブ数`;
+  document.getElementById('sc-month-sub').innerHTML =
+    `${monthComp.label} ${formatDelta(monthDiff)}（${monthComp.previousLabel}：${monthComp.previous.length}回）`;
+
+  const star5 = records.filter(r => r.rating === 5);
+  const star5CompCurrent = monthComp.current.filter(r => r.rating === 5).length;
+  const star5CompPrev = monthComp.previous.filter(r => r.rating === 5).length;
+  document.getElementById('sc-star5').innerHTML = `${star5.length}<span>回</span>`;
+  document.getElementById('sc-star5-sub').innerHTML =
+    `今月 ${formatDelta(star5CompCurrent - star5CompPrev)}（先月：${star5CompPrev}回）`;
+
+  const ratings = records.filter(r => r.rating > 0).map(r => r.rating);
+  const avg = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length) : 0;
+  document.getElementById('sc-avg').innerHTML = `${avg.toFixed(2)}`;
+
+  const prevRatings = totalComp.previous.filter(r => r.rating > 0).map(r => r.rating);
+  const prevAvg = prevRatings.length ? (prevRatings.reduce((a, b) => a + b, 0) / prevRatings.length) : 0;
+  const avgDiff = +(avg - prevAvg).toFixed(2);
+  document.getElementById('sc-avg-sub').innerHTML =
+    `${totalComp.label} ${formatDelta(avgDiff, '')}（${totalComp.previousLabel}：${prevAvg.toFixed(2)}）`;
+}
+
+function renderCharts(records) {
+  const now = new Date();
+  let months = [];
+
+  if (currentPeriod === 'thisYear') {
+    const y = now.getFullYear();
+    for (let m = 0; m < 12; m++) months.push({ y, m });
+  } else if (currentPeriod === 'lastYear') {
+    const y = now.getFullYear() - 1;
+    for (let m = 0; m < 12; m++) months.push({ y, m });
+  } else if (currentPeriod === 'last12') {
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ y: d.getFullYear(), m: d.getMonth() });
+    }
+  } else {
+    if (records.length === 0) {
+      months = [];
+    } else {
+      const sorted = [...records].sort((a, b) => a.date - b.date);
+      const startY = sorted[0].date.getFullYear();
+      const startM = sorted[0].date.getMonth();
+      const endY = sorted[sorted.length - 1].date.getFullYear();
+      const endM = sorted[sorted.length - 1].date.getMonth();
+      let y = startY, m = startM;
+      while (y < endY || (y === endY && m <= endM)) {
+        months.push({ y, m });
+        m++;
+        if (m > 11) { m = 0; y++; }
+      }
+    }
+  }
+
+  const labels = months.map(({ y, m }) => `${y}/${String(m + 1).padStart(2, '0')}`);
+  const stats = months.map(({ y, m }) => {
+    const monthRecords = records.filter(r => r.date.getFullYear() === y && r.date.getMonth() === m);
+    const ratingRecords = monthRecords.filter(r => r.rating > 0);
+    const avg = ratingRecords.length
+      ? +(ratingRecords.reduce((sum, r) => sum + r.rating, 0) / ratingRecords.length).toFixed(2)
+      : null;
+
+    return {
+      count: monthRecords.length,
+      avgRating: avg,
+      star5Count: monthRecords.filter(r => r.rating === 5).length,
+      formats: {
+        'ワンマン': monthRecords.filter(r => r.format === 'ワンマン').length,
+        '対バン': monthRecords.filter(r => r.format === '対バン').length,
+        'フェス': monthRecords.filter(r => r.format === 'フェス').length,
+        'サーキット': monthRecords.filter(r => r.format === 'サーキット').length
+      }
+    };
+  });
+
+  const avgRatings = stats.map(s => s.avgRating);
+  const maxTick = months.length > 36 ? Math.ceil(months.length / 24) : months.length > 18 ? 2 : 1;
+
+  if (barChart) barChart.destroy();
+  const barCtx = document.getElementById('bar-chart').getContext('2d');
+  barChart = new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'ワンマン', data: stats.map(s => s.formats['ワンマン']), backgroundColor: 'rgba(37,99,235,0.78)', stack: 'live' },
+        { label: '対バン', data: stats.map(s => s.formats['対バン']), backgroundColor: 'rgba(124,58,237,0.78)', stack: 'live' },
+        { label: 'フェス', data: stats.map(s => s.formats['フェス']), backgroundColor: 'rgba(217,119,6,0.78)', stack: 'live' },
+        { label: 'サーキット', data: stats.map(s => s.formats['サーキット']), backgroundColor: 'rgba(5,150,105,0.78)', stack: 'live' }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } },
+        tooltip: {
+          callbacks: {
+            title: items => `${items[0].label}`,
+            label: item => `${item.dataset.label}：${item.raw}回`,
+            footer: items => {
+              const idx = items[0]?.dataIndex ?? 0;
+              const stat = stats[idx];
+              return [
+                `合計：${stat.count}回`,
+                `平均評価：${stat.avgRating ?? '—'}`,
+                `星5ライブ：${stat.star5Count}回`
+              ];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          grid: { display: false },
+          ticks: {
+            font: { size: 10 },
+            color: '#94a3b8',
+            maxRotation: 45,
+            callback: (val, i) => i % maxTick === 0 ? labels[i] : ''
+          }
+        },
+        y: {
+          stacked: true,
+          grid: { color: '#f1f5f9' },
+          ticks: { font: { size: 10 }, color: '#94a3b8', stepSize: 1 },
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  if (lineChart) lineChart.destroy();
+  const lineCtx = document.getElementById('line-chart').getContext('2d');
+  lineChart = new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: '平均評価',
+        data: avgRatings,
+        borderColor: '#059669',
+        backgroundColor: 'rgba(5,150,105,0.08)',
+        pointBackgroundColor: '#059669',
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        fill: true,
+        tension: 0.3,
+        spanGaps: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: items => `${items[0].label}`,
+            label: item => {
+              const stat = stats[item.dataIndex];
+              return [
+                `ライブ本数：${stat.count}回`,
+                `平均評価：${item.raw ?? '—'}`,
+                `星5ライブ：${stat.star5Count}回`
+              ];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            font: { size: 10 },
+            color: '#94a3b8',
+            maxRotation: 45,
+            callback: (val, i) => i % maxTick === 0 ? labels[i] : ''
+          }
+        },
+        y: {
+          grid: { color: '#f1f5f9' },
+          min: 1,
+          max: 5,
+          ticks: { font: { size: 10 }, color: '#94a3b8', stepSize: 1 }
+        }
+      }
+    }
+  });
+}
+
+function renderRankingList(containerId, items, colorClass = '') {
+  const el = document.getElementById(containerId);
+  if (!items.length) { el.innerHTML = '<div class="empty-msg">データなし</div>'; return; }
+  const maxVal = items[0].value;
+  el.innerHTML = items.slice(0, 20).map((item, i) => {
+    const numCls = i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
+    const barW = maxVal > 0 ? (item.value / maxVal * 100).toFixed(1) : 0;
+    const display = item.display !== undefined ? item.display : `${item.value}${item.ratio ? ` (${item.ratio}%)` : ''}`;
+    const subDisplay = item.subDisplay ? `<span class="ranking-sub">${item.subDisplay}</span>` : '';
+    return `<div class="ranking-item">
+      <div class="ranking-num ${numCls}">${i+1}</div>
+      <div class="ranking-bar-wrap">
+        <div class="ranking-name" title="${item.name}">${item.name}</div>
+        <div class="ranking-bar-bg">
+          <div class="ranking-bar-fill ${colorClass}" style="width:${barW}%"></div>
+        </div>
+      </div>
+      <div class="ranking-value">${display}${subDisplay}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderArtistRanking(records) {
+  const map = {};
+  records.forEach(r => {
+    r.artists.forEach(a => {
+      map[a] = (map[a] || 0) + 1;
+    });
+  });
+  const total = Object.values(map).reduce((sum, val) => sum + val, 0);
+  const items = Object.entries(map)
+    .map(([name, value]) => ({
+      name,
+      value,
+      display: `${value}回`,
+      subDisplay: total ? `${((value / total) * 100).toFixed(1)}%` : ''
+    }))
+    .sort((a, b) => b.value - a.value);
+  renderRankingList('artist-ranking', items, '');
+}
+
+function renderArtistRatingRanking(records) {
+  const wanman = records.filter(r => r.format === 'ワンマン');
+  const map = {};
+  wanman.forEach(r => {
+    r.artists.forEach(a => {
+      if (!map[a]) map[a] = { total: 0, count: 0 };
+      map[a].total += r.rating;
+      map[a].count++;
+    });
+  });
+  const items = Object.entries(map)
+    .filter(([, v]) => v.count >= 3)
+    .map(([name, v]) => ({
+      name,
+      value: v.total / v.count,
+      display: (v.total / v.count).toFixed(2),
+      subDisplay: `${v.count}回`
+    }))
+    .sort((a, b) => b.value - a.value);
+  renderRankingList('artist-rating-ranking', items, 'green');
+}
+
+function renderVenueRanking(records) {
+  const map = {};
+  records.forEach(r => {
+    if (r.venue) map[r.venue] = (map[r.venue] || 0) + 1;
+  });
+  const total = Object.values(map).reduce((sum, val) => sum + val, 0);
+  const items = Object.entries(map)
+    .map(([name, value]) => ({
+      name,
+      value,
+      display: `${value}回`,
+      subDisplay: total ? `${((value / total) * 100).toFixed(1)}%` : ''
+    }))
+    .sort((a, b) => b.value - a.value);
+  renderRankingList('venue-ranking', items, 'purple');
+}
+
+function renderStar5List(records) {
+  const star5 = records.filter(r => r.rating === 5)
+    .sort((a, b) => b.date - a.date);
+  const el = document.getElementById('star5-list');
+  if (!star5.length) {
+    el.innerHTML = '<div class="empty-msg">星5のライブはありません</div>';
+    return;
+  }
+  el.innerHTML = star5.map(r => {
+    const d = r.date;
+    const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+    const artistDisplay = r.artists.join('・');
+    const linkHtml = r.setlistUrl
+      ? `<a class="star5-link" href="${escHtml(r.setlistUrl)}" target="_blank" rel="noopener noreferrer">セットリストを見る ↗</a>`
+      : '';
+    return `<div class="star5-card">
+      <div class="star5-rating">★★★★★</div>
+      <div class="star5-date">${dateStr}</div>
+      <div class="star5-live-name">${escHtml(r.liveName)}</div>
+      <div class="star5-artist">${escHtml(artistDisplay || '—')}</div>
+      <div class="star5-meta">
+        <span class="meta-chip">📍 ${escHtml(r.venue || '—')}</span>
+        <span class="meta-chip">${escHtml(r.format || '—')}</span>
+      </div>
+      ${linkHtml}
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* =========================================================
+   EVENT HANDLERS
+   ========================================================= */
+document.getElementById('csv-input').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    allRecords = parseCSV(ev.target.result);
+    if (allRecords.length === 0) {
+      showToast('データが見つかりませんでした');
+      return;
+    }
+    showDashboard();
+    renderDashboard();
+    showToast(`${allRecords.length} 件のデータを読み込みました`);
+  };
+  reader.readAsText(file, 'UTF-8');
+  e.target.value = '';
+});
+
+// Period filter
+document.getElementById('period-filter').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('#period-filter .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentPeriod = btn.dataset.value;
+  if (allRecords.length) renderDashboard();
+});
+
+// Format filter
+document.getElementById('format-filter').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('#format-filter .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFormat = btn.dataset.value;
+  if (allRecords.length) renderDashboard();
+});
+
+// Rating filter
+document.getElementById('rating-filter').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('#rating-filter .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentRating = btn.dataset.value;
+  if (allRecords.length) renderDashboard();
+});
+
+function showDashboard() {
+  document.getElementById('no-data-screen').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+(function init() {
+  loadFromApi();
+})();
+</script>
+</body>
+</html>
