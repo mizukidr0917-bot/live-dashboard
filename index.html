@@ -801,7 +801,21 @@
     }
 
     .summary-subgrid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .mini-card {
+      padding: 12px 10px;
+    }
+
+    .mini-value {
+      font-size: 20px;
+    }
+
+    .mini-sub {
+      font-size: 10px;
+      line-height: 1.3;
     }
 
     .chart-wrap {
@@ -884,19 +898,19 @@
 
       <div class="summary-subgrid">
         <div class="mini-card">
-          <div class="mini-label">前月比</div>
-          <div class="mini-value" id="mini-mom">—</div>
-          <div class="mini-sub" id="mini-mom-sub">—</div>
+          <div class="mini-label">今年のライブ数</div>
+          <div class="mini-value" id="mini-this-year">—</div>
+          <div class="mini-sub" id="mini-this-year-sub">—</div>
         </div>
         <div class="mini-card">
-          <div class="mini-label">前年・前期間比</div>
-          <div class="mini-value" id="mini-yoy">—</div>
-          <div class="mini-sub" id="mini-yoy-sub">—</div>
+          <div class="mini-label">月平均ライブ数</div>
+          <div class="mini-value" id="mini-monthly-avg">—</div>
+          <div class="mini-sub" id="mini-monthly-avg-sub">—</div>
         </div>
         <div class="mini-card">
-          <div class="mini-label">全体に占める割合</div>
-          <div class="mini-value" id="mini-share">—</div>
-          <div class="mini-sub" id="mini-share-sub">—</div>
+          <div class="mini-label">星5率</div>
+          <div class="mini-value" id="mini-star5-rate">—</div>
+          <div class="mini-sub" id="mini-star5-rate-sub">—</div>
         </div>
       </div>
 
@@ -1254,64 +1268,35 @@ function renderHeader(records) {
 
 function renderSummary(records) {
   const now = new Date();
-  const thisMonth = now.getMonth();
   const thisYear = now.getFullYear();
 
   const baseRecords = getAllCurrentFilterBaseRecords();
   const ratings = records.filter(r => r.rating > 0).map(r => r.rating);
-  const avg = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length) : 0;
+  const avg = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length) : null;
   const star5 = records.filter(r => r.rating === 5).length;
 
   document.getElementById('sc-total').innerHTML = `${records.length}<span>回</span>`;
-  document.getElementById('sc-avg').textContent = avg.toFixed(2);
+  document.getElementById('sc-avg').textContent = avg === null ? '—' : avg.toFixed(2);
   document.getElementById('sc-star5').innerHTML = `${star5}<span>回</span>`;
 
-  const monthRecords = baseRecords.filter(r => r.date.getFullYear() === thisYear && r.date.getMonth() === thisMonth);
-  const prevMonthDate = new Date(thisYear, thisMonth - 1, 1);
-  const prevMonthRecords = baseRecords.filter(r => r.date.getFullYear() === prevMonthDate.getFullYear() && r.date.getMonth() === prevMonthDate.getMonth());
-  const momDiff = monthRecords.length - prevMonthRecords.length;
-
-  const currentPeriodRecords = records;
-  let previousPeriodRecords = [];
-  let previousLabel = '前期間';
-
-  if (currentPeriod === 'thisYear' || currentPeriod === 'lastYear') {
-    const targetYear = currentPeriod === 'thisYear' ? now.getFullYear() : now.getFullYear() - 1;
-    const prevYear = targetYear - 1;
-    previousPeriodRecords = baseRecords.filter(r => r.date.getFullYear() === prevYear);
-    previousLabel = `${prevYear}年`;
-  } else if (currentPeriod === 'last12') {
-    const currentMonths = getMonthRange(currentPeriodRecords);
-    if (currentMonths.length) {
-      const start = new Date(currentMonths[0].y, currentMonths[0].m, 1);
-      const end = new Date(currentMonths[currentMonths.length - 1].y, currentMonths[currentMonths.length - 1].m + 1, 0);
-      const prevStart = new Date(start.getFullYear(), start.getMonth() - 12, 1);
-      const prevEnd = new Date(end.getFullYear(), end.getMonth() - 12 + 1, 0);
-      previousPeriodRecords = baseRecords.filter(r => r.date >= prevStart && r.date <= prevEnd);
-      previousLabel = `${prevStart.getFullYear()}/${prevStart.getMonth()+1}〜${prevEnd.getFullYear()}/${prevEnd.getMonth()+1}`;
-    }
-  } else {
-    const curYear = now.getFullYear();
-    const prevYear = curYear - 1;
-    previousPeriodRecords = baseRecords.filter(r => r.date.getFullYear() === prevYear);
-    previousLabel = `${prevYear}年`;
-  }
-
-  const yoyDiff = currentPeriodRecords.length - previousPeriodRecords.length;
-  const totalShare = allRecords.length ? ((records.length / allRecords.length) * 100).toFixed(1) : '0.0';
+  const thisYearRecords = baseRecords.filter(r => r.date.getFullYear() === thisYear);
+  const months = getMonthRange(records);
+  const activeMonths = months.length || 1;
+  const monthlyAvg = records.length ? (records.length / activeMonths) : 0;
+  const star5Rate = records.length ? ((star5 / records.length) * 100) : 0;
 
   document.getElementById('sc-total-sub').textContent = `現在の条件で集計`;
   document.getElementById('sc-avg-sub').textContent = ratings.length ? `評価あり ${ratings.length}件ベース` : `評価データなし`;
   document.getElementById('sc-star5-sub').textContent = `全${records.length}件中 ${star5}件`;
 
-  document.getElementById('mini-mom').textContent = formatDelta(momDiff);
-  document.getElementById('mini-mom-sub').textContent = `今月 ${monthRecords.length}回 / 先月 ${prevMonthRecords.length}回`;
+  document.getElementById('mini-this-year').textContent = `${thisYearRecords.length}回`;
+  document.getElementById('mini-this-year-sub').textContent = `${thisYear}年に記録したライブ数`;
 
-  document.getElementById('mini-yoy').textContent = formatDelta(yoyDiff);
-  document.getElementById('mini-yoy-sub').textContent = `${previousLabel} は ${previousPeriodRecords.length}回`;
+  document.getElementById('mini-monthly-avg').textContent = `${monthlyAvg.toFixed(1)}回`;
+  document.getElementById('mini-monthly-avg-sub').textContent = `${activeMonths}か月ベースの平均`;
 
-  document.getElementById('mini-share').textContent = `${totalShare}%`;
-  document.getElementById('mini-share-sub').textContent = `全体 ${allRecords.length}件に対して`;
+  document.getElementById('mini-star5-rate').textContent = `${star5Rate.toFixed(1)}%`;
+  document.getElementById('mini-star5-rate-sub').textContent = `星5 ${star5}回 / 全${records.length}回`;
 }
 
 function adjustChartWidth(records) {
@@ -1444,7 +1429,7 @@ function renderRankingList(containerId, items, colorClass = '') {
     return;
   }
   const maxVal = items[0].value;
-  el.innerHTML = items.slice(0, 20).map((item, i) => {
+  el.innerHTML = items.slice(0, 10).map((item, i) => {
     const numCls = i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
     const barW = maxVal > 0 ? (item.value / maxVal * 100).toFixed(1) : 0;
     const display = item.display !== undefined ? item.display : `${item.value}`;
