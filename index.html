@@ -74,6 +74,47 @@
     font-size: 22px;
   }
 
+  .sidebar-subtitle {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: -8px;
+    margin-bottom: 18px;
+  }
+
+  .sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #f1f6ff 0%, #eaf2ff 100%);
+    border: 1px solid #d9e6ff;
+    margin-bottom: 14px;
+  }
+
+  .sidebar-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: #ffffff;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .sidebar-profile-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1d4ed8;
+  }
+
+  .sidebar-profile-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
   .sidebar-nav {
     display: grid;
     gap: 8px;
@@ -107,6 +148,29 @@
 
   .content-area {
     min-width: 0;
+    background:
+      radial-gradient(circle at 20% -20%, rgba(37, 99, 235, 0.08), transparent 50%),
+      linear-gradient(180deg, #f7faff 0%, #f6f8fc 100%);
+  }
+
+  .sidebar-foot {
+    margin-top: 16px;
+    border-top: 1px solid var(--border-light);
+    padding-top: 14px;
+  }
+
+  .sidebar-foot-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+  }
+
+  .sidebar-foot-value {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-weight: 600;
   }
 
   .topbar {
@@ -144,6 +208,12 @@
     gap: 6px;
     align-items: center;
     flex-wrap: wrap;
+  }
+
+  .topbar-caption {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
   }
 
   .period-btn {
@@ -277,9 +347,9 @@
 
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 18px;
+    grid-template-columns: repeat(3, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 0;
   }
 
   .summary-subgrid {
@@ -300,7 +370,12 @@
   .summary-grid .card {
     position: relative;
     overflow: hidden;
-    min-height: 138px;
+    min-height: 156px;
+  }
+
+  .summary-grid .kpi-main {
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.14);
+    border: 1px solid #d5e4ff;
   }
 
   .summary-grid .card::after {
@@ -332,7 +407,7 @@
 
   .summary-card-value {
     font-family: 'Outfit', sans-serif;
-    font-size: 38px;
+    font-size: 44px;
     font-weight: 700;
     line-height: 1;
     color: var(--text-primary);
@@ -400,6 +475,24 @@
     margin-bottom: 14px;
   }
 
+  .dashboard-hero {
+    display: grid;
+    grid-template-columns: 2.2fr 1.2fr;
+    gap: 22px;
+    align-items: stretch;
+    margin-bottom: 22px;
+  }
+
+  .recent-notes-panel {
+    padding: 20px;
+    min-height: 100%;
+  }
+
+  .recent-notes-panel .recent-note-list {
+    grid-template-columns: 1fr;
+    margin-top: 0;
+  }
+
   .section-title::before {
     content: '';
     width: 3px;
@@ -419,7 +512,7 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 20px;
-    margin-bottom: 28px;
+    margin-bottom: 34px;
   }
 
   .chart-card {
@@ -470,7 +563,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 36px;
   }
 
   .ranking-item {
@@ -555,13 +648,13 @@
   .star5-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 12px;
+    gap: 18px;
   }
 
   .star5-card {
     background: var(--surface);
     border-radius: var(--radius);
-    padding: 16px;
+    padding: 18px;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-light);
     border-left: 4px solid #f59e0b;
@@ -653,7 +746,7 @@
     border-radius: 12px;
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow-sm);
-    padding: 16px;
+    padding: 18px;
   }
 
   .recent-note-date {
@@ -971,7 +1064,7 @@
   }
 
   @media (max-width: 980px) {
-    .charts-row, .analysis-row {
+    .charts-row, .analysis-row, .dashboard-hero {
       grid-template-columns: 1fr;
     }
   }
@@ -1026,7 +1119,7 @@
     }
 
     .summary-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr;
       gap: 8px;
     }
 
@@ -1096,7 +1189,8 @@
     }
 
     .list-table-wrap {
-      display: none;    }
+      display: none;
+    }
 
     .list-cards {
       display: grid;
@@ -1120,7 +1214,17 @@
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <div class="sidebar-title">LIVE LOG</div>
+      <div class="sidebar-head">
+        <div class="sidebar-title">LIVE LOG</div>
+        <div class="sidebar-subtitle">Notion Connected Dashboard</div>
+      </div>
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">🎵</div>
+        <div>
+          <div class="sidebar-profile-name">Live Records</div>
+          <div class="sidebar-profile-sub">Analytics Workspace</div>
+        </div>
+      </div>
       <nav class="sidebar-nav" id="sidebar-nav">
         <button class="sidebar-link active" data-page="dashboard">ダッシュボード</button>
         <button class="sidebar-link" data-page="lives">ライブ一覧</button>
@@ -1129,6 +1233,10 @@
         <button class="sidebar-link" data-page="star5">星5ライブ</button>
         <button class="sidebar-link" data-page="notes">Note記事一覧</button>
       </nav>
+      <div class="sidebar-foot">
+        <div class="sidebar-foot-label">Filter Ready</div>
+        <div class="sidebar-foot-value">Year / 12M / All</div>
+      </div>
     </aside>
     <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
@@ -1136,7 +1244,10 @@
       <div class="topbar">
         <div class="topbar-left">
           <button class="sidebar-toggle" id="sidebar-toggle" aria-label="メニュー">☰</button>
-          <div class="topbar-brand">LIVE LOG</div>
+          <div>
+            <div class="topbar-brand">LIVE LOG</div>
+            <div class="topbar-caption">Notion style live analytics dashboard</div>
+          </div>
         </div>
         <div class="period-controls" id="period-filter">
           <button class="period-btn active" data-value="thisYear">今年</button>
@@ -1173,24 +1284,30 @@
 
             <div id="quality-inline" class="quality-inline">データ品質を確認中…</div>
 
-            <div class="summary-grid">
-              <div class="card summary-card">
-                <div class="summary-card-icon icon-blue">🎤</div>
-                <div class="summary-card-value" id="sc-total">—<span>回</span></div>
-                <div class="summary-card-label">今月のライブ本数</div>
-                <div class="summary-card-sub" id="sc-total-sub">—</div>
+            <div class="dashboard-hero">
+              <div class="summary-grid">
+                <div class="card summary-card kpi-main">
+                  <div class="summary-card-icon icon-blue">🎤</div>
+                  <div class="summary-card-value" id="sc-total">—<span>回</span></div>
+                  <div class="summary-card-label">今月のライブ本数</div>
+                  <div class="summary-card-sub" id="sc-total-sub">—</div>
+                </div>
+                <div class="card summary-card kpi-main">
+                  <div class="summary-card-icon icon-green">📝</div>
+                  <div class="summary-card-value" id="sc-avg">—<span>件</span></div>
+                  <div class="summary-card-label">今月のNote記事</div>
+                  <div class="summary-card-sub" id="sc-avg-sub">—</div>
+                </div>
+                <div class="card summary-card kpi-main">
+                  <div class="summary-card-icon icon-amber">✨</div>
+                  <div class="summary-card-value" id="sc-star5">—<span>回</span></div>
+                  <div class="summary-card-label">今月の星5ライブ</div>
+                  <div class="summary-card-sub" id="sc-star5-sub">—</div>
+                </div>
               </div>
-              <div class="card summary-card">
-                <div class="summary-card-icon icon-green">📝</div>
-                <div class="summary-card-value" id="sc-avg">—<span>件</span></div>
-                <div class="summary-card-label">今月のNote記事</div>
-                <div class="summary-card-sub" id="sc-avg-sub">—</div>
-              </div>
-              <div class="card summary-card">
-                <div class="summary-card-icon icon-amber">✨</div>
-                <div class="summary-card-value" id="sc-star5">—<span>回</span></div>
-                <div class="summary-card-label">今月の星5ライブ</div>
-                <div class="summary-card-sub" id="sc-star5-sub">—</div>
+              <div id="recent-notes-section" class="card recent-notes-panel hidden">
+                <div class="section-title" style="margin-bottom:16px;">📝 最近書いたNote</div>
+                <div id="recent-note-list" class="recent-note-list"></div>
               </div>
             </div>
 
@@ -1257,10 +1374,6 @@
               <div id="star5-list" class="star5-grid"></div>
             </div>
 
-            <div id="recent-notes-section" class="hidden" style="margin-top:24px;">
-              <div class="section-title" style="margin-bottom:16px;">📝 最近書いたNote</div>
-              <div id="recent-note-list" class="recent-note-list"></div>
-            </div>
           </section>
 
           <section id="page-lives" class="page-section hidden">
@@ -1283,8 +1396,7 @@
 
           <section id="page-venues" class="page-section hidden">
             <div class="section-title">会場</div>
-            <div class="card"><div id="venues-page-list"></div></div>
-          </section>
+            <div class="card"><div id="venues-page-list"></div></div>          </section>
 
           <section id="page-star5" class="page-section hidden">
             <div class="section-title">星5ライブ</div>
@@ -1645,7 +1757,8 @@ function renderCharts(records) {
   const barCtx = document.getElementById('bar-chart').getContext('2d');
   barChart = new Chart(barCtx, {
     type: 'bar',
-    data: {      labels,
+    data: {
+      labels,
       datasets: [
         { label: 'ワンマン', data: stats.map(s => s.formats['ワンマン']), backgroundColor: 'rgba(37,99,235,0.78)', stack: 'live' },
         { label: '対バン', data: stats.map(s => s.formats['対バン']), backgroundColor: 'rgba(124,58,237,0.78)', stack: 'live' },
