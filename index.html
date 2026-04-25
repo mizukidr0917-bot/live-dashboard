@@ -9,16 +9,16 @@
   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 
   :root {
-    --bg: #f6f8fc;
+    --bg: #eff5ff;
     --surface: #ffffff;
-    --surface-alt: #f9fbff;
-    --border: #dbe5f2;
-    --border-light: #edf2f8;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-tertiary: #94a3b8;
-    --accent: #2563eb;
-    --accent-light: #eaf2ff;
+    --surface-alt: #f4f8ff;
+    --border: #cfe0ff;
+    --border-light: #e3edff;
+    --text-primary: #0b1736;
+    --text-secondary: #405173;
+    --text-tertiary: #8192b3;
+    --accent: #1f5eff;
+    --accent-light: #e6efff;
     --green: #059669;
     --green-light: #d1fae5;
     --amber: #d97706;
@@ -27,9 +27,9 @@
     --red-light: #fee2e2;
     --purple: #7c3aed;
     --purple-light: #ede9fe;
-    --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
-    --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-    --shadow-lg: 0 20px 45px rgba(15, 23, 42, 0.14);
+    --shadow-sm: 0 6px 18px rgba(31, 67, 130, 0.08);
+    --shadow: 0 12px 28px rgba(31, 67, 130, 0.12);
+    --shadow-lg: 0 22px 46px rgba(31, 67, 130, 0.16);
     --radius: 14px;
   }
 
@@ -55,9 +55,9 @@
   }
 
   .sidebar {
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-    border-right: 1px solid var(--border-light);
-    padding: 24px 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #eef4ff 100%);
+    border-right: 1px solid #d8e6ff;
+    padding: 24px 14px;
     position: sticky;
     top: 0;
     height: 100vh;
@@ -117,33 +117,35 @@
 
   .sidebar-nav {
     display: grid;
-    gap: 8px;
+    gap: 9px;
   }
 
   .sidebar-link {
-    border: 1px solid var(--border-light);
-    background: #fff;
-    border-radius: 12px;
+    border: 1px solid #d6e5ff;
+    background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+    border-radius: 13px;
     text-align: left;
     padding: 11px 12px;
     font-size: 13px;
     color: var(--text-secondary);
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.18s ease;
+    box-shadow: 0 6px 14px rgba(29, 78, 216, 0.06);
   }
 
   .sidebar-link:hover {
-    background: #f7faff;
-    border-color: #cdddff;
+    background: #edf4ff;
+    border-color: #aac7ff;
     color: #1d4ed8;
+    transform: translateY(-1px);
   }
 
   .sidebar-link.active {
-    color: var(--accent);
-    background: linear-gradient(180deg, #eef4ff 0%, #e5efff 100%);
-    border-color: #bdd2ff;
-    box-shadow: inset 0 0 0 1px #d8e6ff;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2d6dff 0%, #1f5eff 100%);
+    border-color: #1f56d9;
+    box-shadow: 0 10px 18px rgba(37, 99, 235, 0.3);
   }
 
   .content-area {
@@ -217,14 +219,14 @@
   }
 
   .period-btn {
-    border: 1px solid var(--border);
+    border: 1px solid #d0ddff;
     background: #fff;
     color: var(--text-secondary);
     border-radius: 999px;
-    padding: 6px 10px;
-    font-size: 12px;
+    padding: 4px 10px;
+    font-size: 11px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .period-btn.active {
@@ -347,8 +349,8 @@
 
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
     margin-bottom: 0;
   }
 
@@ -370,12 +372,17 @@
   .summary-grid .card {
     position: relative;
     overflow: hidden;
-    min-height: 156px;
+    min-height: 118px;
+    padding: 14px 16px;
   }
 
   .summary-grid .kpi-main {
-    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.14);
-    border: 1px solid #d5e4ff;
+    box-shadow: 0 16px 24px rgba(37, 99, 235, 0.17);
+    border: 1px solid #c7dbff;
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    gap: 10px 12px;
+    align-items: center;
   }
 
   .summary-grid .card::after {
@@ -391,14 +398,15 @@
   }
 
   .summary-card-icon {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    margin-bottom: 14px;
+    font-size: 18px;
+    margin-bottom: 0;
+    grid-row: 1 / span 2;
   }
 
   .icon-blue { background: var(--accent-light); }
@@ -407,10 +415,10 @@
 
   .summary-card-value {
     font-family: 'Outfit', sans-serif;
-    font-size: 44px;
+    font-size: 34px;
     font-weight: 700;
     line-height: 1;
-    color: var(--text-primary);
+    color: #0e2a67;
   }
 
   .summary-card-value span {
@@ -422,18 +430,19 @@
 
   .summary-card-label {
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 700;
     color: var(--text-secondary);
-    margin-top: 6px;
-    letter-spacing: 0.03em;
+    margin-top: -2px;
+    letter-spacing: 0.02em;
   }
 
   .summary-card-sub {
-    margin-top: 10px;
-    padding-top: 10px;
+    margin-top: 6px;
+    padding-top: 8px;
     border-top: 1px solid var(--border-light);
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-tertiary);
+    grid-column: 1 / -1;
   }
 
   .mini-card {
@@ -477,15 +486,20 @@
 
   .dashboard-hero {
     display: grid;
-    grid-template-columns: 2.2fr 1.2fr;
-    gap: 22px;
+    grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+    gap: 20px;
     align-items: stretch;
-    margin-bottom: 22px;
+    margin-bottom: 24px;
   }
 
   .recent-notes-panel {
-    padding: 20px;
+    padding: 18px;
     min-height: 100%;
+    justify-self: end;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: 0 14px 30px rgba(31, 67, 130, 0.12);
+    border: 1px solid #d4e3ff;
   }
 
   .recent-notes-panel .recent-note-list {
@@ -1125,6 +1139,12 @@
 
     .summary-grid .card {
       padding: 12px 10px;
+      min-height: 0;
+    }
+
+    .summary-grid .kpi-main {
+      grid-template-columns: 30px 1fr;
+      gap: 8px;
     }
 
     .summary-card-icon {
@@ -1216,7 +1236,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-head">
         <div class="sidebar-title">LIVE LOG</div>
-        <div class="sidebar-subtitle">Notion Connected Dashboard</div>
+        <div class="sidebar-subtitle">SaaS Analytics Dashboard</div>
       </div>
       <div class="sidebar-profile">
         <div class="sidebar-avatar">🎵</div>
@@ -1246,7 +1266,7 @@
           <button class="sidebar-toggle" id="sidebar-toggle" aria-label="メニュー">☰</button>
           <div>
             <div class="topbar-brand">LIVE LOG</div>
-            <div class="topbar-caption">Notion style live analytics dashboard</div>
+            <div class="topbar-caption">SaaS style live analytics dashboard</div>
           </div>
         </div>
         <div class="period-controls" id="period-filter">
@@ -1306,7 +1326,7 @@
                 </div>
               </div>
               <div id="recent-notes-section" class="card recent-notes-panel hidden">
-                <div class="section-title" style="margin-bottom:16px;">📝 最近書いたNote</div>
+                <div class="section-title" style="margin-bottom:14px;justify-content:space-between;">📝 最近書いたNote</div>
                 <div id="recent-note-list" class="recent-note-list"></div>
               </div>
             </div>
