@@ -173,7 +173,7 @@
 
   .summary-subgrid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     margin-bottom: 24px;
   }
@@ -493,6 +493,59 @@
 
   .star5-link:hover {
     text-decoration: underline;
+  }
+
+  .star5-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .note-type-chip {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--purple);
+    background: var(--purple-light);
+    border-radius: 999px;
+    padding: 2px 8px;
+  }
+
+  .recent-note-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .recent-note-card {
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+    padding: 14px;
+  }
+
+  .recent-note-date {
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+
+  .recent-note-title {
+    margin-top: 6px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.45;
+  }
+
+  .recent-note-meta {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
   }
 
   .no-data-screen {
@@ -912,6 +965,11 @@
           <div class="mini-value" id="mini-star5-rate">—</div>
           <div class="mini-sub" id="mini-star5-rate-sub">—</div>
         </div>
+        <div class="mini-card">
+          <div class="mini-label">今年のNote記事数</div>
+          <div class="mini-value" id="mini-note-this-year">—</div>
+          <div class="mini-sub" id="mini-note-this-year-sub">—</div>
+        </div>
       </div>
 
       <div class="charts-row">
@@ -952,6 +1010,11 @@
       <div>
         <div class="section-title" style="margin-bottom:16px;">⭐⭐⭐⭐⭐ 星5ライブ一覧</div>
         <div id="star5-list" class="star5-grid"></div>
+      </div>
+
+      <div id="recent-notes-section" class="hidden" style="margin-top:24px;">
+        <div class="section-title" style="margin-bottom:16px;">📝 最近書いたNote</div>
+        <div id="recent-note-list" class="recent-note-list"></div>
       </div>
     </div>
   </div>
@@ -1013,7 +1076,9 @@
 
 <script>
 let allRecords = [];
+let allNotes = [];
 let allArtists = [];
+let notesByLiveId = new Map();
 let barChart = null;
 let lineChart = null;
 
@@ -1030,6 +1095,7 @@ function normalizeApiRecords(apiRecords) {
       if (Number.isNaN(date.getTime())) return null;
       const artists = Array.isArray(r.artists) ? r.artists.filter(Boolean) : [];
       return {
+        id: r.id || '',
         liveName: r.liveName || '',
         artistRaw: artists.join(', '),
         artists,
@@ -1046,11 +1112,20 @@ function normalizeApiRecords(apiRecords) {
 
 async function loadFromApi() {
   try {
-    const res = await fetch('/api/live-log');
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'APIの取得に失敗しました');
+    const [liveRes, noteRes] = await Promise.all([
+      fetch('/api/live-log'),
+      fetch('/api/note-log')
+    ]);
+    const [liveData, noteData] = await Promise.all([
+      liveRes.json(),
+      noteRes.json()
+    ]);
+    if (!liveRes.ok) throw new Error(liveData.error || 'ライブAPIの取得に失敗しました');
+    if (!noteRes.ok) throw new Error(noteData.error || 'NOTE APIの取得に失敗しました');
 
-    allRecords = normalizeApiRecords(data).sort((a, b) => a.date - b.date);
+    allRecords = normalizeApiRecords(liveData).sort((a, b) => a.date - b.date);
+    allNotes = normalizeNoteRecords(noteData);
+    notesByLiveId = buildNotesByLiveIdMap(allNotes);
     allArtists = [...new Set(allRecords.flatMap(r => r.artists))].sort((a, b) => a.localeCompare(b, 'ja'));
 
     if (!allRecords.length) {
@@ -1067,6 +1142,47 @@ async function loadFromApi() {
     console.error(err);
     showToast(`読み込み失敗: ${err.message}`);
   }
+}
+
+function normalizeNoteRecords(apiNotes) {
+  return (Array.isArray(apiNotes) ? apiNotes : [])
+    .map((n) => {
+      const publishedDate = n.notePublishedDate ? new Date(n.notePublishedDate) : null;
+      return {
+        id: n.id || '',
+        noteTitle: n.noteTitle || '',
+        noteUrl: n.noteUrl || '',
+        noteType: n.noteType || '',
+        notePublishedDate: n.notePublishedDate || '',
+        relatedLivePageIds: Array.isArray(n.relatedLivePageIds) ? n.relatedLivePageIds.filter(Boolean) : [],
+        publishedDate: (publishedDate && !Number.isNaN(publishedDate.getTime())) ? publishedDate : null
+      };
+    })
+    .filter((n) => n.noteUrl && n.relatedLivePageIds.length > 0)
+    .sort((a, b) => {
+      const ad = a.publishedDate ? a.publishedDate.getTime() : 0;
+      const bd = b.publishedDate ? b.publishedDate.getTime() : 0;
+      return bd - ad;
+    });
+}
+
+function buildNotesByLiveIdMap(notes) {
+  const map = new Map();
+  notes.forEach((n) => {
+    n.relatedLivePageIds.forEach((liveId) => {
+      if (!map.has(liveId)) map.set(liveId, []);
+      map.get(liveId).push(n);
+    });
+  });
+  map.forEach((items, key) => {
+    items.sort((a, b) => {
+      const ad = a.publishedDate ? a.publishedDate.getTime() : 0;
+      const bd = b.publishedDate ? b.publishedDate.getTime() : 0;
+      return bd - ad;
+    });
+    map.set(key, items);
+  });
+  return map;
 }
 
 function getFilteredRecords() {
@@ -1284,6 +1400,7 @@ function renderSummary(records) {
   const activeMonths = months.length || 1;
   const monthlyAvg = records.length ? (records.length / activeMonths) : 0;
   const star5Rate = records.length ? ((star5 / records.length) * 100) : 0;
+  const thisYearNotes = allNotes.filter(n => n.publishedDate && n.publishedDate.getFullYear() === thisYear).length;
 
   document.getElementById('sc-total-sub').textContent = `現在の条件で集計`;
   document.getElementById('sc-avg-sub').textContent = ratings.length ? `評価あり ${ratings.length}件ベース` : `評価データなし`;
@@ -1297,6 +1414,8 @@ function renderSummary(records) {
 
   document.getElementById('mini-star5-rate').textContent = `${star5Rate.toFixed(1)}%`;
   document.getElementById('mini-star5-rate-sub').textContent = `星5 ${star5}回 / 全${records.length}回`;
+  document.getElementById('mini-note-this-year').textContent = `${thisYearNotes}件`;
+  document.getElementById('mini-note-this-year-sub').textContent = `${thisYear}年に公開したNote記事数`;
 }
 
 function adjustChartWidth(records) {
@@ -1524,7 +1643,11 @@ function renderStar5List(records) {
     const d = r.date;
     const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
     const artistDisplay = r.artists.join('・');
-    const linkHtml = r.setlistUrl ? `<a class="star5-link" href="${escapeHtmlAttr(r.setlistUrl)}" target="_blank" rel="noopener noreferrer">セットリストを見る ↗</a>` : '';
+    const linkedNotes = notesByLiveId.get(r.id) || [];
+    const primaryNote = linkedNotes[0] || null;
+    const setlistLinkHtml = r.setlistUrl ? `<a class="star5-link" href="${escapeHtmlAttr(r.setlistUrl)}" target="_blank" rel="noopener noreferrer">セットリストを見る ↗</a>` : '';
+    const noteLinkHtml = primaryNote ? `<a class="star5-link" href="${escapeHtmlAttr(primaryNote.noteUrl)}" target="_blank" rel="noopener noreferrer">Note記事を見る ↗</a>` : '';
+    const noteTypeHtml = primaryNote && primaryNote.noteType ? `<span class="note-type-chip">${escapeHtml(primaryNote.noteType)}</span>` : '';
     return `<div class="star5-card">
       <div class="star5-date">${dateStr}</div>
       <div class="star5-live-name">${escapeHtml(r.liveName)}</div>
@@ -1532,8 +1655,35 @@ function renderStar5List(records) {
       <div class="star5-meta">
         <span class="meta-chip">📍 ${escapeHtml(r.venue || '—')}</span>
         <span class="meta-chip">${escapeHtml(r.format || '—')}</span>
+        ${noteTypeHtml}
       </div>
-      ${linkHtml}
+      <div class="star5-actions">${setlistLinkHtml}${noteLinkHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderRecentNotes() {
+  const section = document.getElementById('recent-notes-section');
+  const list = document.getElementById('recent-note-list');
+  if (!allNotes.length) {
+    section.classList.add('hidden');
+    list.innerHTML = '';
+    return;
+  }
+  section.classList.remove('hidden');
+  const items = allNotes.slice(0, 6);
+  list.innerHTML = items.map((n) => {
+    const dateText = n.publishedDate
+      ? `${n.publishedDate.getFullYear()}年${n.publishedDate.getMonth() + 1}月${n.publishedDate.getDate()}日`
+      : '日付未設定';
+    const typeChip = n.noteType ? `<span class="note-type-chip">${escapeHtml(n.noteType)}</span>` : '';
+    return `<div class="recent-note-card">
+      <div class="recent-note-date">${dateText}</div>
+      <div class="recent-note-title">${escapeHtml(n.noteTitle || '無題')}</div>
+      <div class="recent-note-meta">
+        ${typeChip}
+        <a class="star5-link" href="${escapeHtmlAttr(n.noteUrl)}" target="_blank" rel="noopener noreferrer">Note記事を見る ↗</a>
+      </div>
     </div>`;
   }).join('');
 }
@@ -1548,6 +1698,7 @@ function renderDashboard() {
   renderArtistRatingRanking(records);
   renderVenueRanking(records);
   renderStar5List(records);
+  renderRecentNotes();
 }
 
 function showDashboard() {
