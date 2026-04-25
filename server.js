@@ -6,7 +6,8 @@ dotenv.config({ path: "env.txt" });
  
 const app = express();
 const PORT = 3000;
-const LIVE_DB_ID = "130d9af8-2e19-8062-85d3-dd0315b51d43";
+const LIVE_DB_ID = process.env.NOTION_DB_ID || "";
+const NOTE_DB_ID = process.env.NOTION_NOTE_DB_ID || "";
  
 app.use(express.static(__dirname));
  
@@ -42,6 +43,21 @@ function getDate(prop) {
 function getUrl(prop) {
   if (!prop || prop.type !== "url") return "";
   return prop.url || "";
+}
+
+function getStatus(prop) {
+  if (!prop) return "";
+  if (prop.type === "status" && prop.status) return prop.status.name || "";
+  if (prop.type === "select" && prop.select) return prop.select.name || "";
+  if (prop.type === "rich_text" && Array.isArray(prop.rich_text)) {
+    return prop.rich_text.map((t) => t.plain_text || "").join("").trim();
+  }
+  return "";
+}
+
+function getRelationIds(prop) {
+  if (!prop || prop.type !== "relation" || !Array.isArray(prop.relation)) return [];
+  return prop.relation.map((x) => x.id).filter(Boolean);
 }
  
 function getProperty(properties, names) {
@@ -96,9 +112,19 @@ async function fetchAllSearchResults() {
  
   return allResults;
 }
+
+function assertEnvReady() {
+  if (!process.env.NOTION_TOKEN) {
+    throw new Error("NOTION_TOKEN is not configured");
+  }
+  if (!LIVE_DB_ID) {
+    throw new Error("NOTION_DB_ID is not configured");
+  }
+}
  
 app.get("/api/live-log", async (req, res) => {
   try {
+    assertEnvReady();
     const allPages = await fetchAllSearchResults();
  
     const livePages = allPages.filter((item) => {
@@ -156,6 +182,74 @@ app.get("/api/live-log", async (req, res) => {
       .filter((r) => r.date)
       .sort((a, b) => new Date(a.date) - new Date(b.date));
  
+    res.json(validRecords);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: err.message
+    });
+  }
+});
+
+app.get("/api/note-log", async (req, res) => {
+  try {
+    assertEnvReady();
+    if (!NOTE_DB_ID) {
+      throw new Error("NOTION_NOTE_DB_ID is not configured");
+    }
+
+    const allPages = await fetchAllSearchResults();
+    const notePages = allPages.filter((item) => {
+      return (
+        item.object === "page" &&
+        item.parent &&
+        item.parent.type === "database_id" &&
+        normalizeId(item.parent.database_id) === normalizeId(NOTE_DB_ID)
+      );
+    });
+
+    const records = notePages.map((page) => {
+      const p = page.properties || {};
+      const noteStatus = getStatus(getProperty(p, ["ステータス", "Status", "status"])) || "";
+      const noteType =
+        getSelect(getProperty(p, ["種別", "Type", "type"])) ||
+        getRichText(getProperty(p, ["種別", "Type", "type"])) ||
+        "";
+      const noteUrl =
+        getUrl(getProperty(p, ["Note URL", "noteUrl", "URL", "リンク"])) || "";
+      const noteTitle =
+        getTitle(getProperty(p, ["タイトル", "Title", "Name", "記事タイトル"])) ||
+        "";
+      const notePublishedDate =
+        getDate(getProperty(p, ["公開日", "投稿日", "Published", "Date"])) || "";
+      const relatedLivePageIds =
+        getRelationIds(getProperty(p, ["LIVE LOG", "Live", "ライブ", "ライブリレーション", "Live Relation"])) || [];
+
+      return {
+        id: page.id,
+        noteTitle,
+        noteUrl,
+        notePublishedDate,
+        noteType,
+        noteStatus,
+        relatedLivePageIds
+      };
+    });
+
+    const hasStatusProperty = records.some((r) => r.noteStatus);
+    const filtered = records.filter((r) => {
+      if (hasStatusProperty) {
+        return r.noteStatus === "公開済み" && r.noteUrl;
+      }
+      return !!r.noteUrl;
+    });
+
+    const validRecords = filtered.sort((a, b) => {
+      const ad = new Date(a.notePublishedDate || 0).getTime();
+      const bd = new Date(b.notePublishedDate || 0).getTime();
+      return bd - ad;
+    });
+
     res.json(validRecords);
   } catch (err) {
     console.error(err);
