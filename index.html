@@ -698,1403 +698,1128 @@
     padding: 0 16px 18px;
     display: grid;
     gap: 14px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    letter-spacing: 0.05em;
+  }
+
+  .search-combobox {
+    position: relative;
+  }
+
+  .artist-search-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+
+  .artist-search-input:focus {
+    outline: none;
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+  }
+
+  .artist-options {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 120;
+    display: none;
+  }
+
+  .artist-options.open {
+    display: block;
+  }
+
+  .artist-option {
+    padding: 10px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .artist-option:last-child {
+    border-bottom: none;
+  }
+
+  .artist-option.active,
+  .artist-option:hover {
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+
+  .artist-current {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .filter-btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .filter-btn {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 999px;
+    font-size: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .filter-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 1px 4px rgba(37,99,235,0.35);
+  }
+
+  @media (max-width: 980px) {
+    .charts-row, .analysis-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .main {
+      padding: 16px 12px 36px;
+    }
+
+    .header-title {
+      font-size: 28px;
+    }
+
+    .summary-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .summary-grid .card {
+      padding: 12px 10px;
+    }
+
+    .summary-card-icon {
+      width: 30px;
+      height: 30px;
+      font-size: 15px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+    }
+
+    .summary-card-value {
+      font-size: 24px;
+    }
+
+    .summary-card-value span {
+      font-size: 12px;
+      margin-left: 2px;
+    }
+
+    .summary-card-label {
+      font-size: 10px;
+      line-height: 1.25;
+      margin-top: 5px;
+    }
+
+    .summary-card-sub {
+      font-size: 9px;
+      line-height: 1.3;
+      margin-top: 8px;
+      padding-top: 8px;
+    }
+
+    .summary-subgrid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .mini-card {
+      padding: 12px 10px;
+    }
+
+    .mini-value {
+      font-size: 20px;
+    }
+
+    .mini-sub {
+      font-size: 10px;
+      line-height: 1.3;
+    }
+
+    .chart-wrap {
+      height: 220px;
+    }
+
+    .chart-inner-wide {
+      width: 900px;
+      min-width: 900px;
+    }
+
+    .star5-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .scroll-list {
+      max-height: none;
+      overflow: visible;
+      padding-right: 0;
+    }
+
+    .ranking-name {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.35;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-brand">LIVE LOG</div>
+  </div>
+
+  <div class="main">
+    <div class="no-data-screen" id="no-data-screen">
+      <div class="no-data-icon">🎵</div>
+      <div class="no-data-title">ライブログへようこそ</div>
+      <div class="no-data-sub">Notionのライブ記録を読み込んで表示します</div>
+    </div>
+
+    <div id="dashboard" class="hidden">
+      <div class="header">
+        <div class="header-left">
+          <div class="header-title">LIVE <span>LOG</span></div>
+          <div class="header-subtitle">
+            <span id="header-period">対象期間：読み込み中</span>
+            <span class="header-badge" id="header-total">0 件</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="condition-bar" id="condition-bar">
+        <strong>表示条件</strong><span id="condition-text">全体</span>
+      </div>
+
+      <div id="quality-inline" class="quality-inline">データ品質を確認中…</div>
+
+      <div class="summary-grid">
+        <div class="card summary-card">
+          <div class="summary-card-icon icon-blue">🎤</div>
+          <div class="summary-card-value" id="sc-total">—<span>回</span></div>
+          <div class="summary-card-label">ライブ回数</div>
+          <div class="summary-card-sub" id="sc-total-sub">—</div>
+        </div>
+        <div class="card summary-card">
+          <div class="summary-card-icon icon-green">⭐</div>
+          <div class="summary-card-value" id="sc-avg">—</div>
+          <div class="summary-card-label">平均評価</div>
+          <div class="summary-card-sub" id="sc-avg-sub">—</div>
+        </div>
+        <div class="card summary-card">
+          <div class="summary-card-icon icon-amber">✨</div>
+          <div class="summary-card-value" id="sc-star5">—<span>回</span></div>
+          <div class="summary-card-label">星5ライブ数</div>
+          <div class="summary-card-sub" id="sc-star5-sub">—</div>
+        </div>
+      </div>
+
+      <div class="summary-subgrid">
+        <div class="mini-card">
+          <div class="mini-label">今年のライブ数</div>
+          <div class="mini-value" id="mini-this-year">—</div>
+          <div class="mini-sub" id="mini-this-year-sub">—</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">月平均ライブ数</div>
+          <div class="mini-value" id="mini-monthly-avg">—</div>
+          <div class="mini-sub" id="mini-monthly-avg-sub">—</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">星5率</div>
+          <div class="mini-value" id="mini-star5-rate">—</div>
+          <div class="mini-sub" id="mini-star5-rate-sub">—</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">今年のNote記事数</div>
+          <div class="mini-value" id="mini-note-this-year">—</div>
+          <div class="mini-sub" id="mini-note-this-year-sub">—</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="section-title">月別ライブ回数<span class="section-note">※形式別内訳</span></div>
+          <div class="chart-scroll" id="bar-chart-scroll">
+            <div id="bar-chart-inner" class="chart-inner-normal">
+              <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="section-title">月別平均評価</div>
+          <div class="chart-scroll" id="line-chart-scroll">
+            <div id="line-chart-inner" class="chart-inner-normal">
+              <div class="chart-wrap"><canvas id="line-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-row">
+        <div class="card">
+          <div class="section-title" id="left-panel-title">アーティスト別回数</div>
+          <div class="scroll-list" id="left-panel-list"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">アーティスト別平均評価<span class="section-note">※ワンマンのみ・3回以上</span></div>
+          <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;">平均評価はワンマンのみ集計</div>
+          <div class="scroll-list" id="artist-rating-ranking"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">会場ランキング</div>
+          <div class="scroll-list" id="venue-ranking"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title" style="margin-bottom:16px;">⭐⭐⭐⭐⭐ 星5ライブ一覧</div>
+        <div id="star5-list" class="star5-grid"></div>
+      </div>
+
+      <div id="recent-notes-section" class="hidden" style="margin-top:24px;">
+        <div class="section-title" style="margin-bottom:16px;">📝 最近書いたNote</div>
+        <div id="recent-note-list" class="recent-note-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="fab-filter" id="fab-filter" aria-label="フィルター">
+    <span>絞込</span>
+  </button>
+
+  <div class="filter-drawer-backdrop" id="drawer-backdrop"></div>
+  <div class="filter-drawer" id="filter-drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div class="drawer-title">フィルター</div>
+      <button class="drawer-close" id="drawer-close" aria-label="閉じる">×</button>
+    </div>
+    <div class="drawer-body">
+      <div class="filter-group">
+        <span class="filter-label">アーティスト</span>
+        <div class="search-combobox">
+          <input type="text" id="artist-search-input" class="artist-search-input" placeholder="アーティスト名で検索">
+          <div class="artist-options" id="artist-options"></div>
+        </div>
+        <div class="artist-current" id="artist-current-label">現在：全アーティスト</div>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">期間</span>
+        <div class="filter-btn-group" id="period-filter">
+          <button class="filter-btn active" data-value="all">全期間</button>
+          <button class="filter-btn" data-value="thisYear">今年</button>
+          <button class="filter-btn" data-value="lastYear">昨年</button>
+          <button class="filter-btn" data-value="last12">直近12か月</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">形式</span>
+        <div class="filter-btn-group" id="format-filter">
+          <button class="filter-btn active" data-value="all">全形式</button>
+          <button class="filter-btn" data-value="ワンマン">ワンマン</button>
+          <button class="filter-btn" data-value="対バン">対バン</button>
+          <button class="filter-btn" data-value="フェス">フェス</button>
+          <button class="filter-btn" data-value="サーキット">サーキット</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">評価</span>
+        <div class="filter-btn-group" id="rating-filter">
+          <button class="filter-btn active" data-value="all">全評価</button>
+          <button class="filter-btn" data-value="star5">★5のみ</button>
+          <button class="filter-btn" data-value="high">★4以上</button>
+          <button class="filter-btn" data-value="low">★3以下</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+let allRecords = [];
+let allNotes = [];
+let allArtists = [];
+let notesByLiveId = new Map();
+let barChart = null;
+let lineChart = null;
+
+let currentArtist = 'all';
+let currentPeriod = 'all';
+let currentFormat = 'all';
+let currentRating = 'all';
+
+function normalizeApiRecords(apiRecords) {
+  return apiRecords
+    .map((r) => {
+      if (!r.date) return null;
+      const date = new Date(r.date);
+      if (Number.isNaN(date.getTime())) return null;
+      const artists = Array.isArray(r.artists) ? r.artists.filter(Boolean) : [];
+      return {
+        id: r.id || '',
+        liveName: r.liveName || '',
+        artistRaw: artists.join(', '),
+        artists,
+        setlistUrl: r.setlistUrl || '',
+        venue: r.venue || '',
+        format: r.format || '',
+        date,
+        rating: Number(r.rating || 0),
+        dateStr: r.date || ''
+      };
+    })
+    .filter(Boolean);
+}
+
+async function loadFromApi() {
+  try {
+    const [liveRes, noteRes] = await Promise.all([
+      fetch('/api/live-log'),
+      fetch('/api/note-log')
+    ]);
+    const [liveData, noteData] = await Promise.all([
+      liveRes.json(),
+      noteRes.json()
+    ]);
+    if (!liveRes.ok) throw new Error(liveData.error || 'ライブAPIの取得に失敗しました');
+    if (!noteRes.ok) throw new Error(noteData.error || 'NOTE APIの取得に失敗しました');
+
+    allRecords = normalizeApiRecords(liveData).sort((a, b) => a.date - b.date);
+    allNotes = normalizeNoteRecords(noteData);
+    notesByLiveId = buildNotesByLiveIdMap(allNotes);
+    allArtists = [...new Set(allRecords.flatMap(r => r.artists))].sort((a, b) => a.localeCompare(b, 'ja'));
+
+    if (!allRecords.length) {
+      showToast('Notionデータは取得できましたが、表示対象がありません');
+      return;
+    }
+
+    renderArtistOptions('');
+    updateArtistCurrentLabel();
+    showDashboard();
+    renderDashboard();
+    showToast(`${allRecords.length} 件のNotionデータを読み込みました`);
+  } catch (err) {
+    console.error(err);
+    showToast(`読み込み失敗: ${err.message}`);
+  }
+}
+
+function normalizeNoteRecords(apiNotes) {
+  return (Array.isArray(apiNotes) ? apiNotes : [])
+    .map((n) => {
+      const publishedDate = n.notePublishedDate ? new Date(n.notePublishedDate) : null;
+      return {
+        id: n.id || '',
+        noteTitle: n.noteTitle || '',
+        noteUrl: n.noteUrl || '',
+        noteType: n.noteType || '',
+        notePublishedDate: n.notePublishedDate || '',
+        relatedLivePageIds: Array.isArray(n.relatedLivePageIds) ? n.relatedLivePageIds.filter(Boolean) : [],
+        publishedDate: (publishedDate && !Number.isNaN(publishedDate.getTime())) ? publishedDate : null
+      };
+    })
+    .filter((n) => n.noteUrl)
+    .sort((a, b) => {
+      const ad = a.publishedDate ? a.publishedDate.getTime() : 0;
+      const bd = b.publishedDate ? b.publishedDate.getTime() : 0;
+      return bd - ad;
+    });
+}
+
+function buildNotesByLiveIdMap(notes) {
+  const map = new Map();
+  notes.forEach((n) => {
+    n.relatedLivePageIds.forEach((liveId) => {
+      if (!map.has(liveId)) map.set(liveId, []);
+      map.get(liveId).push(n);
+    });
+  });
+  map.forEach((items, key) => {
+    items.sort((a, b) => {
+      const ad = a.publishedDate ? a.publishedDate.getTime() : 0;
+      const bd = b.publishedDate ? b.publishedDate.getTime() : 0;
+      return bd - ad;
+    });
+    map.set(key, items);
+  });
+  return map;
+}
+
+function getFilteredRecords() {
+  const now = new Date();
+  const thisYear = now.getFullYear();
+  const lastYear = thisYear - 1;
+
+  return allRecords.filter(r => {
+    if (currentArtist !== 'all' && !r.artists.includes(currentArtist)) return false;
+
+    if (currentPeriod === 'thisYear') {
+      if (r.date.getFullYear() !== thisYear) return false;
+    } else if (currentPeriod === 'lastYear') {
+      if (r.date.getFullYear() !== lastYear) return false;
+    } else if (currentPeriod === 'last12') {
+      const cutoff = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+      if (r.date < cutoff) return false;
+    }
+
+    if (currentFormat !== 'all' && r.format !== currentFormat) return false;
+
+    if (currentRating === 'star5' && r.rating !== 5) return false;
+    if (currentRating === 'high' && r.rating < 4) return false;
+    if (currentRating === 'low' && r.rating > 3) return false;
+
+    return true;
+  });
+}
+
+function getMonthRange(records) {
+  const now = new Date();
+  const months = [];
+
+  if (currentPeriod === 'thisYear') {
+    const y = now.getFullYear();
+    for (let m = 0; m < 12; m++) months.push({ y, m });
+    return months;
+  }
+  if (currentPeriod === 'lastYear') {
+    const y = now.getFullYear() - 1;
+    for (let m = 0; m < 12; m++) months.push({ y, m });
+    return months;
+  }
+  if (currentPeriod === 'last12') {
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ y: d.getFullYear(), m: d.getMonth() });
+    }
+    return months;
+  }
+
+  if (!records.length) return months;
+
+  const sorted = [...records].sort((a, b) => a.date - b.date);
+  let y = sorted[0].date.getFullYear();
+  let m = sorted[0].date.getMonth();
+  const endY = sorted[sorted.length - 1].date.getFullYear();
+  const endM = sorted[sorted.length - 1].date.getMonth();
+
+  while (y < endY || (y === endY && m <= endM)) {
+    months.push({ y, m });
+    m++;
+    if (m > 11) {
+      m = 0;
+      y++;
+    }
+  }
+  return months;
+}
+
+function buildMonthlyStats(records, months) {
+  const formatKeys = ['ワンマン', '対バン', 'フェス', 'サーキット'];
+  const monthMap = new Map();
+
+  months.forEach(({ y, m }) => {
+    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
+    monthMap.set(key, {
+      count: 0,
+      ratingTotal: 0,
+      ratingCount: 0,
+      star5Count: 0,
+      formats: Object.fromEntries(formatKeys.map(f => [f, 0]))
+    });
+  });
+
+  records.forEach(r => {
+    const key = `${r.date.getFullYear()}-${String(r.date.getMonth() + 1).padStart(2, '0')}`;
+    if (!monthMap.has(key)) return;
+    const row = monthMap.get(key);
+    row.count += 1;
+    if (r.rating > 0) {
+      row.ratingTotal += r.rating;
+      row.ratingCount += 1;
+    }
+    if (r.rating === 5) row.star5Count += 1;
+    if (row.formats[r.format] !== undefined) row.formats[r.format] += 1;
+  });
+
+  return months.map(({ y, m }) => {
+    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
+    const row = monthMap.get(key);
+    return {
+      label: `${y}/${String(m + 1).padStart(2, '0')}`,
+      count: row.count,
+      avgRating: row.ratingCount ? +(row.ratingTotal / row.ratingCount).toFixed(2) : null,
+      star5Count: row.star5Count,
+      formats: row.formats
+    };
+  });
+}
+
+function getPeriodSummaryText(records) {
+  const dates = records.map(r => r.date).sort((a, b) => a - b);
+  if (!dates.length) return '対象期間：データなし';
+  const s = dates[0];
+  const e = dates[dates.length - 1];
+  const fmt = d => `${d.getFullYear()}年${d.getMonth() + 1}月`;
+  return `対象期間：${fmt(s)}〜${fmt(e)}`;
+}
+
+function formatDelta(diff, unit = '回') {
+  if (unit === '') {
+    const sign = diff > 0 ? '+' : '';
+    return `${sign}${diff.toFixed(2)}`;
+  }
+  const sign = diff > 0 ? '+' : '';
+  return `${sign}${diff}${unit}`;
+}
+
+function getConditionText() {
+  const parts = [];
+  parts.push(currentArtist === 'all' ? '全アーティスト' : currentArtist);
+
+  const periodMap = {
+    all: '全期間',
+    thisYear: '今年',
+    lastYear: '昨年',
+    last12: '直近12か月'
+  };
+  parts.push(periodMap[currentPeriod]);
+
+  if (currentFormat !== 'all') parts.push(currentFormat);
+
+  const ratingMap = {
+    star5: '★5のみ',
+    high: '★4以上',
+    low: '★3以下'
+  };
+  if (currentRating !== 'all') parts.push(ratingMap[currentRating]);
+
+  return parts.join(' / ');
+}
+
+function getQualityMetrics() {
+  const total = allRecords.length;
+  const missingRating = allRecords.filter(r => !r.rating).length;
+  const missingFormat = allRecords.filter(r => !r.format).length;
+  const missingVenue = allRecords.filter(r => !r.venue).length;
+  const uniqueKeyCount = new Set(allRecords.map(r => [r.liveName, r.dateStr, r.venue, r.format, r.artistRaw].join('|'))).size;
+  const duplicateLike = Math.max(total - uniqueKeyCount, 0);
+  return { total, missingRating, missingFormat, missingVenue, duplicateLike };
+}
+
+function renderQualityInline() {
+  const q = getQualityMetrics();
+  const issues = [];
+  if (q.missingRating > 0) issues.push(`評価なし ${q.missingRating}件`);
+  if (q.missingFormat > 0) issues.push(`形式なし ${q.missingFormat}件`);
+  if (q.missingVenue > 0) issues.push(`会場なし ${q.missingVenue}件`);
+  if (q.duplicateLike > 0) issues.push(`重複候補 ${q.duplicateLike}件`);
+
+  const el = document.getElementById('quality-inline');
+
+  if (!issues.length) {
+    el.className = 'quality-inline good';
+    el.textContent = `データ品質：問題なし（全${q.total}件）`;
+  } else {
+    el.className = 'quality-inline warn';
+    el.textContent = `データ品質：${issues.join(' / ')}`;
+  }
+}
+
+function getAllCurrentFilterBaseRecords() {
+  return allRecords.filter(r => {
+    if (currentArtist !== 'all' && !r.artists.includes(currentArtist)) return false;
+    if (currentFormat !== 'all' && r.format !== currentFormat) return false;
+    if (currentRating === 'star5' && r.rating !== 5) return false;
+    if (currentRating === 'high' && r.rating < 4) return false;
+    if (currentRating === 'low' && r.rating > 3) return false;
+    return true;
+  });
+}
+
+function renderHeader(records) {
+  document.getElementById('header-period').textContent = getPeriodSummaryText(records);
+  document.getElementById('header-total').textContent = `総ライブ数 ${records.length} 件`;
+  document.getElementById('condition-text').textContent = getConditionText();
+}
+
+function renderSummary(records) {
+  const now = new Date();
+  const thisYear = now.getFullYear();
+
+  const baseRecords = getAllCurrentFilterBaseRecords();
+  const ratings = records.filter(r => r.rating > 0).map(r => r.rating);
+  const avg = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length) : null;
+  const star5 = records.filter(r => r.rating === 5).length;
+
+  document.getElementById('sc-total').innerHTML = `${records.length}<span>回</span>`;
+  document.getElementById('sc-avg').textContent = avg === null ? '—' : avg.toFixed(2);
+  document.getElementById('sc-star5').innerHTML = `${star5}<span>回</span>`;
+
+  const thisYearRecords = baseRecords.filter(r => r.date.getFullYear() === thisYear);
+  const months = getMonthRange(records);
+  const activeMonths = months.length || 1;
+  const monthlyAvg = records.length ? (records.length / activeMonths) : 0;
+  const star5Rate = records.length ? ((star5 / records.length) * 100) : 0;
+  const thisYearNotes = allNotes.filter(n => n.publishedDate && n.publishedDate.getFullYear() === thisYear).length;
+
+  document.getElementById('sc-total-sub').textContent = `現在の条件で集計`;
+  document.getElementById('sc-avg-sub').textContent = ratings.length ? `評価あり ${ratings.length}件ベース` : `評価データなし`;
+  document.getElementById('sc-star5-sub').textContent = `全${records.length}件中 ${star5}件`;
+
+  document.getElementById('mini-this-year').textContent = `${thisYearRecords.length}回`;
+  document.getElementById('mini-this-year-sub').textContent = `${thisYear}年に記録したライブ数`;
+
+  document.getElementById('mini-monthly-avg').textContent = `${monthlyAvg.toFixed(1)}回`;
+  document.getElementById('mini-monthly-avg-sub').textContent = `${activeMonths}か月ベースの平均`;
+
+  document.getElementById('mini-star5-rate').textContent = `${star5Rate.toFixed(1)}%`;
+  document.getElementById('mini-star5-rate-sub').textContent = `星5 ${star5}回 / 全${records.length}回`;
+  document.getElementById('mini-note-this-year').textContent = `${thisYearNotes}件`;
+  document.getElementById('mini-note-this-year-sub').textContent = `${thisYear}年に公開したNote記事数`;
+}
+
+function adjustChartWidth(records) {
+  const isWide = currentPeriod === 'all' && records.length > 24;
+  document.getElementById('bar-chart-inner').className = isWide ? 'chart-inner-wide' : 'chart-inner-normal';
+  document.getElementById('line-chart-inner').className = isWide ? 'chart-inner-wide' : 'chart-inner-normal';
+  document.getElementById('bar-chart-scroll').scrollLeft = 0;
+  document.getElementById('line-chart-scroll').scrollLeft = 0;
+}
+
+function renderCharts(records) {
+  adjustChartWidth(records);
+
+  const months = getMonthRange(records);
+  const stats = buildMonthlyStats(records, months);
+  const labels = stats.map(s => s.label);
+  const avgRatings = stats.map(s => s.avgRating);
+  const maxTick = labels.length > 36 ? Math.ceil(labels.length / 24) : labels.length > 18 ? 2 : 1;
+
+  if (barChart) barChart.destroy();
+  const barCtx = document.getElementById('bar-chart').getContext('2d');
+  barChart = new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'ワンマン', data: stats.map(s => s.formats['ワンマン']), backgroundColor: 'rgba(37,99,235,0.78)', stack: 'live' },
+        { label: '対バン', data: stats.map(s => s.formats['対バン']), backgroundColor: 'rgba(124,58,237,0.78)', stack: 'live' },
+        { label: 'フェス', data: stats.map(s => s.formats['フェス']), backgroundColor: 'rgba(217,119,6,0.78)', stack: 'live' },
+        { label: 'サーキット', data: stats.map(s => s.formats['サーキット']), backgroundColor: 'rgba(5,150,105,0.78)', stack: 'live' }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } },
+        tooltip: {
+          callbacks: {
+            title: items => `${items[0].label}`,
+            label: item => `${item.dataset.label}：${item.raw}回`,
+            footer: items => {
+              const idx = items[0]?.dataIndex ?? 0;
+              const stat = stats[idx];
+              return [`合計：${stat.count}回`, `平均評価：${stat.avgRating ?? '—'}`, `星5ライブ：${stat.star5Count}回`];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          grid: { display: false },
+          ticks: {
+            font: { size: 10 },
+            color: '#94a3b8',
+            maxRotation: 45,
+            callback: (val, i) => i % maxTick === 0 ? labels[i] : ''
+          }
+        },
+        y: {
+          stacked: true,
+          grid: { color: '#f1f5f9' },
+          ticks: { font: { size: 10 }, color: '#94a3b8', stepSize: 1 },
+          beginAtZero: true
+        }
       }
-
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .filter-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    letter-spacing: 0.05em;
-  }
-
-  .search-combobox {
-    position: relative;
-  }
-
-  .artist-search-input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: #fff;
-    font-size: 14px;
-    color: var(--text-primary);
-  }
-
-  .artist-search-input:focus {
-    outline: none;
-    border-color: #93c5fd;
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
-  }
-
-  .artist-options {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    right: 0;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    max-height: 220px;
-    overflow-y: auto;
-    z-index: 120;
-    display: none;
-  }
-
-  .artist-options.open {
-    display: block;
-  }
-
-  .artist-option {
-    padding: 10px 12px;
-    font-size: 13px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border-light);
-  }
-
-  .artist-option:last-child {
-    border-bottom: none;
-  }
-
-  .artist-option.active,
-  .artist-option:hover {
-    background: var(--accent-light);
-    color: var(--accent);
-  }
-
-  .artist-current {
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-
-  .filter-btn-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .filter-btn {
-    padding: 8px 12px;
-    border: 1px solid var(--border);
-    background: #fff;
-    border-radius: 999px;
-    font-size: 12px;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-weight: 500;
-    color: var(--text-secondary);
-    cursor: pointer;
-  }
-
-  .filter-btn.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-    box-shadow: 0 1px 4px rgba(37,99,235,0.35);
-  }
-
-  @media (max-width: 980px) {
-    .charts-row, .analysis-row {
-      grid-template-columns: 1fr;
     }
-  }
+  });
 
-  @media (max-width: 700px) {
-    .main {
-      padding: 16px 12px 36px;
+  if (lineChart) lineChart.destroy();
+  const lineCtx = document.getElementById('line-chart').getContext('2d');
+  lineChart = new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: '平均評価',
+        data: avgRatings,
+        borderColor: '#059669',
+        backgroundColor: 'rgba(5,150,105,0.08)',
+        pointBackgroundColor: '#059669',
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        fill: true,
+        tension: 0.3,
+        spanGaps: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: items => `${items[0].label}`,
+            label: item => {
+              const stat = stats[item.dataIndex];
+              return [`ライブ本数：${stat.count}回`, `平均評価：${item.raw ?? '—'}`, `星5ライブ：${stat.star5Count}回`];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            font: { size: 10 },
+            color: '#94a3b8',
+            maxRotation: 45,
+            callback: (val, i) => i % maxTick === 0 ? labels[i] : ''
+          }
+        },
+        y: {
+          grid: { color: '#f1f5f9' },
+          min: 1,
+          max: 5,
+          ticks: { font: { size: 10 }, color: '#94a3b8', stepSize: 1 }
+        }
+      }
     }
-
-    .header-title {
-      font-size: 28px;
-    }
-
-    .summary-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .summary-grid .card {
-      padding: 12px 10px;
-    }
-
-    .summary-card-icon {
-      width: 30px;
-      height: 30px;
-      font-size: 15px;
-      margin-bottom: 8px;
-      border-radius: 8px;
-    }
-
-    .summary-card-value {
-      font-size: 24px;
-    }
-
-    .summary-card-value span {
-      font-size: 12px;
-      margin-left: 2px;
-    }
-
-    .summary-card-label {
-      font-size: 10px;
-      line-height: 1.25;
-      margin-top: 5px;
-    }
-
-    .summary-card-sub {
-      font-size: 9px;
-      line-height: 1.3;
-      margin-top: 8px;
-      padding-top: 8px;
-    }
-
-    .summary-subgrid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .mini-card {
-      padding: 12px 10px;
-    }
-
-    .mini-value {
-      font-size: 20px;
-    }
-
-    .mini-sub {
-      font-size: 10px;
-      line-height: 1.3;
-    }
-
-    .chart-wrap {
-      height: 220px;
-    }
-
-    .chart-inner-wide {
-      width: 900px;
-      min-width: 900px;
-    }
-
-    .star5-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .scroll-list {
-      max-height: none;
-      overflow: visible;
-      padding-right: 0;
-    }
-
-    .ranking-name {
-      white-space: normal;
-      overflow: visible;
-      text-overflow: clip;
-      line-height: 1.35;
-    }
-  }
-</style>
-</head>
-<body>
-  <div class="topbar">
-    <div class="topbar-brand">LIVE LOG</div>
-  </div>
-
-  <div class="main">
-    <div class="no-data-screen" id="no-data-screen">
-      <div class="no-data-icon">🎵</div>
-      <div class="no-data-title">ライブログへようこそ</div>
-      <div class="no-data-sub">Notionのライブ記録を読み込んで表示します</div>
-    </div>
-
-    <div id="dashboard" class="hidden">
-      <div class="header">
-        <div class="header-left">
-          <div class="header-title">LIVE <span>LOG</span></div>
-          <div class="header-subtitle">
-            <span id="header-period">対象期間：読み込み中</span>
-            <span class="header-badge" id="header-total">0 件</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="condition-bar" id="condition-bar">
-        <strong>表示条件</strong><span id="condition-text">全体</span>
-      </div>
-
-      <div id="quality-inline" class="quality-inline">データ品質を確認中…</div>
-
-      <div class="summary-grid">
-        <div class="card summary-card">
-          <div class="summary-card-icon icon-blue">🎤</div>
-          <div class="summary-card-value" id="sc-total">—<span>回</span></div>
-          <div class="summary-card-label">ライブ回数</div>
-          <div class="summary-card-sub" id="sc-total-sub">—</div>
-        </div>
-        <div class="card summary-card">
-          <div class="summary-card-icon icon-green">⭐</div>
-          <div class="summary-card-value" id="sc-avg">—</div>
-          <div class="summary-card-label">平均評価</div>
-          <div class="summary-card-sub" id="sc-avg-sub">—</div>
-        </div>
-        <div class="card summary-card">
-          <div class="summary-card-icon icon-amber">✨</div>
-          <div class="summary-card-value" id="sc-star5">—<span>回</span></div>
-          <div class="summary-card-label">星5ライブ数</div>
-          <div class="summary-card-sub" id="sc-star5-sub">—</div>
-        </div>
-      </div>
-
-      <div class="summary-subgrid">
-        <div class="mini-card">
-          <div class="mini-label">今年のライブ数</div>
-          <div class="mini-value" id="mini-this-year">—</div>
-          <div class="mini-sub" id="mini-this-year-sub">—</div>
-        </div>
-        <div class="mini-card">
-          <div class="mini-label">月平均ライブ数</div>
-          <div class="mini-value" id="mini-monthly-avg">—</div>
-          <div class="mini-sub" id="mini-monthly-avg-sub">—</div>
-        </div>
-        <div class="mini-card">
-          <div class="mini-label">星5率</div>
-          <div class="mini-value" id="mini-star5-rate">—</div>
-          <div class="mini-sub" id="mini-star5-rate-sub">—</div>
-        </div>
-        <div class="mini-card">
-          <div class="mini-label">今年のNote記事数</div>
-          <div class="mini-value" id="mini-note-this-year">—</div>
-          <div class="mini-sub" id="mini-note-this-year-sub">—</div>
-        </div>
-      </div>
-
-      <div class="charts-row">
-        <div class="chart-card">
-          <div class="section-title">月別ライブ回数<span class="section-note">※形式別内訳</span></div>
-          <div class="chart-scroll" id="bar-chart-scroll">
-            <div id="bar-chart-inner" class="chart-inner-normal">
-              <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
-            </div>
-          </div>
-        </div>
-        <div class="chart-card">
-          <div class="section-title">月別平均評価</div>
-          <div class="chart-scroll" id="line-chart-scroll">
-            <div id="line-chart-inner" class="chart-inner-normal">
-              <div class="chart-wrap"><canvas id="line-chart"></canvas></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="analysis-row">
-        <div class="card">
-          <div class="section-title" id="left-panel-title">アーティスト別回数</div>
-          <div class="scroll-list" id="left-panel-list"></div>
-        </div>
-        <div class="card">
-          <div class="section-title">アーティスト別平均評価<span class="section-note">※ワンマンのみ・3回以上</span></div>
-          <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;">平均評価はワンマンのみ集計</div>
-          <div class="scroll-list" id="artist-rating-ranking"></div>
-        </div>
-        <div class="card">
-          <div class="section-title">会場ランキング</div>
-          <div class="scroll-list" id="venue-ranking"></div>
-        </div>
-      </div>
-
-      <div>
-        <div class="section-title" style="margin-bottom:16px;">⭐⭐⭐⭐⭐ 星5ライブ一覧</div>
-        <div id="star5-list" class="star5-grid"></div>
-      </div>
-
-      <div id="recent-notes-section" class="hidden" style="margin-top:24px;">
-        <div class="section-title" style="margin-bottom:16px;">📝 最近書いたNote</div>
-        <div id="recent-note-list" class="recent-note-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <button class="fab-filter" id="fab-filter" aria-label="フィルター">
-    <span>絞込</span>
-  </button>
-
-  <div class="filter-drawer-backdrop" id="drawer-backdrop"></div>
-  <div class="filter-drawer" id="filter-drawer" aria-hidden="true">
-    <div class="drawer-header">
-      <div class="drawer-title">フィルター</div>
-      <button class="drawer-close" id="drawer-close" aria-label="閉じる">×</button>
-    </div>
-    <div class="drawer-body">
-      <div class="filter-group">
-        <span class="filter-label">アーティスト</span>
-        <div class="search-combobox">
-          <input type="text" id="artist-search-input" class="artist-search-input" placeholder="アーティスト名で検索">
-          <div class="artist-options" id="artist-options"></div>
-        </div>
-        <div class="artist-current" id="artist-current-label">現在：全アーティスト</div>
-      </div>
-
-      <div class="filter-group">
-        <span class="filter-label">期間</span>
-        <div class="filter-btn-group" id="period-filter">
-          <button class="filter-btn active" data-value="all">全期間</button>
-          <button class="filter-btn" data-value="thisYear">今年</button>
-          <button class="filter-btn" data-value="lastYear">昨年</button>
-          <button class="filter-btn" data-value="last12">直近12か月</button>
-        </div>
-      </div>
-
-      <div class="filter-group">
-        <span class="filter-label">形式</span>
-        <div class="filter-btn-group" id="format-filter">
-          <button class="filter-btn active" data-value="all">全形式</button>
-          <button class="filter-btn" data-value="ワンマン">ワンマン</button>
-          <button class="filter-btn" data-value="対バン">対バン</button>
-          <button class="filter-btn" data-value="フェス">フェス</button>
-          <button class="filter-btn" data-value="サーキット">サーキット</button>
-        </div>
-      </div>
-
-      <div class="filter-group">
-        <span class="filter-label">評価</span>
-        <div class="filter-btn-group" id="rating-filter">
-          <button class="filter-btn active" data-value="all">全評価</button>
-          <button class="filter-btn" data-value="star5">★5のみ</button>
-          <button class="filter-btn" data-value="high">★4以上</button>
-          <button class="filter-btn" data-value="low">★3以下</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-<script>
-let allRecords = [];
-let allNotes = [];
-let allArtists = [];
-let notesByLiveId = new Map();
-let barChart = null;
-let lineChart = null;
-
-let currentArtist = 'all';
-let currentPeriod = 'all';
-let currentFormat = 'all';
-let currentRating = 'all';
-
-function normalizeApiRecords(apiRecords) {
-  return apiRecords
-    .map((r) => {
-      if (!r.date) return null;
-      const date = new Date(r.date);
-      if (Number.isNaN(date.getTime())) return null;
-      const artists = Array.isArray(r.artists) ? r.artists.filter(Boolean) : [];
-      return {
-        id: r.id || '',
-        liveName: r.liveName || '',
-        artistRaw: artists.join(', '),
-        artists,
-        setlistUrl: r.setlistUrl || '',
-        venue: r.venue || '',
-        format: r.format || '',
-        date,
-        rating: Number(r.rating || 0),
-        dateStr: r.date || ''
-      };
-    })
-    .filter(Boolean);
+  });
 }
 
-async function loadFromApi() {
-  try {
-    const [liveRes, noteRes] = await Promise.all([
-      fetch('/api/live-log'),
-      fetch('/api/note-log')
-    ]);
-    const [liveData, noteData] = await Promise.all([
-      liveRes.json(),
-      noteRes.json()
-    ]);
-    if (!liveRes.ok) throw new Error(liveData.error || 'ライブAPIの取得に失敗しました');
-    if (!noteRes.ok) throw new Error(noteData.error || 'NOTE APIの取得に失敗しました');
-
-    allRecords = normalizeApiRecords(liveData).sort((a, b) => a.date - b.date);
-    allNotes = normalizeNoteRecords(noteData);
-    notesByLiveId = buildNotesByLiveIdMap(allNotes);
-    allArtists = [...new Set(allRecords.flatMap(r => r.artists))].sort((a, b) => a.localeCompare(b, 'ja'));
-
-    if (!allRecords.length) {
-      showToast('Notionデータは取得できましたが、表示対象がありません');
-      return;
-    }
-
-    renderArtistOptions('');
-    updateArtistCurrentLabel();
-    showDashboard();
-    renderDashboard();
-    showToast(`${allRecords.length} 件のNotionデータを読み込みました`);
-  } catch (err) {
-    console.error(err);
-    showToast(`読み込み失敗: ${err.message}`);
+function renderRankingList(containerId, items, colorClass = '') {
+  const el = document.getElementById(containerId);
+  if (!items.length) {
+    el.innerHTML = '<div class="empty-msg">データなし</div>';
+    return;
   }
+  const maxVal = items[0].value;
+  el.innerHTML = items.slice(0, 10).map((item, i) => {
+    const numCls = i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
+    const barW = maxVal > 0 ? (item.value / maxVal * 100).toFixed(1) : 0;
+    const display = item.display !== undefined ? item.display : `${item.value}`;
+    const subDisplay = item.subDisplay ? `<span class="ranking-sub">${item.subDisplay}</span>` : '';
+    return `<div class="ranking-item">
+      <div class="ranking-num ${numCls}">${i+1}</div>
+      <div class="ranking-bar-wrap">
+        <div class="ranking-name" title="${escapeHtmlAttr(item.name)}">${escapeHtml(item.name)}</div>
+        <div class="ranking-bar-bg"><div class="ranking-bar-fill ${colorClass}" style="width:${barW}%"></div></div>
+      </div>
+      <div class="ranking-value">${display}${subDisplay}</div>
+    </div>`;
+  }).join('');
 }
 
-function normalizeNoteRecords(apiNotes) {
-  return (Array.isArray(apiNotes) ? apiNotes : [])
-    .map((n) => {
-      const publishedDate = n.notePublishedDate ? new Date(n.notePublishedDate) : null;
-      return {
-        id: n.id || '',
-        noteTitle: n.noteTitle || '',
-        noteUrl: n.noteUrl || '',
-        noteType: n.noteType || '',
-        notePublishedDate: n.notePublishedDate || '',
-        relatedLivePageIds: Array.isArray(n.relatedLivePageIds) ? n.relatedLivePageIds.filter(Boolean) : [],
-        publishedDate: (publishedDate && !Number.isNaN(publishedDate.getTime())) ? publishedDate : null
-      };
-    })
-    .filter((n) => n.noteUrl)
-    .sort((a, b) => {
-      const ad = a.publishedDate ? a.publishedDate.getTime() : 0;
-      const bd = b.publishedDate ? b.publishedDate.getTime() : 0;
-      return bd - ad;
+function renderLeftPanel(records) {
+  if (currentArtist === 'all') {
+    document.getElementById('left-panel-title').textContent = 'アーティスト別回数';
+    const map = {};
+    records.forEach(r => {
+      r.artists.forEach(a => { map[a] = (map[a] || 0) + 1; });
     });
-}
-
-function buildNotesByLiveIdMap(notes) {
-  const map = new Map();
-  notes.forEach((n) => {
-    n.relatedLivePageIds.forEach((liveId) => {
-      if (!map.has(liveId)) map.set(liveId, []);
-      map.get(liveId).push(n);
-    });
-  });
-  map.forEach((items, key) => {
-    items.sort((a, b) => {
-      const ad = a.publishedDate ? a.publishedDate.getTime() : 0;
-      const bd = b.publishedDate ? b.publishedDate.getTime() : 0;
-      return bd - ad;
-    });
-    map.set(key, items);
-  });
-  return map;
-}
-
-function getFilteredRecords() {
-  const now = new Date();
-  const thisYear = now.getFullYear();
-  const lastYear = thisYear - 1;
-
-  return allRecords.filter(r => {
-    if (currentArtist !== 'all' && !r.artists.includes(currentArtist)) return false;
-
-    if (currentPeriod === 'thisYear') {
-      if (r.date.getFullYear() !== thisYear) return false;
-    } else if (currentPeriod === 'lastYear') {
-      if (r.date.getFullYear() !== lastYear) return false;
-    } else if (currentPeriod === 'last12') {
-      const cutoff = new Date(now.getFullYear(), now.getMonth() - 11, 1);
-      if (r.date < cutoff) return false;
-    }
-
-    if (currentFormat !== 'all' && r.format !== currentFormat) return false;
-
-    if (currentRating === 'star5' && r.rating !== 5) return false;
-    if (currentRating === 'high' && r.rating < 4) return false;
-    if (currentRating === 'low' && r.rating > 3) return false;
-
-    return true;
-  });
-}
-
-function getMonthRange(records) {
-  const now = new Date();
-  const months = [];
-
-  if (currentPeriod === 'thisYear') {
-    const y = now.getFullYear();
-    for (let m = 0; m < 12; m++) months.push({ y, m });
-    return months;
-  }
-  if (currentPeriod === 'lastYear') {
-    const y = now.getFullYear() - 1;
-    for (let m = 0; m < 12; m++) months.push({ y, m });
-    return months;
-  }
-  if (currentPeriod === 'last12') {
-    for (let i = 11; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      months.push({ y: d.getFullYear(), m: d.getMonth() });
-    }
-    return months;
-  }
-
-  if (!records.length) return months;
-
-  const sorted = [...records].sort((a, b) => a.date - b.date);
-  let y = sorted[0].date.getFullYear();
-  let m = sorted[0].date.getMonth();
-  const endY = sorted[sorted.length - 1].date.getFullYear();
-  const endM = sorted[sorted.length - 1].date.getMonth();
-
-  while (y < endY || (y === endY && m <= endM)) {
-    months.push({ y, m });
-    m++;
-    if (m > 11) {
-      m = 0;
-      y++;
-    }
-  }
-  return months;
-}
-
-function buildMonthlyStats(records, months) {
-  const formatKeys = ['ワンマン', '対バン', 'フェス', 'サーキット'];
-  const monthMap = new Map();
-
-  months.forEach(({ y, m }) => {
-    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
-    monthMap.set(key, {
-      count: 0,
-      ratingTotal: 0,
-      ratingCount: 0,
-      star5Count: 0,
-      formats: Object.fromEntries(formatKeys.map(f => [f, 0]))
-    });
-  });
-
-  records.forEach(r => {
-    const key = `${r.date.getFullYear()}-${String(r.date.getMonth() + 1).padStart(2, '0')}`;
-    if (!monthMap.has(key)) return;
-    const row = monthMap.get(key);
-    row.count += 1;
-    if (r.rating > 0) {
-      row.ratingTotal += r.rating;
-      row.ratingCount += 1;
-    }
-    if (r.rating === 5) row.star5Count += 1;
-    if (row.formats[r.format] !== undefined) row.formats[r.format] += 1;
-  });
-
-  return months.map(({ y, m }) => {
-    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
-    const row = monthMap.get(key);
-    return {
-      label: `${y}/${String(m + 1).padStart(2, '0')}`,
-      count: row.count,
-      avgRating: row.ratingCount ? +(row.ratingTotal / row.ratingCount).toFixed(2) : null,
-      star5Count: row.star5Count,
-      formats: row.formats
-    };
-  });
-}
-
-function getPeriodSummaryText(records) {
-  const dates = records.map(r => r.date).sort((a, b) => a - b);
-  if (!dates.length) return '対象期間：データなし';
-  const s = dates[0];
-  const e = dates[dates.length - 1];
-  const fmt = d => `${d.getFullYear()}年${d.getMonth() + 1}月`;
-  return `対象期間：${fmt(s)}〜${fmt(e)}`;
-}
-
-function formatDelta(diff, unit = '回') {
-  if (unit === '') {
-    const sign = diff > 0 ? '+' : '';
-    return `${sign}${diff.toFixed(2)}`;
-  }
-  const sign = diff > 0 ? '+' : '';
-  return `${sign}${diff}${unit}`;
-}
-
-function getConditionText() {
-  const parts = [];
-  parts.push(currentArtist === 'all' ? '全アーティスト' : currentArtist);
-
-  const periodMap = {
-    all: '全期間',
-    thisYear: '今年',
-    lastYear: '昨年',
-    last12: '直近12か月'
-  };
-  parts.push(periodMap[currentPeriod]);
-
-  if (currentFormat !== 'all') parts.push(currentFormat);
-
-  const ratingMap = {
-    star5: '★5のみ',
-    high: '★4以上',
-    low: '★3以下'
-  };
-  if (currentRating !== 'all') parts.push(ratingMap[currentRating]);
-
-  return parts.join(' / ');
-}
-
-function getQualityMetrics() {
-  const total = allRecords.length;
-  const missingRating = allRecords.filter(r => !r.rating).length;
-  const missingFormat = allRecords.filter(r => !r.format).length;
-  const missingVenue = allRecords.filter(r => !r.venue).length;
-  const uniqueKeyCount = new Set(allRecords.map(r => [r.liveName, r.dateStr, r.venue, r.format, r.artistRaw].join('|'))).size;
-  const duplicateLike = Math.max(total - uniqueKeyCount, 0);
-  return { total, missingRating, missingFormat, missingVenue, duplicateLike };
-}
-
-function renderQualityInline() {
-  const q = getQualityMetrics();
-  const issues = [];
-  if (q.missingRating > 0) issues.push(`評価なし ${q.missingRating}件`);
-  if (q.missingFormat > 0) issues.push(`形式なし ${q.missingFormat}件`);
-  if (q.missingVenue > 0) issues.push(`会場なし ${q.missingVenue}件`);
-  if (q.duplicateLike > 0) issues.push(`重複候補 ${q.duplicateLike}件`);
-
-  const el = document.getElementById('quality-inline');
-
-  if (!issues.length) {
-    el.className = 'quality-inline good';
-    el.textContent = `データ品質：問題なし（全${q.total}件）`;
+    const total = Object.values(map).reduce((sum, val) => sum + val, 0);
+    const items = Object.entries(map).map(([name, value]) => ({
+      name,
+      value,
+      display: `${value}回`,
+      subDisplay: total ? `${((value / total) * 100).toFixed(1)}%` : ''
+    })).sort((a, b) => b.value - a.value);
+    renderRankingList('left-panel-list', items, '');
   } else {
-    el.className = 'quality-inline warn';
-    el.textContent = `データ品質：${issues.join(' / ')}`;
-  }
-}
-
-function getAllCurrentFilterBaseRecords() {
-  return allRecords.filter(r => {
-    if (currentArtist !== 'all' && !r.artists.includes(currentArtist)) return false;
-    if (currentFormat !== 'all' && r.format !== currentFormat) return false;
-    if (currentRating === 'star5' && r.rating !== 5) return false;
-    if (currentRating === 'high' && r.rating < 4) return false;
-    if (currentRating === 'low' && r.rating > 3) return false;
-    return true;
-  });
-}
-
-function renderHeader(records) {
-  document.getElementById('header-period').textContent = getPeriodSummaryText(records);
-  document.getElementById('header-total').textContent = `総ライブ数 ${records.length} 件`;
-  document.getElementById('condition-text').textContent = getConditionText();
-}
-
-function renderSummary(records) {
-  const now = new Date();
-  const thisYear = now.getFullYear();
-
-  const baseRecords = getAllCurrentFilterBaseRecords();
-  const ratings = records.filter(r => r.rating > 0).map(r => r.rating);
-  const avg = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length) : null;
-  const star5 = records.filter(r => r.rating === 5).length;
-
-  document.getElementById('sc-total').innerHTML = `${records.length}<span>回</span>`;
-  document.getElementById('sc-avg').textContent = avg === null ? '—' : avg.toFixed(2);
-  document.getElementById('sc-star5').innerHTML = `${star5}<span>回</span>`;
-
-  const thisYearRecords = baseRecords.filter(r => r.date.getFullYear() === thisYear);
-  const months = getMonthRange(records);
-  const activeMonths = months.length || 1;
-    }
-
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .filter-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    letter-spacing: 0.05em;
-  }
-
-  .search-combobox {
-    position: relative;
-  }
-
-  .artist-search-input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: #fff;
-    font-size: 14px;
-    color: var(--text-primary);
-  }
-
-  .artist-search-input:focus {
-    outline: none;
-    border-color: #93c5fd;
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
-  }
-
-  .artist-options {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    right: 0;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    max-height: 220px;
-    overflow-y: auto;
-    z-index: 120;
-    display: none;
-  }
-
-  .artist-options.open {
-    display: block;
-  }
-
-  .artist-option {
-    padding: 10px 12px;
-    font-size: 13px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border-light);
-  }
-
-  .artist-option:last-child {
-    border-bottom: none;
-  }
-
-  .artist-option.active,
-  .artist-option:hover {
-    background: var(--accent-light);
-    color: var(--accent);
-  }
-
-  .artist-current {
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-
-  .filter-btn-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .filter-btn {
-    padding: 8px 12px;
-    border: 1px solid var(--border);
-    background: #fff;
-    border-radius: 999px;
-    font-size: 12px;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-weight: 500;
-    color: var(--text-secondary);
-    cursor: pointer;
-  }
-
-  .filter-btn.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-    box-shadow: 0 1px 4px rgba(37,99,235,0.35);
-  }
-
-  @media (max-width: 980px) {
-    .charts-row, .analysis-row {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (max-width: 700px) {
-    .main {
-      padding: 16px 12px 36px;
-    }
-
-    .header-title {
-      font-size: 28px;
-    }
-
-    .summary-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .summary-grid .card {
-      padding: 12px 10px;
-    }
-
-    .summary-card-icon {
-      width: 30px;
-      height: 30px;
-      font-size: 15px;
-      margin-bottom: 8px;
-      border-radius: 8px;
-    }
-
-    .summary-card-value {
-      font-size: 24px;
-    }
-
-    .summary-card-value span {
-      font-size: 12px;
-      margin-left: 2px;
-    }
-
-    .summary-card-label {
-      font-size: 10px;
-      line-height: 1.25;
-      margin-top: 5px;
-    }
-
-    .summary-card-sub {
-      font-size: 9px;
-      line-height: 1.3;
-      margin-top: 8px;
-      padding-top: 8px;
-    }
-
-    .summary-subgrid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .mini-card {
-      padding: 12px 10px;
-    }
-
-    .mini-value {
-      font-size: 20px;
-    }
-
-    .mini-sub {
-      font-size: 10px;
-      line-height: 1.3;
-    }
-
-    .chart-wrap {
-      height: 220px;
-    }
-
-    .chart-inner-wide {
-      width: 900px;
-      min-width: 900px;
-    }
-
-    .star5-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .scroll-list {
-      max-height: none;
-      overflow: visible;
-      padding-right: 0;
-    }
-
-    .ranking-name {
-      white-space: normal;
-      overflow: visible;
-      text-overflow: clip;
-      line-height: 1.35;
-    }
-  }
-</style>
-</head>
-<body>
-  <div class="topbar">
-    <div class="topbar-brand">LIVE LOG</div>
-  </div>
-
-  <div class="main">
-    <div class="no-data-screen" id="no-data-screen">
-      <div class="no-data-icon">🎵</div>
-      <div class="no-data-title">ライブログへようこそ</div>
-      <div class="no-data-sub">Notionのライブ記録を読み込んで表示します</div>
-    </div>
-
-    <div id="dashboard" class="hidden">
-      <div class="header">
-        <div class="header-left">
-          <div class="header-title">LIVE <span>LOG</span></div>
-          <div class="header-subtitle">
-            <span id="header-period">対象期間：読み込み中</span>
-            <span class="header-badge" id="header-total">0 件</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="condition-bar" id="condition-bar">
-        <strong>表示条件</strong><span id="condition-text">全体</span>
-      </div>
-
-      <div id="quality-inline" class="quality-inline">データ品質を確認中…</div>
-
-      <div class="summary-grid">
-        <div class="card summary-card">
-          <div class="summary-card-icon icon-blue">🎤</div>
-          <div class="summary-card-value" id="sc-total">—<span>回</span></div>
-          <div class="summary-card-label">ライブ回数</div>
-          <div class="summary-card-sub" id="sc-total-sub">—</div>
-        </div>
-        <div class="card summary-card">
-          <div class="summary-card-icon icon-green">⭐</div>
-          <div class="summary-card-value" id="sc-avg">—</div>
-          <div class="summary-card-label">平均評価</div>
-          <div class="summary-card-sub" id="sc-avg-sub">—</div>
-        </div>
-        <div class="card summary-card">
-          <div class="summary-card-icon icon-amber">✨</div>
-          <div class="summary-card-value" id="sc-star5">—<span>回</span></div>
-          <div class="summary-card-label">星5ライブ数</div>
-          <div class="summary-card-sub" id="sc-star5-sub">—</div>
-        </div>
-      </div>
-
-      <div class="summary-subgrid">
-        <div class="mini-card">
-          <div class="mini-label">今年のライブ数</div>
-          <div class="mini-value" id="mini-this-year">—</div>
-          <div class="mini-sub" id="mini-this-year-sub">—</div>
-        </div>
-        <div class="mini-card">
-          <div class="mini-label">月平均ライブ数</div>
-          <div class="mini-value" id="mini-monthly-avg">—</div>
-          <div class="mini-sub" id="mini-monthly-avg-sub">—</div>
-        </div>
-        <div class="mini-card">
-          <div class="mini-label">星5率</div>
-          <div class="mini-value" id="mini-star5-rate">—</div>
-          <div class="mini-sub" id="mini-star5-rate-sub">—</div>
-        </div>
-        <div class="mini-card">
-          <div class="mini-label">今年のNote記事数</div>
-          <div class="mini-value" id="mini-note-this-year">—</div>
-          <div class="mini-sub" id="mini-note-this-year-sub">—</div>
-        </div>
-      </div>
-
-      <div class="charts-row">
-        <div class="chart-card">
-          <div class="section-title">月別ライブ回数<span class="section-note">※形式別内訳</span></div>
-          <div class="chart-scroll" id="bar-chart-scroll">
-            <div id="bar-chart-inner" class="chart-inner-normal">
-              <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
-            </div>
-          </div>
-        </div>
-        <div class="chart-card">
-          <div class="section-title">月別平均評価</div>
-          <div class="chart-scroll" id="line-chart-scroll">
-            <div id="line-chart-inner" class="chart-inner-normal">
-              <div class="chart-wrap"><canvas id="line-chart"></canvas></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="analysis-row">
-        <div class="card">
-          <div class="section-title" id="left-panel-title">アーティスト別回数</div>
-          <div class="scroll-list" id="left-panel-list"></div>
-        </div>
-        <div class="card">
-          <div class="section-title">アーティスト別平均評価<span class="section-note">※ワンマンのみ・3回以上</span></div>
-          <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;">平均評価はワンマンのみ集計</div>
-          <div class="scroll-list" id="artist-rating-ranking"></div>
-        </div>
-        <div class="card">
-          <div class="section-title">会場ランキング</div>
-          <div class="scroll-list" id="venue-ranking"></div>
-        </div>
-      </div>
-
-      <div>
-        <div class="section-title" style="margin-bottom:16px;">⭐⭐⭐⭐⭐ 星5ライブ一覧</div>
-        <div id="star5-list" class="star5-grid"></div>
-      </div>
-
-      <div id="recent-notes-section" class="hidden" style="margin-top:24px;">
-        <div class="section-title" style="margin-bottom:16px;">📝 最近書いたNote</div>
-        <div id="recent-note-list" class="recent-note-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <button class="fab-filter" id="fab-filter" aria-label="フィルター">
-    <span>絞込</span>
-  </button>
-
-  <div class="filter-drawer-backdrop" id="drawer-backdrop"></div>
-  <div class="filter-drawer" id="filter-drawer" aria-hidden="true">
-    <div class="drawer-header">
-      <div class="drawer-title">フィルター</div>
-      <button class="drawer-close" id="drawer-close" aria-label="閉じる">×</button>
-    </div>
-    <div class="drawer-body">
-      <div class="filter-group">
-        <span class="filter-label">アーティスト</span>
-        <div class="search-combobox">
-          <input type="text" id="artist-search-input" class="artist-search-input" placeholder="アーティスト名で検索">
-          <div class="artist-options" id="artist-options"></div>
-        </div>
-        <div class="artist-current" id="artist-current-label">現在：全アーティスト</div>
-      </div>
-
-      <div class="filter-group">
-        <span class="filter-label">期間</span>
-        <div class="filter-btn-group" id="period-filter">
-          <button class="filter-btn active" data-value="all">全期間</button>
-          <button class="filter-btn" data-value="thisYear">今年</button>
-          <button class="filter-btn" data-value="lastYear">昨年</button>
-          <button class="filter-btn" data-value="last12">直近12か月</button>
-        </div>
-      </div>
-
-      <div class="filter-group">
-        <span class="filter-label">形式</span>
-        <div class="filter-btn-group" id="format-filter">
-          <button class="filter-btn active" data-value="all">全形式</button>
-          <button class="filter-btn" data-value="ワンマン">ワンマン</button>
-          <button class="filter-btn" data-value="対バン">対バン</button>
-          <button class="filter-btn" data-value="フェス">フェス</button>
-          <button class="filter-btn" data-value="サーキット">サーキット</button>
-        </div>
-      </div>
-
-      <div class="filter-group">
-        <span class="filter-label">評価</span>
-        <div class="filter-btn-group" id="rating-filter">
-          <button class="filter-btn active" data-value="all">全評価</button>
-          <button class="filter-btn" data-value="star5">★5のみ</button>
-          <button class="filter-btn" data-value="high">★4以上</button>
-          <button class="filter-btn" data-value="low">★3以下</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-<script>
-let allRecords = [];
-let allNotes = [];
-let allArtists = [];
-let notesByLiveId = new Map();
-let barChart = null;
-let lineChart = null;
-
-let currentArtist = 'all';
-let currentPeriod = 'all';
-let currentFormat = 'all';
-let currentRating = 'all';
-
-function normalizeApiRecords(apiRecords) {
-  return apiRecords
-    .map((r) => {
-      if (!r.date) return null;
-      const date = new Date(r.date);
-      if (Number.isNaN(date.getTime())) return null;
-      const artists = Array.isArray(r.artists) ? r.artists.filter(Boolean) : [];
-      return {
-        id: r.id || '',
-        liveName: r.liveName || '',
-        artistRaw: artists.join(', '),
-        artists,
-        setlistUrl: r.setlistUrl || '',
-        venue: r.venue || '',
-        format: r.format || '',
-        date,
-        rating: Number(r.rating || 0),
-        dateStr: r.date || ''
-      };
-    })
-    .filter(Boolean);
-}
-
-async function loadFromApi() {
-  try {
-    const [liveRes, noteRes] = await Promise.all([
-      fetch('/api/live-log'),
-      fetch('/api/note-log')
-    ]);
-    const [liveData, noteData] = await Promise.all([
-      liveRes.json(),
-      noteRes.json()
-    ]);
-    if (!liveRes.ok) throw new Error(liveData.error || 'ライブAPIの取得に失敗しました');
-    if (!noteRes.ok) throw new Error(noteData.error || 'NOTE APIの取得に失敗しました');
-
-    allRecords = normalizeApiRecords(liveData).sort((a, b) => a.date - b.date);
-    allNotes = normalizeNoteRecords(noteData);
-    notesByLiveId = buildNotesByLiveIdMap(allNotes);
-    allArtists = [...new Set(allRecords.flatMap(r => r.artists))].sort((a, b) => a.localeCompare(b, 'ja'));
-
-    if (!allRecords.length) {
-      showToast('Notionデータは取得できましたが、表示対象がありません');
-      return;
-    }
-
-    renderArtistOptions('');
-    updateArtistCurrentLabel();
-    showDashboard();
-    renderDashboard();
-    showToast(`${allRecords.length} 件のNotionデータを読み込みました`);
-  } catch (err) {
-    console.error(err);
-    showToast(`読み込み失敗: ${err.message}`);
-  }
-}
-
-function normalizeNoteRecords(apiNotes) {
-  return (Array.isArray(apiNotes) ? apiNotes : [])
-    .map((n) => {
-      const publishedDate = n.notePublishedDate ? new Date(n.notePublishedDate) : null;
-      return {
-        id: n.id || '',
-        noteTitle: n.noteTitle || '',
-        noteUrl: n.noteUrl || '',
-        noteType: n.noteType || '',
-        notePublishedDate: n.notePublishedDate || '',
-        relatedLivePageIds: Array.isArray(n.relatedLivePageIds) ? n.relatedLivePageIds.filter(Boolean) : [],
-        publishedDate: (publishedDate && !Number.isNaN(publishedDate.getTime())) ? publishedDate : null
-      };
-    })
-    .filter((n) => n.noteUrl)
-    .sort((a, b) => {
-      const ad = a.publishedDate ? a.publishedDate.getTime() : 0;
-      const bd = b.publishedDate ? b.publishedDate.getTime() : 0;
-      return bd - ad;
+    document.getElementById('left-panel-title').textContent = `${currentArtist} の年別回数`;
+    const map = {};
+    records.forEach(r => {
+      const y = String(r.date.getFullYear());
+      map[y] = (map[y] || 0) + 1;
     });
+    const items = Object.entries(map).map(([name, value]) => ({
+      name: `${name}年`,
+      value,
+      display: `${value}回`
+    })).sort((a, b) => Number(b.name.slice(0,4)) - Number(a.name.slice(0,4)));
+    renderRankingList('left-panel-list', items, '');
+  }
 }
 
-function buildNotesByLiveIdMap(notes) {
-  const map = new Map();
-  notes.forEach((n) => {
-    n.relatedLivePageIds.forEach((liveId) => {
-      if (!map.has(liveId)) map.set(liveId, []);
-      map.get(liveId).push(n);
+function renderArtistRatingRanking(records) {
+  const wanman = records.filter(r => r.format === 'ワンマン');
+  const map = {};
+  wanman.forEach(r => {
+    r.artists.forEach(a => {
+      if (!map[a]) map[a] = { total: 0, count: 0 };
+      map[a].total += r.rating;
+      map[a].count++;
     });
   });
-  map.forEach((items, key) => {
-    items.sort((a, b) => {
-      const ad = a.publishedDate ? a.publishedDate.getTime() : 0;
-      const bd = b.publishedDate ? b.publishedDate.getTime() : 0;
-      return bd - ad;
-    });
-    map.set(key, items);
-  });
-  return map;
+  const items = Object.entries(map)
+    .filter(([, v]) => v.count >= 3)
+    .map(([name, v]) => ({
+      name,
+      value: v.total / v.count,
+      display: (v.total / v.count).toFixed(2),
+      subDisplay: `${v.count}回`
+    }))
+    .sort((a, b) => b.value - a.value);
+  renderRankingList('artist-rating-ranking', items, 'green');
 }
 
-function getFilteredRecords() {
-  const now = new Date();
-  const thisYear = now.getFullYear();
-  const lastYear = thisYear - 1;
-
-  return allRecords.filter(r => {
-    if (currentArtist !== 'all' && !r.artists.includes(currentArtist)) return false;
-
-    if (currentPeriod === 'thisYear') {
-      if (r.date.getFullYear() !== thisYear) return false;
-    } else if (currentPeriod === 'lastYear') {
-      if (r.date.getFullYear() !== lastYear) return false;
-    } else if (currentPeriod === 'last12') {
-      const cutoff = new Date(now.getFullYear(), now.getMonth() - 11, 1);
-      if (r.date < cutoff) return false;
-    }
-
-    if (currentFormat !== 'all' && r.format !== currentFormat) return false;
-
-    if (currentRating === 'star5' && r.rating !== 5) return false;
-    if (currentRating === 'high' && r.rating < 4) return false;
-    if (currentRating === 'low' && r.rating > 3) return false;
-
-    return true;
-  });
-}
-
-function getMonthRange(records) {
-  const now = new Date();
-  const months = [];
-
-  if (currentPeriod === 'thisYear') {
-    const y = now.getFullYear();
-    for (let m = 0; m < 12; m++) months.push({ y, m });
-    return months;
-  }
-  if (currentPeriod === 'lastYear') {
-    const y = now.getFullYear() - 1;
-    for (let m = 0; m < 12; m++) months.push({ y, m });
-    return months;
-  }
-  if (currentPeriod === 'last12') {
-    for (let i = 11; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      months.push({ y: d.getFullYear(), m: d.getMonth() });
-    }
-    return months;
-  }
-
-  if (!records.length) return months;
-
-  const sorted = [...records].sort((a, b) => a.date - b.date);
-  let y = sorted[0].date.getFullYear();
-  let m = sorted[0].date.getMonth();
-  const endY = sorted[sorted.length - 1].date.getFullYear();
-  const endM = sorted[sorted.length - 1].date.getMonth();
-
-  while (y < endY || (y === endY && m <= endM)) {
-    months.push({ y, m });
-    m++;
-    if (m > 11) {
-      m = 0;
-      y++;
-    }
-  }
-  return months;
-}
-
-function buildMonthlyStats(records, months) {
-  const formatKeys = ['ワンマン', '対バン', 'フェス', 'サーキット'];
-  const monthMap = new Map();
-
-  months.forEach(({ y, m }) => {
-    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
-    monthMap.set(key, {
-      count: 0,
-      ratingTotal: 0,
-      ratingCount: 0,
-      star5Count: 0,
-      formats: Object.fromEntries(formatKeys.map(f => [f, 0]))
-    });
-  });
-
+function renderVenueRanking(records) {
+  const map = {};
   records.forEach(r => {
-    const key = `${r.date.getFullYear()}-${String(r.date.getMonth() + 1).padStart(2, '0')}`;
-    if (!monthMap.has(key)) return;
-    const row = monthMap.get(key);
-    row.count += 1;
-    if (r.rating > 0) {
-      row.ratingTotal += r.rating;
-      row.ratingCount += 1;
-    }
-    if (r.rating === 5) row.star5Count += 1;
-    if (row.formats[r.format] !== undefined) row.formats[r.format] += 1;
+    if (r.venue) map[r.venue] = (map[r.venue] || 0) + 1;
   });
-
-  return months.map(({ y, m }) => {
-    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
-    const row = monthMap.get(key);
-    return {
-      label: `${y}/${String(m + 1).padStart(2, '0')}`,
-      count: row.count,
-      avgRating: row.ratingCount ? +(row.ratingTotal / row.ratingCount).toFixed(2) : null,
-      star5Count: row.star5Count,
-      formats: row.formats
-    };
-  });
+  const total = Object.values(map).reduce((sum, val) => sum + val, 0);
+  const items = Object.entries(map).map(([name, value]) => ({
+    name,
+    value,
+    display: `${value}回`,
+    subDisplay: total ? `${((value / total) * 100).toFixed(1)}%` : ''
+  })).sort((a, b) => b.value - a.value);
+  renderRankingList('venue-ranking', items, 'purple');
 }
 
-function getPeriodSummaryText(records) {
-  const dates = records.map(r => r.date).sort((a, b) => a - b);
-  if (!dates.length) return '対象期間：データなし';
-  const s = dates[0];
-  const e = dates[dates.length - 1];
-  const fmt = d => `${d.getFullYear()}年${d.getMonth() + 1}月`;
-  return `対象期間：${fmt(s)}〜${fmt(e)}`;
-}
-
-function formatDelta(diff, unit = '回') {
-  if (unit === '') {
-    const sign = diff > 0 ? '+' : '';
-    return `${sign}${diff.toFixed(2)}`;
+function renderStar5List(records) {
+  const star5 = records.filter(r => r.rating === 5).sort((a, b) => b.date - a.date);
+  const el = document.getElementById('star5-list');
+  if (!star5.length) {
+    el.innerHTML = '<div class="empty-msg">星5のライブはありません</div>';
+    return;
   }
-  const sign = diff > 0 ? '+' : '';
-  return `${sign}${diff}${unit}`;
+  el.innerHTML = star5.map(r => {
+    const d = r.date;
+    const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+    const artistDisplay = r.artists.join('・');
+    const linkedNotes = notesByLiveId.get(r.id) || [];
+    const primaryNote = linkedNotes[0] || null;
+    const setlistLinkHtml = r.setlistUrl ? `<a class="star5-link" href="${escapeHtmlAttr(r.setlistUrl)}" target="_blank" rel="noopener noreferrer">セットリストを見る ↗</a>` : '';
+    const noteLinkHtml = primaryNote ? `<a class="star5-link" href="${escapeHtmlAttr(primaryNote.noteUrl)}" target="_blank" rel="noopener noreferrer">Note記事を見る ↗</a>` : '';
+    const noteTypeHtml = primaryNote && primaryNote.noteType ? `<span class="note-type-chip">${escapeHtml(primaryNote.noteType)}</span>` : '';
+    return `<div class="star5-card">
+      <div class="star5-date">${dateStr}</div>
+      <div class="star5-live-name">${escapeHtml(r.liveName)}</div>
+      <div class="star5-artist">${escapeHtml(artistDisplay || '—')}</div>
+      <div class="star5-meta">
+        <span class="meta-chip">📍 ${escapeHtml(r.venue || '—')}</span>
+        <span class="meta-chip">${escapeHtml(r.format || '—')}</span>
+        ${noteTypeHtml}
+      </div>
+      <div class="star5-actions">${setlistLinkHtml}${noteLinkHtml}</div>
+    </div>`;
+  }).join('');
 }
 
-function getConditionText() {
-  const parts = [];
-  parts.push(currentArtist === 'all' ? '全アーティスト' : currentArtist);
-
-  const periodMap = {
-    all: '全期間',
-    thisYear: '今年',
-    lastYear: '昨年',
-    last12: '直近12か月'
-  };
-  parts.push(periodMap[currentPeriod]);
-
-  if (currentFormat !== 'all') parts.push(currentFormat);
-
-  const ratingMap = {
-    star5: '★5のみ',
-    high: '★4以上',
-    low: '★3以下'
-  };
-  if (currentRating !== 'all') parts.push(ratingMap[currentRating]);
-
-  return parts.join(' / ');
-}
-
-function getQualityMetrics() {
-  const total = allRecords.length;
-  const missingRating = allRecords.filter(r => !r.rating).length;
-  const missingFormat = allRecords.filter(r => !r.format).length;
-  const missingVenue = allRecords.filter(r => !r.venue).length;
-  const uniqueKeyCount = new Set(allRecords.map(r => [r.liveName, r.dateStr, r.venue, r.format, r.artistRaw].join('|'))).size;
-  const duplicateLike = Math.max(total - uniqueKeyCount, 0);
-  return { total, missingRating, missingFormat, missingVenue, duplicateLike };
-}
-
-function renderQualityInline() {
-  const q = getQualityMetrics();
-  const issues = [];
-  if (q.missingRating > 0) issues.push(`評価なし ${q.missingRating}件`);
-  if (q.missingFormat > 0) issues.push(`形式なし ${q.missingFormat}件`);
-  if (q.missingVenue > 0) issues.push(`会場なし ${q.missingVenue}件`);
-  if (q.duplicateLike > 0) issues.push(`重複候補 ${q.duplicateLike}件`);
-
-  const el = document.getElementById('quality-inline');
-
-  if (!issues.length) {
-    el.className = 'quality-inline good';
-    el.textContent = `データ品質：問題なし（全${q.total}件）`;
-  } else {
-    el.className = 'quality-inline warn';
-    el.textContent = `データ品質：${issues.join(' / ')}`;
+function renderRecentNotes() {
+  const section = document.getElementById('recent-notes-section');
+  const list = document.getElementById('recent-note-list');
+  if (!allNotes.length) {
+    section.classList.add('hidden');
+    list.innerHTML = '';
+    return;
   }
+  section.classList.remove('hidden');
+  const items = allNotes.slice(0, 6);
+  list.innerHTML = items.map((n) => {
+    const dateText = n.publishedDate
+      ? `${n.publishedDate.getFullYear()}年${n.publishedDate.getMonth() + 1}月${n.publishedDate.getDate()}日`
+      : '日付未設定';
+    const typeChip = n.noteType ? `<span class="note-type-chip">${escapeHtml(n.noteType)}</span>` : '';
+    return `<div class="recent-note-card">
+      <div class="recent-note-date">${dateText}</div>
+      <div class="recent-note-title">${escapeHtml(n.noteTitle || '無題')}</div>
+      <div class="recent-note-meta">
+        ${typeChip}
+        <a class="star5-link" href="${escapeHtmlAttr(n.noteUrl)}" target="_blank" rel="noopener noreferrer">Note記事を見る ↗</a>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function getAllCurrentFilterBaseRecords() {
-  return allRecords.filter(r => {
-    if (currentArtist !== 'all' && !r.artists.includes(currentArtist)) return false;
-    if (currentFormat !== 'all' && r.format !== currentFormat) return false;
-    if (currentRating === 'star5' && r.rating !== 5) return false;
-    if (currentRating === 'high' && r.rating < 4) return false;
-    if (currentRating === 'low' && r.rating > 3) return false;
-    return true;
-  });
+function renderDashboard() {
+  const records = getFilteredRecords();
+  renderHeader(records);
+  renderQualityInline();
+  renderSummary(records);
+  renderCharts(records);
+  renderLeftPanel(records);
+  renderArtistRatingRanking(records);
+  renderVenueRanking(records);
+  renderStar5List(records);
+  renderRecentNotes();
 }
 
-function renderHeader(records) {
-  document.getElementById('header-period').textContent = getPeriodSummaryText(records);
-  document.getElementById('header-total').textContent = `総ライブ数 ${records.length} 件`;
-  document.getElementById('condition-text').textContent = getConditionText();
+function showDashboard() {
+  document.getElementById('no-data-screen').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
 }
 
-function renderSummary(records) {
-  const now = new Date();
-  const thisYear = now.getFullYear();
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
 
-  const baseRecords = getAllCurrentFilterBaseRecords();
-  const ratings = records.filter(r => r.rating > 0).map(r => r.rating);
-  const avg = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length) : null;
-  const star5 = records.filter(r => r.rating === 5).length;
+function openDrawer() {
+  document.getElementById('filter-drawer').classList.add('open');
+  document.getElementById('drawer-backdrop').classList.add('open');
+  document.getElementById('filter-drawer').setAttribute('aria-hidden', 'false');
+  renderArtistOptions(document.getElementById('artist-search-input').value || '');
+}
 
-  document.getElementById('sc-total').innerHTML = `${records.length}<span>回</span>`;
-  document.getElementById('sc-avg').textContent = avg === null ? '—' : avg.toFixed(2);
-  document.getElementById('sc-star5').innerHTML = `${star5}<span>回</span>`;
+function closeDrawer() {
+  document.getElementById('filter-drawer').classList.remove('open');
+  document.getElementById('drawer-backdrop').classList.remove('open');
+  document.getElementById('filter-drawer').setAttribute('aria-hidden', 'true');
+  document.getElementById('artist-options').classList.remove('open');
+}
 
-  const thisYearRecords = baseRecords.filter(r => r.date.getFullYear() === thisYear);
-  const months = getMonthRange(records);
-  const activeMonths = months.length || 1;
+function renderArtistOptions(keyword) {
+  const container = document.getElementById('artist-options');
+  const q = keyword.trim().toLowerCase();
+  const filtered = ['all', ...allArtists.filter(a => a.toLowerCase().includes(q))];
+
+  container.innerHTML = filtered.map((name, idx) => {
+    const display = name === 'all' ? '全アーティスト' : name;
+    const active = (name === currentArtist) ? ' active' : '';
+    return `<div class="artist-option${active}" data-value="${escapeHtmlAttr(name)}">${escapeHtml(display)}</div>`;
+  }).join('');
+
+  container.classList.add('open');
+}
+
+function selectArtist(name) {
+  currentArtist = name;
+  document.getElementById('artist-search-input').value = name === 'all' ? '' : name;
+  updateArtistCurrentLabel();
+  document.getElementById('artist-options').classList.remove('open');
+  renderDashboard();
+}
+
+function updateArtistCurrentLabel() {
+  document.getElementById('artist-current-label').textContent = `現在：${currentArtist === 'all' ? '全アーティスト' : currentArtist}`;
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function escapeHtmlAttr(s) {
+  return escapeHtml(s).replace(/'/g, '&#39;');
+}
+
+document.getElementById('fab-filter').addEventListener('click', openDrawer);
+document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+document.getElementById('drawer-backdrop').addEventListener('click', closeDrawer);
+
+document.getElementById('artist-search-input').addEventListener('focus', (e) => {
+  renderArtistOptions(e.target.value || '');
+});
+
+document.getElementById('artist-search-input').addEventListener('input', (e) => {
+  renderArtistOptions(e.target.value || '');
+});
+
+document.getElementById('artist-options').addEventListener('click', (e) => {
+  const option = e.target.closest('.artist-option');
+  if (!option) return;
+  selectArtist(option.dataset.value);
+});
+
+document.addEventListener('click', (e) => {
+  const wrap = document.querySelector('.search-combobox');
+  if (!wrap.contains(e.target)) {
+    document.getElementById('artist-options').classList.remove('open');
+  }
+});
+
+document.getElementById('period-filter').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('#period-filter .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentPeriod = btn.dataset.value;
+  renderDashboard();
+});
+
+document.getElementById('format-filter').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('#format-filter .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFormat = btn.dataset.value;
+  renderDashboard();
+});
+
+document.getElementById('rating-filter').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('#rating-filter .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentRating = btn.dataset.value;
+  renderDashboard();
+});
+
+(function init() {
+  loadFromApi();
+})();
+</script>
+</body>
+</html>
