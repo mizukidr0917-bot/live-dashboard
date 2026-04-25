@@ -251,16 +251,44 @@
 
   .dashboard-hero {
     display: grid;
-    grid-template-columns: minmax(0, 3.2fr) minmax(280px, 1fr);
-    gap: 8px;
-    margin-bottom: 8px;
+    grid-template-columns: minmax(0, 3.2fr) minmax(300px, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
     align-items: stretch;
+  }
+
+  .highlights-wrap {
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    background: linear-gradient(160deg, #ffffff 0%, #f3f8ff 100%);
+    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.08);
+    padding: 10px;
+  }
+
+  .highlights-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .highlights-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #1d4ed8;
+  }
+
+  .highlights-sub {
+    font-size: 11px;
+    color: #64748b;
   }
 
   .summary-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+    gap: 10px;
   }
 
   .card,
@@ -279,8 +307,11 @@
   .chart-card { padding: 10px; }
 
   .summary-grid .card {
-    height: 122px;
-    padding: 10px;
+    height: 132px;
+    padding: 12px;
+    border-radius: 14px;
+    border-color: #dbeafe;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
     transition: transform .16s ease, box-shadow .16s ease;
   }
 
@@ -289,7 +320,7 @@
   .mini-card:hover,
   .recent-note-card:hover,
   .list-card:hover,
-  .star5-card:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08); }
+  .star5-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12); }
 
   .kpi-main {
     display: flex;
@@ -313,7 +344,7 @@
 
   .summary-card-value {
     font-family: 'Outfit', sans-serif;
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 700;
     line-height: 1;
     letter-spacing: -.01em;
@@ -336,23 +367,34 @@
   }
 
   .recent-notes-panel {
-    height: 122px;
-    padding: 8px;
+    height: 174px;
+    padding: 10px;
+    border-radius: 16px;
+    border-color: #dbeafe;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     overflow: hidden;
   }
 
   .section-title {
     font-family: 'Outfit', sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: #0f172a;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+  }
+
+  .section-title::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #60a5fa, #2563eb);
   }
 
   .section-note { font-size: 10px; color: var(--muted-2); }
@@ -374,7 +416,7 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 14px;
   }
 
   .mini-card { padding: 8px 10px; }
@@ -386,7 +428,7 @@
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
     gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
   }
 
   .chart-scroll { overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
@@ -399,15 +441,13 @@
   .analysis-row {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    margin-bottom: 10px;
+    gap: 12px;
+    margin-bottom: 16px;
   }
 
   .scroll-list { max-height: 320px; overflow: auto; padding-right: 2px; }
   .scroll-list::-webkit-scrollbar { width: 6px; }
-  .scroll-list::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 999px; }
-
-  .ranking-item {
+  .scroll-list::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 999px; }  .ranking-item {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -450,8 +490,15 @@
 
   .recent-note-card { padding: 8px; }
   .recent-note-date { font-size: 10px; color: var(--muted-2); }
-  .recent-note-title { margin-top: 3px; font-size: 12px; color: #1f2937; font-weight: 600; }
-  .recent-note-meta { margin-top: 5px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .recent-note-title { margin-top: 3px; font-size: 12px; color: #1f2937; font-weight: 600; line-height: 1.4; }
+  .recent-note-meta { margin-top: 6px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+
+  .recent-notes-panel .recent-note-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 8px 9px;
+    background: #fff;
+  }
 
   .list-table-wrap {
     border: 1px solid var(--line);
@@ -768,24 +815,30 @@
             <div id="quality-inline" class="quality-inline">データ品質を確認中…</div>
 
             <div class="dashboard-hero">
-              <div class="summary-grid">
-                <div class="card summary-card kpi-main">
-                  <div class="summary-card-icon icon-blue">🎤</div>
-                  <div class="summary-card-value" id="sc-total">—<span>回</span></div>
-                  <div class="summary-card-label">今月のライブ本数</div>
-                  <div class="summary-card-sub" id="sc-total-sub">—</div>
+              <div class="highlights-wrap">
+                <div class="highlights-head">
+                  <div class="highlights-title">今月のハイライト</div>
+                  <div class="highlights-sub">ライブとNoteの動き</div>
                 </div>
-                <div class="card summary-card kpi-main">
-                  <div class="summary-card-icon icon-green">📝</div>
-                  <div class="summary-card-value" id="sc-avg">—<span>件</span></div>
-                  <div class="summary-card-label">今月のNote記事</div>
-                  <div class="summary-card-sub" id="sc-avg-sub">—</div>
-                </div>
-                <div class="card summary-card kpi-main">
-                  <div class="summary-card-icon icon-amber">✨</div>
-                  <div class="summary-card-value" id="sc-star5">—<span>回</span></div>
-                  <div class="summary-card-label">今月の星5ライブ</div>
-                  <div class="summary-card-sub" id="sc-star5-sub">—</div>
+                <div class="summary-grid">
+                  <div class="card summary-card kpi-main">
+                    <div class="summary-card-icon icon-blue">🎤</div>
+                    <div class="summary-card-value" id="sc-total">—<span>回</span></div>
+                    <div class="summary-card-label">今月のライブ本数</div>
+                    <div class="summary-card-sub" id="sc-total-sub">—</div>
+                  </div>
+                  <div class="card summary-card kpi-main">
+                    <div class="summary-card-icon icon-green">📝</div>
+                    <div class="summary-card-value" id="sc-avg">—<span>件</span></div>
+                    <div class="summary-card-label">今月のNote記事</div>
+                    <div class="summary-card-sub" id="sc-avg-sub">—</div>
+                  </div>
+                  <div class="card summary-card kpi-main">
+                    <div class="summary-card-icon icon-amber">✨</div>
+                    <div class="summary-card-value" id="sc-star5">—<span>回</span></div>
+                    <div class="summary-card-label">今月の星5ライブ</div>
+                    <div class="summary-card-sub" id="sc-star5-sub">—</div>
+                  </div>
                 </div>
               </div>
               <div id="recent-notes-section" class="card recent-notes-panel hidden">
@@ -842,8 +895,7 @@
                 <div class="scroll-list" id="left-panel-list"></div>
               </div>
               <div class="card">
-                <div class="section-title">アーティスト別平均評価<span class="section-note">※ワンマンのみ・3回以上</span></div>
-                <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;">平均評価はワンマンのみ集計</div>
+                <div class="section-title">アーティスト別平均評価<span class="section-note">※ワンマンのみ・3回以上</span></div>                <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;">平均評価はワンマンのみ集計</div>
                 <div class="scroll-list" id="artist-rating-ranking"></div>
               </div>
               <div class="card">
@@ -1292,8 +1344,7 @@ function renderRankingList(containerId, items, colorClass = '') {
     const subDisplay = item.subDisplay ? `<span class="ranking-sub">${item.subDisplay}</span>` : '';
     return `<div class="ranking-item">
       <div class="ranking-num ${numCls}">${i+1}</div>
-      <div class="ranking-bar-wrap">
-        <div class="ranking-name" title="${escapeHtmlAttr(item.name)}">${escapeHtml(item.name)}</div>
+      <div class="ranking-bar-wrap">        <div class="ranking-name" title="${escapeHtmlAttr(item.name)}">${escapeHtml(item.name)}</div>
         <div class="ranking-bar-bg"><div class="ranking-bar-fill ${colorClass}" style="width:${barW}%"></div></div>
       </div>
       <div class="ranking-value">${display}${subDisplay}</div>
