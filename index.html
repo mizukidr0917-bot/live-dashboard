@@ -3,1701 +3,504 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LIVE LOG Dashboard</title>
+<title>LIVE LOG</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #080b16;
-  --bg-2: #0d1122;
-  --bg-3: #121628;
-  --bg-card: #161b2e;
-  --bg-card-hover: #1c2238;
-  --border: rgba(255,255,255,0.065);
-  --border-strong: rgba(255,255,255,0.13);
-  --border-accent: rgba(124,110,247,0.3);
-  --text: #eef0ff;
-  --text-2: #8893be;
-  --text-3: #4a5278;
-  --accent: #7c6ef7;
-  --accent-2: #a78bfa;
-  --accent-glow: rgba(124,110,247,0.22);
-  --blue: #4a9eff;
-  --blue-soft: rgba(74,158,255,0.12);
-  --green: #34d399;
-  --green-soft: rgba(52,211,153,0.12);
-  --amber: #fbbf24;
-  --amber-soft: rgba(251,191,36,0.12);
-  --pink: #f472b6;
-  --pink-soft: rgba(244,114,182,0.12);
-  --radius-sm: 8px;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
-  --sidebar-w: 230px;
-  --font-display: 'Space Grotesk', 'Noto Sans JP', sans-serif;
-  --font-body: 'DM Sans', 'Noto Sans JP', sans-serif;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { width: 100%; min-height: 100vh; }
-
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
-  font-size: 13px;
-  line-height: 1.55;
-}
-
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
-
-.hidden { display: none !important; }
-
-/* ── Layout ── */
-.app-shell {
-  display: grid;
-  grid-template-columns: var(--sidebar-w) minmax(0,1fr);
-  min-height: 100vh;
-}
-
-/* ── Sidebar ── */
-.sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  background: var(--bg-2);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  padding: 22px 16px 20px;
-  z-index: 30;
-  overflow: hidden;
-}
-
-.sidebar::before {
-  content: '';
-  position: absolute;
-  top: -80px;
-  left: -60px;
-  width: 220px;
-  height: 220px;
-  background: radial-gradient(circle, rgba(124,110,247,0.18) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 28px;
-}
-
-.logo-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent), #5b6ef0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(124,110,247,0.35);
-}
-
-.logo-text { font-family: var(--font-display); font-size: 16px; font-weight: 700; letter-spacing: .04em; }
-.logo-text span { color: var(--accent-2); }
-.logo-sub { font-size: 9px; color: var(--text-3); letter-spacing: .1em; text-transform: uppercase; margin-top: 1px; }
-
-.sidebar-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-
-.sidebar-link {
-  border: none;
-  background: transparent;
-  color: var(--text-2);
-  border-radius: var(--radius-sm);
-  text-align: left;
-  padding: 8px 10px;
-  font-size: 12px;
-  font-weight: 500;
-  font-family: var(--font-body);
-  cursor: pointer;
-  transition: all .16s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-.sidebar-link.active { color: var(--accent-2); background: rgba(124,110,247,0.14); font-weight: 600; }
-.sidebar-link-icon { font-size: 14px; width: 18px; text-align: center; }
-
-.sidebar-quote {
-  background: rgba(124,110,247,0.08);
-  border: 1px solid rgba(124,110,247,0.2);
-  border-radius: var(--radius);
-  padding: 12px;
-  margin-top: 16px;
-}
-
-.sidebar-quote-text {
-  font-size: 11px;
-  line-height: 1.6;
-  color: var(--text-2);
-  font-style: italic;
-}
-
-.sidebar-character {
-  text-align: center;
-  margin-top: 10px;
-  font-size: 28px;
-  line-height: 1;
-}
-
-.sidebar-char-caption {
-  text-align: center;
-  font-size: 10px;
-  color: var(--accent-2);
-  font-weight: 600;
-  margin-top: 4px;
-}
-
-.sidebar-foot {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  font-size: 10px;
-  color: var(--text-3);
-}
-
-.sidebar-foot-row { display: flex; justify-content: space-between; align-items: center; }
-.sidebar-foot-val { color: var(--text-2); font-weight: 500; }
-
-/* ── Sidebar backdrop (mobile) ── */
-.sidebar-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.6);
-  opacity: 0; visibility: hidden;
-  transition: opacity .2s;
-  z-index: 70;
-}
-.sidebar-backdrop.open { opacity: 1; visibility: visible; }
-
-/* ── Content ── */
-.content-area { min-width: 0; display: flex; flex-direction: column; }
-
-/* ── Topbar ── */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: rgba(11,14,26,0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 22px;
-}
-
-.topbar-left { display: flex; align-items: center; gap: 10px; }
-
-.sidebar-toggle {
-  display: none;
-  border: 1px solid var(--border-strong);
-  background: var(--bg-card);
-  color: var(--text-2);
-  width: 32px; height: 32px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 14px;
-  align-items: center; justify-content: center;
-}
-
-.topbar-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; letter-spacing: .04em; }
-.topbar-title span { color: var(--accent-2); }
-.topbar-sub { font-size: 10px; color: var(--text-3); }
-
-.period-controls { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-
-.period-btn {
-  border: 1px solid var(--border-strong);
-  background: transparent;
-  border-radius: 99px;
-  padding: 4px 12px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-2);
-  cursor: pointer;
-  transition: all .15s;
-  font-family: var(--font-body);
-}
-
-.period-btn:hover { border-color: var(--accent); color: var(--accent-2); }
-.period-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 2px 10px rgba(124,110,247,0.35); }
-
-.year-select {
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  background: var(--bg-card);
-  color: var(--text-2);
-  padding: 4px 8px;
-  font-family: var(--font-body);
-}
-
-/* ── Main ── */
-.main {
-  flex: 1;
-  max-width: 1500px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 22px 22px 40px;
-}
-
-/* ── No data ── */
-.no-data-screen {
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius-xl);
-  text-align: center;
-  padding: 60px 20px;
-  background: var(--bg-card);
-}
-.no-data-icon { font-size: 36px; margin-bottom: 12px; }
-.no-data-title { font-size: 18px; font-weight: 700; font-family: var(--font-display); }
-.no-data-sub { font-size: 12px; color: var(--text-2); margin-top: 6px; }
-
-/* ── Page header — hero banner ── */
-.page-header {
-  margin-bottom: 14px;
-  padding: 24px 26px 22px;
-  border-radius: var(--radius-xl);
-  background: linear-gradient(130deg, #14183a 0%, #0f1330 55%, #170e32 100%);
-  border: 1px solid rgba(124,110,247,0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Layered ambient glows */
-.page-header::before {
-  content: '';
-  position: absolute;
-  top: -60px; right: -60px;
-  width: 240px; height: 240px;
-  background: radial-gradient(circle, rgba(124,110,247,0.17) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-.page-header::after {
-  content: '';
-  position: absolute;
-  bottom: -50px; left: 20px;
-  width: 180px; height: 180px;
-  background: radial-gradient(circle, rgba(74,158,255,0.1) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-.page-header-inner {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.page-header-left {}
-
-.page-title {
-  font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: .03em;
-  line-height: 1;
-}
-.page-title span { color: var(--accent-2); }
-
-.page-tagline {
-  font-size: 12px;
-  color: var(--text-3);
-  margin-top: 5px;
-  letter-spacing: .05em;
-}
-
-.page-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.page-meta-text { font-size: 12px; color: var(--text-2); }
-
-.page-badge {
-  background: rgba(124,110,247,0.2);
-  color: var(--accent-2);
-  border: 1px solid rgba(124,110,247,0.32);
-  border-radius: 99px;
-  padding: 3px 11px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-/* Right side: hero month stats */
-.page-header-right {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.hero-stat {
-  text-align: center;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: var(--radius);
-  padding: 10px 16px;
-  min-width: 68px;
-}
-
-.hero-stat-value {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.hero-stat-value.c-blue { color: var(--blue); }
-.hero-stat-value.c-green { color: var(--green); }
-.hero-stat-value.c-amber { color: var(--amber); }
-
-.hero-stat-label {
-  font-size: 9px;
-  color: var(--text-3);
-  margin-top: 4px;
-  letter-spacing: .04em;
-  white-space: nowrap;
-}
-
-.page-header-month {
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent-2);
-  letter-spacing: .06em;
-}
-
-.page-header-note {
-  font-size: 10px;
-  color: var(--text-3);
-  margin-top: 3px;
-}
-
-/* ── Condition / Quality bars ── */
-.info-bar {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 7px 12px;
-  margin-bottom: 8px;
-  font-size: 11px;
-  color: var(--text-2);
-}
-
-.info-bar.warn { border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.07); color: #fcd34d; }
-.info-bar.good { border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.07); color: var(--green); }
-
-/* ── Highlight section ── */
-.highlight-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.section-title {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.section-title::before {
-  content: '';
-  width: 3px;
-  height: 14px;
-  border-radius: 99px;
-  background: linear-gradient(180deg, var(--accent-2), var(--accent));
-  flex-shrink: 0;
-}
-
-.section-note { font-size: 10px; color: var(--text-3); font-family: var(--font-body); font-weight: 400; }
-
-/* ── KPI Cards ── */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.kpi-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 18px 16px;
-  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.kpi-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-.kpi-card.c-blue::after { background: linear-gradient(90deg, var(--blue), transparent); }
-.kpi-card.c-green::after { background: linear-gradient(90deg, var(--green), transparent); }
-.kpi-card.c-amber::after { background: linear-gradient(90deg, var(--amber), transparent); }
-.kpi-card.c-purple::after { background: linear-gradient(90deg, var(--accent), transparent); }
-
-.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.25); border-color: var(--border-strong); }
-
-.kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-
-.kpi-icon {
-  width: 40px; height: 40px;
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-.kpi-icon.ib { background: var(--blue-soft); }
-.kpi-icon.ig { background: var(--green-soft); }
-.kpi-icon.ia { background: var(--amber-soft); }
-.kpi-icon.ip { background: var(--accent-glow); }
-
-.kpi-delta {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 99px;
-}
-
-.kpi-delta.pos { background: rgba(52,211,153,0.15); color: var(--green); }
-.kpi-delta.zero { background: rgba(139,147,184,0.12); color: var(--text-3); }
-.kpi-delta.neg { background: rgba(244,114,182,0.12); color: var(--pink); }
-
-.kpi-value {
-  font-family: var(--font-display);
-  font-size: 38px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -.01em;
-  margin-bottom: 4px;
-}
-
-.kpi-value .unit { font-size: 13px; font-weight: 500; color: var(--text-2); margin-left: 3px; }
-.kpi-label { font-size: 12px; color: var(--text-2); font-weight: 500; }
-.kpi-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
-
-/* KPI comment card — main hero, warm editorial feel */
-.kpi-comment-card {
-  background: linear-gradient(145deg, #1c1545 0%, #15183d 45%, #111630 100%);
-  border: 1px solid rgba(167,139,250,0.28);
-  border-radius: var(--radius-lg);
-  padding: 20px 20px 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-  overflow: hidden;
-  transition: transform .18s ease, border-color .18s ease;
-  min-height: 148px;
-  grid-column: span 1;
-}
-
-/* Warm glow top-right */
-.kpi-comment-card::before {
-  content: '';
-  position: absolute;
-  top: -40px; right: -40px;
-  width: 160px; height: 160px;
-  background: radial-gradient(circle, rgba(167,139,250,0.2) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-/* Accent top bar — full gradient */
-.kpi-comment-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #7c6ef7, #a78bfa, #c4b5fd, transparent);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-.kpi-comment-card:hover { transform: translateY(-3px); border-color: rgba(167,139,250,0.5); }
-
-.kpi-comment-head {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--accent-2);
-  margin-bottom: 10px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  opacity: 0.9;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.kpi-comment-body {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.6;
-  flex: 1;
-  position: relative;
-  z-index: 1;
-  white-space: pre-line;
-}
-
-.kpi-comment-foot {
-  font-size: 10px;
-  color: var(--accent-2);
-  margin-top: 14px;
-  opacity: 0.65;
-  letter-spacing: .04em;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* Decorative music note watermark */
-.kpi-comment-decoration {
-  position: absolute;
-  bottom: 8px; right: 12px;
-  font-size: 32px;
-  opacity: 0.1;
-  line-height: 1;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* ── Summary row ── */
-.summary-row {
-  display: grid;
-  grid-template-columns: minmax(0,1.6fr) minmax(0,1fr);
-  gap: 14px;
-  margin-bottom: 20px;
-  align-items: start;
-}
-
-/* ── Period summary ── */
-.period-summary-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-}
-
-.period-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.period-stat {
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px;
-}
-
-.period-stat-icon { font-size: 14px; margin-bottom: 6px; }
-.period-stat-value { font-family: var(--font-display); font-size: 22px; font-weight: 700; line-height: 1; }
-.period-stat-label { font-size: 10px; color: var(--text-3); margin-top: 3px; }
-.period-stat-sub { font-size: 10px; color: var(--text-2); margin-top: 2px; }
-
-/* ── Recent Notes card — archive/stacking feel ── */
-.notes-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-}
-
-.notes-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
-
-.notes-count-badge {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--accent-2);
-  background: rgba(124,110,247,0.12);
-  border: 1px solid rgba(124,110,247,0.2);
-  border-radius: 99px;
-  padding: 2px 10px;
-}
-
-/* Timeline connector line left edge */
-.note-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin-top: 10px;
-  position: relative;
-}
-
-.note-list::before {
-  content: '';
-  position: absolute;
-  left: 28px;
-  top: 8px;
-  bottom: 8px;
-  width: 1px;
-  background: linear-gradient(180deg, rgba(124,110,247,0.4), rgba(124,110,247,0.08));
-  pointer-events: none;
-}
-
-.note-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px 10px 12px 10px;
-  border-radius: var(--radius);
-  background: transparent;
-  border: 1px solid transparent;
-  transition: background .15s, border-color .15s;
-  text-decoration: none;
-  color: inherit;
-  position: relative;
-  margin-bottom: 2px;
-}
-
-.note-item:last-child { margin-bottom: 0; }
-
-.note-item:hover {
-  background: rgba(124,110,247,0.06);
-  border-color: rgba(124,110,247,0.15);
-}
-
-/* Timeline dot */
-.note-item::before {
-  content: '';
-  position: absolute;
-  left: 24px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 9px; height: 9px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 2px solid rgba(124,110,247,0.45);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.note-item:first-child::before { border-color: var(--accent-2); background: var(--accent); }
-
-.note-thumb-wrap {
-  flex-shrink: 0;
-  margin-left: 20px;
-}
-
-.note-thumb {
-  width: 64px; height: 64px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  display: block;
-}
-
-.note-thumb-placeholder {
-  width: 64px; height: 64px;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, rgba(124,110,247,0.18) 0%, rgba(74,158,255,0.1) 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  border: 1px solid rgba(124,110,247,0.15);
-}
-
-.note-body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-}
-
-.note-date { font-size: 10px; color: var(--text-3); letter-spacing: .03em; }
-
-.note-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.45;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.note-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
-
-.note-chip {
-  background: rgba(124,110,247,0.13);
-  color: var(--accent-2);
-  border: 1px solid rgba(124,110,247,0.2);
-  border-radius: 99px;
-  padding: 1px 8px;
-  font-size: 10px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.note-link {
-  font-size: 10px;
-  color: var(--accent-2);
-  text-decoration: none;
-  white-space: nowrap;
-  opacity: 0.75;
-}
-
-.note-link:hover { text-decoration: underline; opacity: 1; }
-
-.notes-empty {
-  font-size: 12px;
-  color: var(--text-3);
-  padding: 16px 0;
-  text-align: center;
-}
-
-/* ── Charts row ── */
-.charts-row {
-  display: grid;
-  grid-template-columns: minmax(0,2fr) minmax(0,1fr);
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.chart-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-}
-
-.chart-card .section-title { margin-bottom: 14px; }
-
-.chart-scroll { overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
-.chart-wrap { position: relative; height: 210px; }
-.chart-inner-normal { width: 100%; min-width: 0; }
-.chart-inner-wide { width: 100%; min-width: 0; }
-
-/* ── Analysis row ── */
-.analysis-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.list-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-}
-
-.list-card .section-title { margin-bottom: 12px; }
-
-.ranking-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.ranking-item:last-child { border-bottom: none; }
-
-.ranking-num {
-  width: 20px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-3);
-  font-family: var(--font-display);
-  flex-shrink: 0;
-}
-
-.ranking-num.top1 { color: #fbbf24; }
-.ranking-num.top2 { color: #94a3b8; }
-.ranking-num.top3 { color: #c8a068; }
-
-.ranking-bar-wrap { flex: 1; min-width: 0; }
-.ranking-name {
-  font-size: 12px;
-  color: var(--text);
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.ranking-bar-bg { height: 3px; border-radius: 99px; background: var(--bg-3); overflow: hidden; }
-.ranking-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
-.ranking-bar-fill.venue { background: linear-gradient(90deg, var(--blue), #93c5fd); }
-.ranking-value { font-size: 11px; color: var(--text-2); font-weight: 600; white-space: nowrap; min-width: 44px; text-align: right; }
-.ranking-sub { font-size: 10px; color: var(--text-3); margin-left: 2px; }
-
-/* ── Star5 section — treasure shelf ── */
-.star5-section { margin-bottom: 30px; }
-
-.star5-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-/* PC: show as a multi-column grid when enough items, else scroll */
-.star5-scroll-wrap {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 14px;
-}
-
-.star5-scroll-wrap::-webkit-scrollbar { height: 4px; }
-.star5-scroll-wrap::-webkit-scrollbar-track { background: var(--bg-3); border-radius: 99px; }
-.star5-scroll-wrap::-webkit-scrollbar-thumb { background: rgba(124,110,247,0.35); border-radius: 99px; }
-
-.star5-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: transform .18s ease, border-color .2s ease, box-shadow .2s ease;
-  position: relative;
-}
-
-/* Gold shimmer line at top for treasure feel */
-.star5-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 10%, rgba(251,191,36,0.4) 50%, transparent 90%);
-}
-
-.star5-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(167,139,250,0.35);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(124,110,247,0.12);
-}
-
-.star5-thumb {
-  width: 100%;
-  height: 116px;
-  object-fit: cover;
-  display: block;
-}
-
-.star5-thumb-placeholder {
-  width: 100%;
-  height: 116px;
-  background: linear-gradient(135deg, #1a1535 0%, #1e1842 40%, #17213a 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 30px;
-  position: relative;
-  overflow: hidden;
-}
-
-.star5-thumb-placeholder::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 70% 30%, rgba(124,110,247,0.25) 0%, transparent 60%),
-    radial-gradient(ellipse at 20% 80%, rgba(74,158,255,0.14) 0%, transparent 55%);
-}
-
-.star5-body { padding: 12px 13px 12px; }
-.star5-thumb-wrap { overflow: hidden; }
-
-.star5-date {
-  font-size: 10px;
-  color: var(--text-3);
-  margin-bottom: 5px;
-  letter-spacing: .03em;
-}
-
-.star5-name {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 4px;
-  font-family: var(--font-display);
-}
-
-.star5-artist {
-  font-size: 11px;
-  color: var(--text-2);
-  margin-bottom: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.star5-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
-}
-
-.star5-meta-row {
-  font-size: 10px;
-  color: var(--text-3);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.star5-rating {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  color: var(--amber);
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: .04em;
-}
-
-.star5-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-
-.star5-link {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--accent-2);
-  text-decoration: none;
-  padding: 4px 10px;
-  border: 1px solid rgba(124,110,247,0.22);
-  border-radius: 99px;
-  transition: background .15s, border-color .15s;
-  white-space: nowrap;
-}
-
-.star5-link:hover { background: rgba(124,110,247,0.14); border-color: rgba(124,110,247,0.45); text-decoration: none; }
-
-.star5-empty {
-  font-size: 13px;
-  color: var(--text-3);
-  padding: 24px 0;
-  text-align: center;
-  grid-column: 1 / -1;
-}
-
-/* ── Footer ── */
-.page-footer {
-  text-align: center;
-  padding: 24px 0 12px;
-  font-size: 12px;
-  color: var(--text-3);
-  border-top: 1px solid var(--border);
-  margin-top: 8px;
-}
-
-.page-footer span { color: var(--accent-2); }
-
-/* ── Filter FAB ── */
-.fab-filter {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  border: none;
-  border-radius: 99px;
-  background: linear-gradient(135deg, var(--accent), #5b6ef0);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 10px 16px;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(124,110,247,0.4);
-  display: none;
-  z-index: 80;
-  font-family: var(--font-body);
-  align-items: center;
-  gap: 6px;
-}
-
-/* ── Filter Drawer ── */
-.filter-drawer-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.6);
-  opacity: 0; visibility: hidden;
-  transition: opacity .2s;
-  z-index: 70;
-}
-
-.filter-drawer-backdrop.open { opacity: 1; visibility: visible; }
-
-.filter-drawer {
-  position: fixed;
-  right: 0; top: 0;
-  height: 100vh;
-  width: min(360px, 92vw);
-  background: var(--bg-2);
-  border-left: 1px solid var(--border-strong);
-  transform: translateX(100%);
-  transition: transform .24s ease;
-  z-index: 80;
-  display: flex;
-  flex-direction: column;
-}
-
-.filter-drawer.open { transform: translateX(0); }
-
-.drawer-header {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.drawer-title { font-size: 13px; font-weight: 700; font-family: var(--font-display); }
-
-.drawer-close {
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  width: 28px; height: 28px;
-  background: var(--bg-card);
-  color: var(--text-2);
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.drawer-body { padding: 14px 16px; overflow: auto; flex: 1; }
-
-.filter-group { margin-bottom: 16px; }
-
-.filter-label {
-  font-size: 10px;
-  color: var(--text-3);
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  display: block;
-  margin-bottom: 8px;
-}
-
-.filter-btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
-
-.filter-btn {
-  border: 1px solid var(--border-strong);
-  background: transparent;
-  border-radius: 99px;
-  padding: 5px 10px;
-  font-size: 11px;
-  color: var(--text-2);
-  cursor: pointer;
-  transition: all .15s;
-  font-family: var(--font-body);
-}
-
-.filter-btn:hover { border-color: var(--accent); color: var(--accent-2); }
-
-.filter-btn.active {
-  background: rgba(124,110,247,0.18);
-  border-color: rgba(124,110,247,0.4);
-  color: var(--accent-2);
-  font-weight: 600;
-}
-
-/* ── Artist search ── */
-.search-combobox { position: relative; }
-
-.artist-search-input {
-  width: 100%;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  padding: 8px 10px;
-  background: var(--bg-card);
-  color: var(--text);
-  font-family: var(--font-body);
-  outline: none;
-}
-
-.artist-search-input:focus { border-color: rgba(124,110,247,0.5); }
-
-.artist-options {
-  position: absolute;
-  left: 0; right: 0;
-  top: calc(100% + 4px);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  background: var(--bg-2);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.4);
-  max-height: 220px;
-  overflow: auto;
-  z-index: 10;
-  display: none;
-}
-
-.artist-options.show { display: block; }
-
-.artist-option {
-  padding: 8px 10px;
-  font-size: 12px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-2);
-}
-
-.artist-option:last-child { border-bottom: none; }
-.artist-option:hover, .artist-option.active { background: rgba(124,110,247,0.12); color: var(--accent-2); }
-
-.artist-current { margin-top: 6px; font-size: 11px; color: var(--text-3); }
-
-/* ── Toast ── */
-.toast {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%) translateY(8px);
-  bottom: 14px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-strong);
-  color: var(--text);
-  border-radius: var(--radius);
-  padding: 9px 14px;
-  font-size: 12px;
-  opacity: 0;
-  pointer-events: none;
-  transition: .2s ease;
-  z-index: 100;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  white-space: nowrap;
-}
-
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ── Chips ── */
-.chip { display: inline-flex; align-items: center; border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 600; }
-.chip-format { background: var(--bg-3); color: var(--text-2); border: 1px solid var(--border); }
-.chip-rating-high { background: var(--green-soft); color: var(--green); }
-.chip-rating-mid { background: var(--amber-soft); color: var(--amber); }
-.chip-rating-low { background: var(--pink-soft); color: var(--pink); }
-
-a { color: var(--accent-2); text-decoration: none; }
-a:hover { text-decoration: underline; }
-
-/* ── Responsive ── */
-
-/* ── Note progress bar ── */
-.note-progress {
-  margin-top: 10px;
-  padding: 8px 10px;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  color: var(--text-2);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.note-progress-bar-wrap { flex: 1; min-width: 0; }
-.note-progress-label { white-space: nowrap; font-size: 10px; color: var(--text-3); }
-.note-progress-bar-bg { height: 4px; border-radius: 99px; background: rgba(255,255,255,0.08); margin-top: 3px; overflow: hidden; }
-.note-progress-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .4s ease; }
-.note-progress-stat { font-size: 11px; font-weight: 600; color: var(--accent-2); white-space: nowrap; }
-.note-pending-badge {
-  display: inline-block;
-  background: rgba(251,191,36,0.12);
-  color: var(--amber);
-  border: 1px solid rgba(251,191,36,0.2);
-  border-radius: 99px;
-  padding: 1px 7px;
-  font-size: 10px;
-  font-weight: 600;
-  margin-left: 4px;
-}
-
-/* Tablet/narrow desktop: stack layouts */
-@media (max-width: 1200px) {
-  .analysis-row { grid-template-columns: 1fr; }
-  .charts-row { grid-template-columns: 1fr; }
-  .summary-row { grid-template-columns: 1fr; }
-  .star5-scroll-wrap { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); }
-}
-
-/* Mobile landscape / tablet portrait */
-@media (max-width: 960px) {
-  .app-shell { grid-template-columns: 1fr; }
-
-  .sidebar {
-    position: fixed; top: 0; left: 0;
-    width: min(250px, 80vw);
-    transform: translateX(-100%);
-    transition: transform .24s ease;
-    box-shadow: 8px 0 32px rgba(0,0,0,0.5);
-    z-index: 75;
-    height: 100vh;
-  }
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-toggle { display: flex; }
-  .fab-filter { display: inline-flex; }
-
-  .page-header-right { display: none; }
-
-  /* B案: 2×2 grid — 3 metric cards + comment card fills right-bottom */
-  .kpi-grid {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    grid-template-rows: auto auto;
-    gap: 10px;
-  }
-  /* comment card sits in 4th cell, normal vertical layout */
-  .kpi-comment-card {
-    grid-column: span 1;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 14px 14px 12px;
-    min-height: unset;
-  }
-  .kpi-comment-head {
-    writing-mode: horizontal-tb;
-    transform: none;
-    font-size: 9px;
-    margin-bottom: 8px;
-    flex-shrink: unset;
-  }
-  .kpi-comment-body { font-size: 12px; line-height: 1.5; }
-  .kpi-comment-foot { display: block; margin-top: 8px; font-size: 10px; }
-  .kpi-comment-decoration { display: none; }
-  .kpi-card { padding: 14px 12px; }
-  .kpi-value { font-size: 28px; }
-  .kpi-icon { width: 34px; height: 34px; font-size: 15px; }
-  .kpi-top { margin-bottom: 10px; }
-
-  .period-stat-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .charts-row { grid-template-columns: 1fr; }
-  .period-btn { padding: 3px 9px; font-size: 10px; }
-
-  /* Star5: horizontal scroll on tablet */
-  .star5-scroll-wrap {
-    display: flex;
-    overflow-x: auto;
-    gap: 14px;
-    padding-bottom: 10px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    grid-template-columns: unset;
-  }
-  .star5-card { flex-shrink: 0; width: 200px; scroll-snap-align: start; }
-  .star5-empty { width: auto; }
-}
-
-/* Mobile ≤640px */
-@media (max-width: 640px) {
-  /* Safe area for iPhone home bar / Safari toolbar */
-  body { padding-bottom: env(safe-area-inset-bottom, 0px); }
-  .main { padding: 10px 12px calc(80px + env(safe-area-inset-bottom, 16px)); }
-  .topbar { padding: 10px 12px; gap: 8px; }
-  .topbar-sub { display: none; }
-  .year-select { display: none; }
-  .topbar-title { font-size: 14px; }
-
-  /* Page header compact */
-  .page-header { padding: 14px 16px 12px; }
-  .page-title { font-size: 20px; }
-  .page-tagline { font-size: 11px; }
-  .page-meta { margin-top: 8px; }
-  .page-header-right { display: none; }
-
-  /* B案: 2×2 grid stays; comment card 4th cell */
-  .kpi-grid {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    gap: 8px;
-  }
-  .kpi-comment-card {
-    grid-column: span 1;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 12px 12px 10px;
-    min-height: unset;
-  }
-  .kpi-comment-head {
-    writing-mode: horizontal-tb;
-    transform: none;
-    font-size: 9px;
-    margin-bottom: 6px;
-    flex-shrink: unset;
-    letter-spacing: .04em;
-  }
-  .kpi-comment-body { font-size: 11px; line-height: 1.5; }
-  .kpi-comment-foot { display: none; }
-  .kpi-comment-decoration { display: none; }
-  .kpi-value { font-size: 26px; }
-  .kpi-icon { width: 30px; height: 30px; font-size: 13px; }
-  .kpi-card { padding: 12px 10px; }
-  .kpi-top { margin-bottom: 8px; }
-  .kpi-delta { font-size: 10px; padding: 2px 6px; }
-
-  /* Notes */
-  .note-list::before { left: 22px; }
-  .note-item::before { left: 18px; }
-  .note-thumb-wrap { margin-left: 10px; }
-  .note-thumb, .note-thumb-placeholder { width: 48px; height: 48px; }
-  .note-title { font-size: 12px; }
-
-  /* Summary 2-col */
-  .period-stat-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .summary-row { grid-template-columns: 1fr; }
-
-  /* Charts */
-  .chart-wrap { height: 160px; }
-  .chart-inner-wide { width: 820px; min-width: 820px; }
-
-  /* Star5 scroll */
-  .star5-scroll-wrap {
-    display: flex;
-    overflow-x: auto;
-    gap: 12px;
-    padding-bottom: 10px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-  .star5-card { flex-shrink: 0; width: 180px; scroll-snap-align: start; }
-  .star5-empty { width: auto; }
-
-  .analysis-row { grid-template-columns: 1fr; }
-  .section-title { font-size: 13px; }
-
-  /* FAB: smaller, higher to avoid overlap with content */
-  .fab-filter {
-    padding: 8px 13px;
-    font-size: 11px;
-    right: 14px;
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  }
-}
-
-@media (max-width: 400px) {
-  .kpi-value { font-size: 22px; }
-  .star5-card { width: 164px; }
-  .period-stat-value { font-size: 19px; }
+  --bg:#07091a; --bg-2:#0c1025; --bg-3:#111530; --bg-card:#151a2f;
+  --border:rgba(255,255,255,.07); --border-s:rgba(255,255,255,.14);
+  --text:#eef0ff; --text-2:#8691bc; --text-3:#454e72;
+  --accent:#7c6ef7; --accent-2:#a78bfa;
+  --blue:#4a9eff; --blue-soft:rgba(74,158,255,.12);
+  --green:#34d399; --green-soft:rgba(52,211,153,.12);
+  --amber:#fbbf24; --amber-soft:rgba(251,191,36,.12);
+  --pink:#f472b6;
+  --r-sm:8px; --r:12px; --r-lg:16px; --r-xl:22px;
+  --sw:220px;
+  --fd:'Space Grotesk','Noto Sans JP',sans-serif;
+  --fb:'DM Sans','Noto Sans JP',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100vh}
+body{font-family:var(--fb);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:99px}
+.hidden{display:none!important}
+a{color:var(--accent-2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Layout */
+.app-shell{display:grid;grid-template-columns:var(--sw) minmax(0,1fr);min-height:100vh}
+
+/* Sidebar */
+.sidebar{position:sticky;top:0;height:100vh;background:var(--bg-2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px 18px;z-index:30;overflow:hidden}
+.sidebar::before{content:'';position:absolute;top:-80px;left:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(124,110,247,.15) 0%,transparent 70%);pointer-events:none}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:24px}
+.logo-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#5b6ef0);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;box-shadow:0 3px 12px rgba(124,110,247,.35)}
+.logo-name{font-family:var(--fd);font-size:15px;font-weight:700;letter-spacing:.04em}
+.logo-name span{color:var(--accent-2)}
+.logo-sub{font-size:9px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-top:1px}
+.sidebar-nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.sidebar-link{border:none;background:transparent;color:var(--text-2);border-radius:var(--r-sm);text-align:left;padding:7px 10px;font-size:12px;font-weight:500;font-family:var(--fb);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px}
+.sidebar-link:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.sidebar-link.active{color:var(--accent-2);background:rgba(124,110,247,.14);font-weight:600}
+.sidebar-quote{background:rgba(124,110,247,.07);border:1px solid rgba(124,110,247,.18);border-radius:var(--r);padding:10px 12px;margin-top:14px}
+.sidebar-quote-char{text-align:center;font-size:24px;line-height:1}
+.sidebar-quote-cap{text-align:center;font-size:9px;color:var(--accent-2);font-weight:600;margin-top:3px}
+.sidebar-quote-text{font-size:10px;line-height:1.6;color:var(--text-2);font-style:italic;margin-top:7px}
+.sidebar-foot{margin-top:14px;padding-top:10px;border-top:1px solid var(--border);font-size:10px;color:var(--text-3)}
+.sidebar-foot-row{display:flex;justify-content:space-between}
+.sidebar-foot-val{color:var(--text-2);font-weight:500}
+.sidebar-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;visibility:hidden;transition:opacity .2s;z-index:70}
+.sidebar-backdrop.open{opacity:1;visibility:visible}
+
+/* Topbar */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(7,9,26,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 20px}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.sidebar-toggle{display:none;border:1px solid var(--border-s);background:var(--bg-card);color:var(--text-2);width:30px;height:30px;border-radius:var(--r-sm);cursor:pointer;font-size:13px;align-items:center;justify-content:center}
+.topbar-brand{font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.04em}
+.topbar-brand span{color:var(--accent-2)}
+.topbar-sub{font-size:9px;color:var(--text-3)}
+.filter-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2);background:var(--bg-card);border:1px solid var(--border-s);border-radius:99px;padding:4px 12px;cursor:pointer;transition:border-color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}
+.filter-status:hover{border-color:var(--accent)}
+.filter-status-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.topbar-filter-btn{border:1px solid var(--border-s);background:var(--bg-card);color:var(--text-2);border-radius:var(--r-sm);padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--fb);transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.topbar-filter-btn:hover{border-color:var(--accent);color:var(--accent-2)}
+
+/* Main */
+.content-area{min-width:0;display:flex;flex-direction:column}
+.main{flex:1;max-width:1460px;width:100%;margin:0 auto;padding:20px 20px 40px}
+
+/* No data */
+.no-data-screen{border:1px dashed var(--border-s);border-radius:var(--r-xl);text-align:center;padding:60px 20px;background:var(--bg-card)}
+.no-data-icon{font-size:36px;margin-bottom:12px}
+.no-data-title{font-size:18px;font-weight:700;font-family:var(--fd)}
+.no-data-sub{font-size:12px;color:var(--text-2);margin-top:6px}
+
+/* Info bars */
+.info-bar{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 12px;margin-bottom:8px;font-size:11px;color:var(--text-2)}
+.info-bar.warn{border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.07);color:#fcd34d}
+.info-bar.good{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.07);color:var(--green)}
+
+/* Zone */
+.zone{margin-bottom:32px}
+.zone-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.zone-title{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);display:flex;align-items:center;gap:8px}
+.zone-title::before{content:'';width:3px;height:12px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--accent-2),var(--accent))}
+.zone-note{font-size:10px;color:var(--text-3)}
+
+/* ① KPI grid */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 18px 16px;position:relative;overflow:hidden;transition:transform .16s,border-color .16s,box-shadow .16s}
+.kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--r-lg) var(--r-lg) 0 0}
+.kpi-card.c-blue::after{background:linear-gradient(90deg,var(--blue),transparent)}
+.kpi-card.c-green::after{background:linear-gradient(90deg,var(--green),transparent)}
+.kpi-card.c-amber::after{background:linear-gradient(90deg,var(--amber),transparent)}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.28);border-color:var(--border-s)}
+.kpi-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.kpi-icon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.kpi-icon.ib{background:var(--blue-soft)} .kpi-icon.ig{background:var(--green-soft)} .kpi-icon.ia{background:var(--amber-soft)}
+.kpi-delta{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px}
+.kpi-delta.pos{background:rgba(52,211,153,.15);color:var(--green)}
+.kpi-delta.zero{background:rgba(139,147,184,.1);color:var(--text-3)}
+.kpi-delta.neg{background:rgba(244,114,182,.12);color:var(--pink)}
+.kpi-value{font-family:var(--fd);font-size:44px;font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:4px}
+.kpi-value .unit{font-size:14px;font-weight:500;color:var(--text-2);margin-left:2px}
+.kpi-label{font-size:11px;color:var(--text-2)}
+.kpi-hint{font-size:11px;color:var(--accent-2);font-weight:600;margin-top:5px;min-height:16px}
+
+/* Note化率 card */
+.kpi-rate-card{background:linear-gradient(145deg,#1a1540,#14173a,#101328);border:1px solid rgba(167,139,250,.25);border-radius:var(--r-lg);padding:20px 18px 16px;position:relative;overflow:hidden;transition:transform .16s,border-color .16s}
+.kpi-rate-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#7c6ef7,#a78bfa,transparent);border-radius:var(--r-lg) var(--r-lg) 0 0}
+.kpi-rate-card::before{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;background:radial-gradient(circle,rgba(167,139,250,.18) 0%,transparent 65%);pointer-events:none}
+.kpi-rate-card:hover{transform:translateY(-2px);border-color:rgba(167,139,250,.45)}
+.kpi-rate-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kpi-rate-label{font-size:10px;font-weight:700;color:var(--accent-2);letter-spacing:.08em;text-transform:uppercase}
+.kpi-rate-value{font-family:var(--fd);font-size:44px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--text);margin-bottom:4px}
+.kpi-rate-sub{font-size:11px;color:var(--text-2)}
+.kpi-rate-bar-bg{height:3px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:10px;overflow:hidden}
+.kpi-rate-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s}
+.kpi-rate-hint{font-size:11px;color:var(--accent-2);font-weight:600;margin-top:6px;position:relative;z-index:1;min-height:16px}
+
+/* ② Analysis zone */
+.analysis-zone{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px;margin-bottom:12px}
+.charts-pair{display:flex;flex-direction:column;gap:12px}
+.chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px}
+.chart-card-title{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.chart-card-title::before{content:'';width:3px;height:12px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--accent-2),var(--accent))}
+.chart-note{font-size:10px;color:var(--text-3);margin-bottom:12px}
+.chart-scroll{overflow-x:auto;overflow-y:hidden;padding-bottom:2px}
+.chart-scroll::-webkit-scrollbar{height:4px}
+.chart-scroll::-webkit-scrollbar-thumb{background:rgba(124,110,247,.3);border-radius:99px}
+.chart-wrap{position:relative;height:180px}
+.chart-inner-normal{width:100%;min-width:0}
+.chart-inner-wide{width:100%;min-width:0}
+.chart-analysis{font-size:11px;color:var(--accent-2);background:rgba(124,110,247,.08);border:1px solid rgba(124,110,247,.15);border-radius:var(--r-sm);padding:5px 10px;margin-top:10px}
+
+.notes-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;display:flex;flex-direction:column}
+.notes-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.panel-title{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.panel-title::before{content:'';width:3px;height:12px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--accent-2),var(--accent))}
+.notes-count-badge{font-size:10px;font-weight:600;color:var(--accent-2);background:rgba(124,110,247,.12);border:1px solid rgba(124,110,247,.2);border-radius:99px;padding:2px 9px}
+.note-rate-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:6px 9px;background:var(--bg-3);border-radius:var(--r-sm);border:1px solid var(--border)}
+.note-rate-text{font-size:10px;color:var(--text-2);white-space:nowrap}
+.note-rate-bar-wrap{flex:1;min-width:0}
+.note-rate-bar-bg{height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+.note-rate-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s}
+.note-rate-stat{font-size:11px;font-weight:700;color:var(--accent-2);white-space:nowrap}
+.note-list{display:flex;flex-direction:column;position:relative;flex:1}
+.note-list::before{content:'';position:absolute;left:24px;top:6px;bottom:6px;width:1px;background:linear-gradient(180deg,rgba(124,110,247,.4),rgba(124,110,247,.06));pointer-events:none}
+.note-item{display:flex;gap:10px;padding:9px 8px;border-radius:var(--r);background:transparent;border:1px solid transparent;transition:background .15s,border-color .15s;text-decoration:none;color:inherit;position:relative;margin-bottom:2px}
+.note-item:last-child{margin-bottom:0}
+.note-item:hover{background:rgba(124,110,247,.06);border-color:rgba(124,110,247,.14)}
+.note-item::before{content:'';position:absolute;left:20px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--bg-card);border:2px solid rgba(124,110,247,.4);z-index:1;pointer-events:none}
+.note-item:first-child::before{border-color:var(--accent-2);background:var(--accent)}
+.note-thumb-wrap{flex-shrink:0;margin-left:16px}
+.note-thumb{width:48px;height:48px;border-radius:var(--r-sm);object-fit:cover;background:var(--bg-3);border:1px solid var(--border);display:block}
+.note-thumb-ph{width:48px;height:48px;border-radius:var(--r-sm);background:linear-gradient(135deg,rgba(124,110,247,.16),rgba(74,158,255,.09));display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid rgba(124,110,247,.13)}
+.note-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;justify-content:center}
+.note-date{font-size:10px;color:var(--text-3)}
+.note-title{font-size:12px;font-weight:600;color:var(--text);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.note-meta{display:flex;align-items:center;gap:5px;margin-top:2px;flex-wrap:wrap}
+.note-chip{background:rgba(124,110,247,.13);color:var(--accent-2);border:1px solid rgba(124,110,247,.2);border-radius:99px;padding:1px 7px;font-size:10px;font-weight:600}
+.note-link-text{font-size:10px;color:var(--accent-2);opacity:.75}
+.notes-empty{font-size:12px;color:var(--text-3);padding:16px 0;text-align:center}
+
+/* Rankings */
+.analysis-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.list-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px}
+.list-card-title{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.list-card-title::before{content:'';width:3px;height:12px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--accent-2),var(--accent))}
+.ranking-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.ranking-item:last-child{border-bottom:none}
+.ranking-num{width:18px;text-align:center;font-size:11px;font-weight:700;color:var(--text-3);font-family:var(--fd);flex-shrink:0}
+.ranking-num.top1{color:#fbbf24} .ranking-num.top2{color:#9ca3af} .ranking-num.top3{color:#c8a068}
+.ranking-bar-wrap{flex:1;min-width:0}
+.ranking-name{font-size:12px;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ranking-bar-bg{height:3px;border-radius:99px;background:var(--bg-3);overflow:hidden}
+.ranking-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.ranking-bar-fill.venue{background:linear-gradient(90deg,var(--blue),#93c5fd)}
+.ranking-value{font-size:11px;color:var(--text-2);font-weight:600;white-space:nowrap;min-width:40px;text-align:right}
+.ranking-sub{font-size:10px;color:var(--text-3);margin-left:2px}
+.analysis-comment{font-size:11px;color:var(--accent-2);margin-top:10px;background:rgba(124,110,247,.07);border:1px solid rgba(124,110,247,.14);border-radius:var(--r-sm);padding:5px 10px}
+
+/* ③ Totals */
+.total-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.total-stat{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
+.total-stat-icon{font-size:13px;margin-bottom:5px}
+.total-stat-value{font-family:var(--fd);font-size:24px;font-weight:700;line-height:1}
+.total-stat-label{font-size:10px;color:var(--text-3);margin-top:3px}
+.total-stat-sub{font-size:10px;color:var(--text-2);margin-top:2px}
+
+/* Star5 */
+.star5-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.star5-title{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.star5-title::before{content:'';width:3px;height:12px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--amber),rgba(251,191,36,.4))}
+.star5-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.star5-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:transform .18s,border-color .2s,box-shadow .2s;position:relative}
+.star5-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 10%,rgba(251,191,36,.3) 50%,transparent 90%)}
+.star5-card:hover{transform:translateY(-4px);border-color:rgba(167,139,250,.32);box-shadow:0 14px 36px rgba(0,0,0,.4)}
+.star5-thumb-wrap{overflow:hidden}
+.star5-thumb{width:100%;height:110px;object-fit:cover;display:block}
+.star5-body{padding:11px 12px 10px}
+.star5-date{font-size:10px;color:var(--text-3);margin-bottom:4px}
+.star5-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.38;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:3px;font-family:var(--fd)}
+.star5-artist{font-size:11px;color:var(--text-2);margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.star5-meta{display:flex;flex-direction:column;gap:2px;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.star5-meta-row{font-size:10px;color:var(--text-3);display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.star5-rating{color:var(--amber);font-weight:700;font-size:12px}
+.star5-actions{display:flex;gap:5px;flex-wrap:wrap}
+.star5-link{font-size:10px;font-weight:600;color:var(--accent-2);text-decoration:none;padding:3px 8px;border:1px solid rgba(124,110,247,.2);border-radius:99px;transition:background .15s,border-color .15s}
+.star5-link:hover{background:rgba(124,110,247,.12);border-color:rgba(124,110,247,.4);text-decoration:none}
+.star5-empty{font-size:13px;color:var(--text-3);padding:20px;text-align:center;grid-column:1/-1}
+
+/* Footer */
+.page-footer{text-align:center;padding:22px 0 10px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border);margin-top:8px}
+.page-footer span{color:var(--accent-2)}
+
+/* FAB */
+.fab-filter{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));border:none;border-radius:99px;background:linear-gradient(135deg,var(--accent),#5b6ef0);color:#fff;font-size:11px;font-weight:700;padding:8px 13px;cursor:pointer;box-shadow:0 5px 18px rgba(124,110,247,.4);display:none;z-index:80;font-family:var(--fb);align-items:center;gap:5px}
+
+/* Filter Drawer */
+.filter-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;visibility:hidden;transition:opacity .2s;z-index:70}
+.filter-drawer-backdrop.open{opacity:1;visibility:visible}
+.filter-drawer{position:fixed;right:0;top:0;height:100vh;width:min(360px,92vw);background:var(--bg-2);border-left:1px solid var(--border-s);transform:translateX(100%);transition:transform .24s;z-index:80;display:flex;flex-direction:column}
+.filter-drawer.open{transform:translateX(0)}
+.drawer-header{padding:13px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.drawer-title{font-size:13px;font-weight:700;font-family:var(--fd)}
+.drawer-close{border:1px solid var(--border-s);border-radius:var(--r-sm);width:27px;height:27px;background:var(--bg-card);color:var(--text-2);cursor:pointer;font-size:14px}
+.drawer-body{padding:14px 15px;overflow:auto;flex:1}
+.filter-group{margin-bottom:14px}
+.filter-label{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:7px}
+.filter-btn-group{display:flex;flex-wrap:wrap;gap:5px}
+.filter-btn{border:1px solid var(--border-s);background:transparent;border-radius:99px;padding:4px 10px;font-size:11px;color:var(--text-2);cursor:pointer;transition:all .15s;font-family:var(--fb)}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent-2)}
+.filter-btn.active{background:rgba(124,110,247,.18);border-color:rgba(124,110,247,.4);color:var(--accent-2);font-weight:600}
+.search-combobox{position:relative}
+.artist-search-input{width:100%;border:1px solid var(--border-s);border-radius:var(--r-sm);font-size:12px;padding:7px 9px;background:var(--bg-card);color:var(--text);font-family:var(--fb);outline:none}
+.artist-search-input:focus{border-color:rgba(124,110,247,.5)}
+.artist-options{position:absolute;left:0;right:0;top:calc(100% + 4px);border:1px solid var(--border-s);border-radius:var(--r);background:var(--bg-2);box-shadow:0 10px 28px rgba(0,0,0,.4);max-height:200px;overflow:auto;z-index:10;display:none}
+.artist-options.show{display:block}
+.artist-option{padding:7px 9px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);color:var(--text-2)}
+.artist-option:last-child{border-bottom:none}
+.artist-option:hover,.artist-option.active{background:rgba(124,110,247,.1);color:var(--accent-2)}
+.artist-current{margin-top:5px;font-size:11px;color:var(--text-3)}
+.year-select-input{width:100%;border:1px solid var(--border-s);border-radius:var(--r-sm);font-size:12px;padding:7px 9px;background:var(--bg-card);color:var(--text);font-family:var(--fb);margin-top:8px}
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(8px);bottom:14px;background:var(--bg-card);border:1px solid var(--border-s);color:var(--text);border-radius:var(--r);padding:8px 13px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Responsive */
+@media (max-width:1280px){
+  .analysis-zone{grid-template-columns:1fr}
+  .analysis-cards{grid-template-columns:1fr}
+  .total-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:960px){
+  .app-shell{grid-template-columns:1fr}
+  .sidebar{position:fixed;top:0;left:0;width:min(240px,80vw);transform:translateX(-100%);transition:transform .24s;box-shadow:8px 0 32px rgba(0,0,0,.5);z-index:75;height:100vh}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-toggle{display:flex}
+  .fab-filter{display:inline-flex}
+  .topbar-filter-btn{display:none}
+  .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .kpi-value,.kpi-rate-value{font-size:34px}
+  .total-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .star5-grid{grid-template-columns:repeat(auto-fill,minmax(175px,1fr))}
+}
+@media (max-width:640px){
+  body{padding-bottom:env(safe-area-inset-bottom,0px)}
+  .main{padding:10px 12px calc(68px + env(safe-area-inset-bottom,12px))}
+  .topbar{padding:9px 12px;gap:8px}
+  .topbar-sub{display:none}
+  .filter-status{max-width:160px;font-size:10px;padding:3px 9px}
+  .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .kpi-card{padding:14px 12px}
+  .kpi-value,.kpi-rate-value{font-size:28px}
+  .kpi-icon{width:30px;height:30px;font-size:13px}
+  .kpi-head{margin-bottom:8px}
+  .kpi-rate-card{padding:14px 12px}
+  .chart-wrap{height:155px}
+  .note-list::before{left:20px}
+  .note-item::before{left:16px}
+  .note-thumb-wrap{margin-left:8px}
+  .note-thumb,.note-thumb-ph{width:44px;height:44px}
+  .note-title{font-size:11px}
+  .analysis-cards{grid-template-columns:1fr}
+  .total-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .star5-grid{display:flex;overflow-x:auto;gap:10px;padding-bottom:8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .star5-card{flex-shrink:0;width:175px;scroll-snap-align:start}
+  .star5-empty{width:auto}
+  .zone{margin-bottom:24px}
+  .fab-filter{padding:7px 12px;font-size:10px}
+}
+@media (max-width:400px){
+  .kpi-value,.kpi-rate-value{font-size:24px}
+  .total-stat-value{font-size:20px}
+  .star5-card{width:158px}
 }
 </style>
 </head>
 <body>
 <div class="app-shell">
 
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">🎵</div>
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🎵</div>
+    <div>
+      <div class="logo-name">LIVE <span>LOG</span></div>
+      <div class="logo-sub">Music Home</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="sidebar-link active"><span style="font-size:13px">🏠</span>ダッシュボード</button>
+  </nav>
+  <div class="sidebar-quote">
+    <div class="sidebar-quote-char">🎧</div>
+    <div class="sidebar-quote-cap">今日も素敵なライブを！</div>
+    <div class="sidebar-quote-text">音楽の記録は<br>未来の自分への<br>最高のプレゼント。</div>
+  </div>
+  <div class="sidebar-foot">
+    <div class="sidebar-foot-row"><span>更新日</span><span class="sidebar-foot-val" id="sidebar-updated">—</span></div>
+  </div>
+</aside>
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+<!-- CONTENT -->
+<div class="content-area">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
       <div>
-        <div class="logo-text">LIVE <span>LOG</span></div>
-        <div class="logo-sub">Music Analytics</div>
+        <div class="topbar-brand">LIVE <span>LOG</span></div>
+        <div class="topbar-sub">Music activity home</div>
       </div>
     </div>
+    <div class="filter-status" id="filter-status-pill">
+      <span class="filter-status-dot"></span>
+      <span id="filter-status-text">全アーティスト / 今年</span>
+    </div>
+    <button class="topbar-filter-btn" id="topbar-filter-btn">⚙ 絞り込み</button>
+  </div>
 
-    <nav class="sidebar-nav" id="sidebar-nav">
-      <button class="sidebar-link active" data-page="dashboard">
-        <span class="sidebar-link-icon">🏠</span>ダッシュボード
-      </button>
-    </nav>
-
-    <div class="sidebar-quote">
-      <div class="sidebar-character">🎧</div>
-      <div class="sidebar-char-caption">今日も素敵なライブを！</div>
-      <div class="sidebar-quote-text" style="margin-top:8px;">
-        音楽の記録は<br>未来の自分への<br>最高のプレゼント。
-      </div>
+  <div class="main">
+    <div class="no-data-screen" id="no-data-screen">
+      <div class="no-data-icon">🎵</div>
+      <div class="no-data-title">LIVE LOGへようこそ</div>
+      <div class="no-data-sub">ライブ記録を読み込んで表示します</div>
     </div>
 
-    <div class="sidebar-foot">
-      <div class="sidebar-foot-row">
-        <span>データ更新日</span>
-        <span class="sidebar-foot-val" id="sidebar-updated">—</span>
-      </div>
-    </div>
-  </aside>
-  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+    <div id="app-pages" class="hidden">
+      <section id="page-dashboard">
 
-  <!-- Content -->
-  <div class="content-area">
-    <!-- Topbar -->
-    <div class="topbar">
-      <div class="topbar-left">
-        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="メニュー">☰</button>
-        <div>
-          <div class="topbar-title">LIVE <span>LOG</span></div>
-          <div class="topbar-sub">Music activity home</div>
-        </div>
-      </div>
-      <div class="period-controls" id="period-filter">
-        <button class="period-btn active" data-value="thisYear">今年</button>
-        <button class="period-btn" data-value="all">全期間</button>
-        <button class="period-btn" data-value="last12">直近12ヶ月</button>
-        <select id="year-select" class="year-select"><option value="">年選択</option></select>
-      </div>
-    </div>
+        <div class="info-bar" id="condition-bar"><strong>表示条件</strong>　<span id="condition-text">全体</span></div>
+        <div id="quality-inline" class="info-bar">データ品質を確認中…</div>
 
-    <!-- Main -->
-    <div class="main">
-      <!-- No data -->
-      <div class="no-data-screen" id="no-data-screen">
-        <div class="no-data-icon">🎵</div>
-        <div class="no-data-title">LIVE LOGへようこそ</div>
-        <div class="no-data-sub">ライブ記録を読み込んで表示します</div>
-      </div>
-
-      <!-- Dashboard -->
-      <div id="app-pages" class="hidden">
-        <section id="page-dashboard">
-
-          <!-- Header -->
-          <div class="page-header">
-            <div class="page-header-inner">
-              <div class="page-header-left">
-                <div class="page-title">LIVE <span>LOG</span></div>
-                <div class="page-tagline">ライブの記録が、未来の自分へのプレイリストになる。</div>
-                <div class="page-meta">
-                  <span class="page-meta-text" id="header-period">対象期間：読み込み中</span>
-                  <span class="page-badge" id="header-total">0 件</span>
-                </div>
-              </div>
-              <div class="page-header-right" id="page-header-right">
-                <div class="hero-stat">
-                  <div class="hero-stat-value c-blue" id="hero-live-count">—</div>
-                  <div class="hero-stat-label">今月のライブ</div>
-                </div>
-                <div class="hero-stat">
-                  <div class="hero-stat-value c-green" id="hero-note-count">—</div>
-                  <div class="hero-stat-label">今月のNote</div>
-                </div>
-                <div class="hero-stat">
-                  <div class="hero-stat-value c-amber" id="hero-star5-count">—</div>
-                  <div class="hero-stat-label">今月の星5</div>
-                </div>
-              </div>
-            </div>
+        <!-- ① 今月 -->
+        <div class="zone">
+          <div class="zone-header">
+            <div class="zone-title">① 今月のアクティビティ <span id="this-month-label" style="color:var(--text-3);font-size:10px;margin-left:4px;font-weight:400;letter-spacing:0;text-transform:none"></span></div>
+            <span class="zone-note">常に当月</span>
           </div>
-
-          <!-- Info bars -->
-          <div class="info-bar" id="condition-bar">
-            <strong>表示条件</strong>　<span id="condition-text">全体</span>
-          </div>
-          <div id="quality-inline" class="info-bar">データ品質を確認中…</div>
-
-          <!-- KPI Highlight -->
-          <div class="highlight-header">
-            <div class="section-title">
-              今月のハイライト
-              <span id="highlight-month-label" class="section-note">（—月）</span>
-            </div>
-            <span class="section-note">※ 常に当月データを表示</span>
-          </div>
-
-          <div class="kpi-grid" style="margin-bottom:20px;">
+          <div class="kpi-grid">
             <div class="kpi-card c-blue">
-              <div class="kpi-top">
-                <div class="kpi-icon ib">🎤</div>
-                <div class="kpi-delta zero" id="kpi-live-delta">—</div>
-              </div>
+              <div class="kpi-head"><div class="kpi-icon ib">🎤</div><div class="kpi-delta zero" id="kpi-live-delta">—</div></div>
               <div class="kpi-value" id="sc-total">—<span class="unit">本</span></div>
-              <div class="kpi-label">今月のライブ本数</div>
-              <div class="kpi-sub" id="sc-total-sub">—</div>
+              <div class="kpi-label">ライブ本数</div>
+              <div class="kpi-hint" id="kpi-live-hint"></div>
             </div>
-
             <div class="kpi-card c-green">
-              <div class="kpi-top">
-                <div class="kpi-icon ig">📝</div>
-                <div class="kpi-delta zero" id="kpi-note-delta">—</div>
-              </div>
+              <div class="kpi-head"><div class="kpi-icon ig">📝</div><div class="kpi-delta zero" id="kpi-note-delta">—</div></div>
               <div class="kpi-value" id="sc-avg">—<span class="unit">件</span></div>
-              <div class="kpi-label">今月のNote記事</div>
-              <div class="kpi-sub" id="sc-avg-sub">—</div>
+              <div class="kpi-label">Note記事数</div>
+              <div class="kpi-hint" id="kpi-note-hint"></div>
             </div>
-
             <div class="kpi-card c-amber">
-              <div class="kpi-top">
-                <div class="kpi-icon ia">⭐</div>
-                <div class="kpi-delta zero" id="kpi-star5-delta">—</div>
-              </div>
+              <div class="kpi-head"><div class="kpi-icon ia">⭐</div><div class="kpi-delta zero" id="kpi-star5-delta">—</div></div>
               <div class="kpi-value" id="sc-star5">—<span class="unit">回</span></div>
-              <div class="kpi-label">今月の星5ライブ</div>
-              <div class="kpi-sub" id="sc-star5-sub">—</div>
+              <div class="kpi-label">星5ライブ</div>
+              <div class="kpi-hint" id="kpi-star5-hint"></div>
             </div>
-
-            <div class="kpi-comment-card">
-              <div class="kpi-comment-head">✍️ 今月の活動コメント</div>
-              <div class="kpi-comment-body" id="sc-comment">—</div>
-              <div class="kpi-comment-foot" id="sc-comment-sub">🎵 ライブの余韻をNoteへ</div>
-              <div class="kpi-comment-decoration">🎶</div>
+            <div class="kpi-rate-card">
+              <div class="kpi-rate-head"><span class="kpi-rate-label">Note化率</span></div>
+              <div class="kpi-rate-value" id="sc-note-rate">—<span style="font-size:16px;font-weight:500;color:var(--text-2);margin-left:2px">%</span></div>
+              <div class="kpi-rate-sub" id="sc-note-rate-sub">—</div>
+              <div class="kpi-rate-bar-bg"><div class="kpi-rate-bar-fill" id="note-rate-bar" style="width:0%"></div></div>
+              <div class="kpi-rate-hint" id="kpi-rate-hint"></div>
             </div>
           </div>
+        </div>
 
-          <!-- Summary + Notes -->
-          <div class="summary-row">
-            <!-- Recent notes -->
-            <div class="notes-card" id="recent-notes-section">
-              <div class="notes-card-header">
-                <div class="section-title">📝 最近書いたNote</div>
-                <span class="notes-count-badge" id="notes-count-badge">選択期間</span>
+        <!-- ② 分析 -->
+        <div class="zone">
+          <div class="zone-header">
+            <div class="zone-title">② 分析・トレンド</div>
+            <span class="zone-note">選択期間</span>
+          </div>
+          <div class="analysis-zone">
+            <div class="charts-pair">
+              <div class="chart-card">
+                <div class="chart-card-title"><span id="bar-chart-title">月別ライブ回数</span></div>
+                <div class="chart-note" id="bar-chart-note">形式別内訳</div>
+                <div class="chart-scroll"><div id="bar-chart-inner" class="chart-inner-normal"><div class="chart-wrap"><canvas id="bar-chart"></canvas></div></div></div>
+                <div class="chart-analysis" id="bar-chart-analysis" style="display:none"></div>
               </div>
-              <div id="note-progress-wrap" class="note-progress">
-                <div class="note-progress-bar-wrap">
-                  <div class="note-progress-label">今月のNote化率 <span id="note-progress-text">—</span></div>
-                  <div class="note-progress-bar-bg"><div class="note-progress-bar-fill" id="note-progress-bar" style="width:0%"></div></div>
-                </div>
-                <div class="note-progress-stat" id="note-pending-text">—</div>
+              <div class="chart-card">
+                <div class="chart-card-title"><span id="line-chart-title">月別平均評価</span></div>
+                <div class="chart-scroll"><div id="line-chart-inner" class="chart-inner-normal"><div class="chart-wrap"><canvas id="line-chart"></canvas></div></div></div>
+              </div>
+            </div>
+            <div class="notes-panel">
+              <div class="notes-panel-header">
+                <div class="panel-title">最近のNote</div>
+                <span class="notes-count-badge" id="notes-count-badge">0件</span>
+              </div>
+              <div class="note-rate-row">
+                <span class="note-rate-text" id="note-rate-label">今月 —/—本</span>
+                <div class="note-rate-bar-wrap"><div class="note-rate-bar-bg"><div class="note-rate-bar-fill" id="note-rate-bar-panel" style="width:0%"></div></div></div>
+                <span class="note-rate-stat" id="note-rate-stat">—</span>
               </div>
               <div id="recent-note-list" class="note-list"></div>
             </div>
-
-            <!-- Period summary -->
-            <div class="period-summary-card">
-              <div class="section-title">選択期間のまとめ</div>
-              <div class="period-stat-grid">
-                <div class="period-stat">
-                  <div class="period-stat-icon">🎵</div>
-                  <div class="period-stat-value" id="mini-this-year">—</div>
-                  <div class="period-stat-label">ライブ数</div>
-                  <div class="period-stat-sub" id="mini-this-year-sub">—</div>
-                </div>
-                <div class="period-stat">
-                  <div class="period-stat-icon">📝</div>
-                  <div class="period-stat-value" id="mini-note-this-year">—</div>
-                  <div class="period-stat-label">Note記事数</div>
-                  <div class="period-stat-sub" id="mini-note-this-year-sub">—</div>
-                </div>
-                <div class="period-stat">
-                  <div class="period-stat-icon">⭐</div>
-                  <div class="period-stat-value" id="mini-star5-rate">—</div>
-                  <div class="period-stat-label">星5ライブ数</div>
-                  <div class="period-stat-sub" id="mini-star5-rate-sub">—</div>
-                </div>
-                <div class="period-stat">
-                  <div class="period-stat-icon">📊</div>
-                  <div class="period-stat-value" id="mini-monthly-avg">—</div>
-                  <div class="period-stat-label">平均評価</div>
-                  <div class="period-stat-sub" id="mini-monthly-avg-sub">—</div>
-                </div>
-                <div class="period-stat">
-                  <div class="period-stat-icon">✍️</div>
-                  <div class="period-stat-value" id="mini-note-rate">—</div>
-                  <div class="period-stat-label">Note化率</div>
-                  <div class="period-stat-sub" id="mini-note-rate-sub">—</div>
-                </div>
-                <div class="period-stat">
-                  <div class="period-stat-icon">💫</div>
-                  <div class="period-stat-value" id="mini-star5-pct">—</div>
-                  <div class="period-stat-label">星5率</div>
-                  <div class="period-stat-sub" id="mini-star5-pct-sub">—</div>
-                </div>
-              </div>
-            </div>
           </div>
-
-          <!-- Charts -->
-          <div class="charts-row">
-            <div class="chart-card">
-              <div class="section-title"><span id="bar-chart-title">月別ライブ回数</span><span class="section-note" id="bar-chart-note" style="margin-left:4px;">※形式別内訳</span></div>
-              <div class="chart-scroll" id="bar-chart-scroll">
-                <div id="bar-chart-inner" class="chart-inner-normal">
-                  <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
-                </div>
-              </div>
-            </div>
-            <div class="chart-card">
-              <div class="section-title"><span id="line-chart-title">月別平均評価</span></div>
-              <div class="chart-scroll" id="line-chart-scroll">
-                <div id="line-chart-inner" class="chart-inner-normal">
-                  <div class="chart-wrap"><canvas id="line-chart"></canvas></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Rankings -->
-          <div class="analysis-row">
+          <div class="analysis-cards">
             <div class="list-card">
-              <div class="section-title" id="left-panel-title">アーティスト別回数 TOP5</div>
+              <div class="list-card-title" id="left-panel-title">アーティスト TOP5</div>
               <div id="left-panel-list"></div>
+              <div class="analysis-comment" id="artist-analysis-comment" style="display:none"></div>
             </div>
             <div class="list-card">
-              <div class="section-title">会場ランキング TOP5</div>
+              <div class="list-card-title">会場 TOP5</div>
               <div id="venue-ranking"></div>
             </div>
           </div>
+        </div>
 
-          <!-- Star5 -->
-          <div class="star5-section">
-            <div class="star5-section-header">
-              <div class="section-title">⭐ 星5ライブ一覧 <span class="section-note" id="star5-count-label" style="margin-left:4px;"></span></div>
+        <!-- ③ 全期間 -->
+        <div class="zone">
+          <div class="zone-header">
+            <div class="zone-title">③ 実績・積み上げ</div>
+            <span class="zone-note" id="all-period-label">全期間</span>
+          </div>
+          <div class="total-stats">
+            <div class="total-stat">
+              <div class="total-stat-icon">🎵</div>
+              <div class="total-stat-value" id="total-live-count">—</div>
+              <div class="total-stat-label">総ライブ数</div>
+              <div class="total-stat-sub" id="total-live-sub"></div>
             </div>
-            <div id="star5-list" class="star5-scroll-wrap"></div>
+            <div class="total-stat">
+              <div class="total-stat-icon">📝</div>
+              <div class="total-stat-value" id="total-note-count">—</div>
+              <div class="total-stat-label">総Note記事数</div>
+              <div class="total-stat-sub" id="total-note-sub"></div>
+            </div>
+            <div class="total-stat">
+              <div class="total-stat-icon">⭐</div>
+              <div class="total-stat-value" id="total-star5-count">—</div>
+              <div class="total-stat-label">星5ライブ数</div>
+              <div class="total-stat-sub" id="total-star5-sub"></div>
+            </div>
+            <div class="total-stat">
+              <div class="total-stat-icon">📊</div>
+              <div class="total-stat-value" id="total-avg-rating">—</div>
+              <div class="total-stat-label">平均評価</div>
+              <div class="total-stat-sub" id="total-avg-sub"></div>
+            </div>
           </div>
-
-          <!-- Footer -->
-          <div class="page-footer">
-            LIVE LOGは、あなたの音楽活動の記録と、未来の物語をつなぎます。<span>♥</span>
+          <div class="star5-section-header">
+            <div class="star5-title">⭐ 星5ライブ一覧 <span id="star5-count-label" style="font-size:10px;color:var(--text-3);font-weight:400;margin-left:4px"></span></div>
           </div>
+          <div id="star5-list" class="star5-grid"></div>
+        </div>
 
-        </section>
-      </div>
+        <div class="page-footer">LIVE LOGは、あなたの音楽活動の記録と、未来の物語をつなぎます。<span>♥</span></div>
+      </section>
     </div>
   </div>
 </div>
+</div>
 
-<!-- FAB -->
-<button class="fab-filter" id="fab-filter" aria-label="フィルター">🔍 絞込</button>
+<button class="fab-filter" id="fab-filter">⚙ 絞込</button>
 
-<!-- Filter Drawer -->
 <div class="filter-drawer-backdrop" id="drawer-backdrop"></div>
-<div class="filter-drawer" id="filter-drawer" aria-hidden="true">
+<div class="filter-drawer" id="filter-drawer">
   <div class="drawer-header">
-    <div class="drawer-title">フィルター</div>
-    <button class="drawer-close" id="drawer-close" aria-label="閉じる">×</button>
+    <div class="drawer-title">絞り込み</div>
+    <button class="drawer-close" id="drawer-close">×</button>
   </div>
   <div class="drawer-body">
+    <div class="filter-group">
+      <span class="filter-label">期間</span>
+      <div class="filter-btn-group" id="period-filter-drawer">
+        <button class="filter-btn active" data-value="thisYear">今年</button>
+        <button class="filter-btn" data-value="all">全期間</button>
+        <button class="filter-btn" data-value="last12">直近12ヶ月</button>
+      </div>
+      <select id="year-select" class="year-select-input"><option value="">年を選択</option></select>
+    </div>
     <div class="filter-group">
       <span class="filter-label">アーティスト</span>
       <div class="search-combobox">
@@ -1707,7 +510,7 @@ a:hover { text-decoration: underline; }
       <div class="artist-current" id="artist-current-label">現在：全アーティスト</div>
     </div>
     <div class="filter-group">
-      <span class="filter-label">形式</span>
+      <span class="filter-label">ライブ形式</span>
       <div class="filter-btn-group" id="format-filter">
         <button class="filter-btn active" data-value="all">全形式</button>
         <button class="filter-btn" data-value="ワンマン">ワンマン</button>
@@ -1731,563 +534,365 @@ a:hover { text-decoration: underline; }
 <div class="toast" id="toast"></div>
 
 <script>
-let allRecords = [], allNotes = [], allArtists = [];
-let notesByLiveId = new Map();
-let barChart = null, lineChart = null;
-let currentArtist = 'all', currentPeriod = 'thisYear';
-let selectedYear = new Date().getFullYear();
-let currentFormat = 'all', currentRating = 'all';
+let allRecords=[],allNotes=[],allArtists=[];
+let notesByLiveId=new Map();
+let barChart=null,lineChart=null;
+let currentArtist='all',currentPeriod='thisYear';
+let selectedYear=new Date().getFullYear();
+let currentFormat='all',currentRating='all';
 
-function normalizeApiRecords(apiRecords) {
-  return apiRecords.map(r => {
-    if (!r.date) return null;
-    const date = new Date(r.date);
-    if (isNaN(date.getTime())) return null;
-    const artists = Array.isArray(r.artists) ? r.artists.filter(Boolean) : [];
-    return { id: r.id||'', liveName: r.liveName||'', artistRaw: artists.join(', '), artists, setlistUrl: r.setlistUrl||'', venue: r.venue||'', format: r.format||'', date, rating: Number(r.rating||0), dateStr: r.date||'' };
+function normalizeApiRecords(api){
+  return api.map(r=>{
+    if(!r.date)return null;
+    const date=new Date(r.date);if(isNaN(date.getTime()))return null;
+    const artists=Array.isArray(r.artists)?r.artists.filter(Boolean):[];
+    return{id:r.id||'',liveName:r.liveName||'',artistRaw:artists.join(', '),artists,setlistUrl:r.setlistUrl||'',venue:r.venue||'',format:r.format||'',date,rating:Number(r.rating||0),dateStr:r.date||'',imageUrl:r.imageUrl||''};
   }).filter(Boolean);
 }
-
-function normalizeNoteRecords(apiNotes) {
-  return (Array.isArray(apiNotes) ? apiNotes : []).map(n => {
-    const pd = n.notePublishedDate ? new Date(n.notePublishedDate) : null;
-    return { id: n.id||'', noteTitle: n.noteTitle||'', noteUrl: n.noteUrl||'', noteType: n.noteType||'', notePublishedDate: n.notePublishedDate||'', relatedLivePageIds: Array.isArray(n.relatedLivePageIds)?n.relatedLivePageIds.filter(Boolean):[], thumbnailUrl: n.thumbnailUrl||n.eyecatch||n.imageUrl||'', publishedDate: (pd && !isNaN(pd.getTime())) ? pd : null };
-  }).filter(n => n.noteUrl).sort((a,b) => (b.publishedDate?.getTime()||0)-(a.publishedDate?.getTime()||0));
+function normalizeNoteRecords(api){
+  return(Array.isArray(api)?api:[]).map(n=>{
+    const pd=n.notePublishedDate?new Date(n.notePublishedDate):null;
+    return{id:n.id||'',noteTitle:n.noteTitle||'',noteUrl:n.noteUrl||'',noteType:n.noteType||'',relatedLivePageIds:Array.isArray(n.relatedLivePageIds)?n.relatedLivePageIds.filter(Boolean):[],thumbnailUrl:n.thumbnailUrl||n.eyecatch||n.imageUrl||'',publishedDate:(pd&&!isNaN(pd.getTime()))?pd:null};
+  }).filter(n=>n.noteUrl).sort((a,b)=>(b.publishedDate?.getTime()||0)-(a.publishedDate?.getTime()||0));
 }
-
-function buildNotesByLiveIdMap(notes) {
-  const map = new Map();
-  notes.forEach(n => n.relatedLivePageIds.forEach(liveId => {
-    if (!map.has(liveId)) map.set(liveId, []);
-    map.get(liveId).push(n);
-  }));
-  map.forEach((items, key) => {
-    items.sort((a,b) => (b.publishedDate?.getTime()||0)-(a.publishedDate?.getTime()||0));
-    map.set(key, items);
-  });
+function buildNotesByLiveIdMap(notes){
+  const map=new Map();
+  notes.forEach(n=>n.relatedLivePageIds.forEach(id=>{if(!map.has(id))map.set(id,[]);map.get(id).push(n);}));
+  map.forEach((v,k)=>{v.sort((a,b)=>(b.publishedDate?.getTime()||0)-(a.publishedDate?.getTime()||0));map.set(k,v);});
   return map;
 }
 
-function getPeriodFilteredRecords() {
-  const now = new Date();
-  return allRecords.filter(r => {
-    if (currentPeriod==='thisYear') return r.date.getFullYear()===now.getFullYear();
-    if (currentPeriod==='year') return r.date.getFullYear()===selectedYear;
-    if (currentPeriod==='last12') { const c=new Date(now.getFullYear(),now.getMonth()-11,1); return r.date>=c; }
+function getPeriodFilteredRecords(){
+  const now=new Date();
+  return allRecords.filter(r=>{
+    if(currentPeriod==='thisYear')return r.date.getFullYear()===now.getFullYear();
+    if(currentPeriod==='year')return r.date.getFullYear()===selectedYear;
+    if(currentPeriod==='last12'){const c=new Date(now.getFullYear(),now.getMonth()-11,1);return r.date>=c;}
     return true;
   });
 }
-
-function getFilteredRecords() {
-  return getPeriodFilteredRecords().filter(r => {
-    if (currentArtist!=='all' && !r.artists.includes(currentArtist)) return false;
-    if (currentFormat!=='all' && r.format!==currentFormat) return false;
-    if (currentRating==='star5' && r.rating!==5) return false;
-    if (currentRating==='high' && r.rating<4) return false;
-    if (currentRating==='low' && r.rating>3) return false;
+function getFilteredRecords(){
+  return getPeriodFilteredRecords().filter(r=>{
+    if(currentArtist!=='all'&&!r.artists.includes(currentArtist))return false;
+    if(currentFormat!=='all'&&r.format!==currentFormat)return false;
+    if(currentRating==='star5'&&r.rating!==5)return false;
+    if(currentRating==='high'&&r.rating<4)return false;
+    if(currentRating==='low'&&r.rating>3)return false;
     return true;
   });
 }
-
-function getFilteredNotes() {
-  const now = new Date();
-  return allNotes.filter(n => {
-    if (!n.publishedDate) return false;
-    if (currentPeriod==='thisYear') return n.publishedDate.getFullYear()===now.getFullYear();
-    if (currentPeriod==='year') return n.publishedDate.getFullYear()===selectedYear;
-    if (currentPeriod==='last12') { const c=new Date(now.getFullYear(),now.getMonth()-11,1); return n.publishedDate>=c; }
+function getFilteredNotes(){
+  const now=new Date();
+  return allNotes.filter(n=>{
+    if(!n.publishedDate)return false;
+    if(currentPeriod==='thisYear')return n.publishedDate.getFullYear()===now.getFullYear();
+    if(currentPeriod==='year')return n.publishedDate.getFullYear()===selectedYear;
+    if(currentPeriod==='last12'){const c=new Date(now.getFullYear(),now.getMonth()-11,1);return n.publishedDate>=c;}
     return true;
   });
 }
-
-function getMonthRange(records) {
-  const now = new Date();
-  const buckets = [];
-  if (currentPeriod==='thisYear'||currentPeriod==='year') {
-    const y = currentPeriod==='year' ? selectedYear : now.getFullYear();
-    for (let m=0;m<12;m++) buckets.push({y,m,key:`${y}-${String(m+1).padStart(2,'0')}`,label:`${m+1}月`});
+function getMonthRange(records){
+  const now=new Date();const buckets=[];
+  if(currentPeriod==='thisYear'||currentPeriod==='year'){
+    const y=currentPeriod==='year'?selectedYear:now.getFullYear();
+    for(let m=0;m<12;m++)buckets.push({y,m,key:`${y}-${String(m+1).padStart(2,'0')}`,label:`${m+1}月`});
     return buckets;
   }
-  if (currentPeriod==='last12') {
-    for (let i=11;i>=0;i--) { const d=new Date(now.getFullYear(),now.getMonth()-i,1); buckets.push({y:d.getFullYear(),m:d.getMonth(),key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,label:`${d.getMonth()+1}月`}); }
+  if(currentPeriod==='last12'){
+    for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);buckets.push({y:d.getFullYear(),m:d.getMonth(),key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,label:`${d.getMonth()+1}月`});}
     return buckets;
   }
-  const years = [...new Set(records.map(r=>r.date.getFullYear()))].sort((a,b)=>a-b);
-  return years.map(y=>({y,m:null,key:`${y}`,label:`${y}`}));
+  return[...new Set(records.map(r=>r.date.getFullYear()))].sort((a,b)=>a-b).map(y=>({y,m:null,key:`${y}`,label:`${y}`}));
 }
-
-function buildMonthlyStats(records, buckets) {
-  const fmtKeys = ['ワンマン','対バン','フェス','サーキット'];
-  const mm = new Map();
-  buckets.forEach(({key}) => mm.set(key, {count:0,ratingTotal:0,ratingCount:0,star5Count:0,formats:Object.fromEntries(fmtKeys.map(f=>[f,0]))}));
-  records.forEach(r => {
-    const key = currentPeriod==='all' ? `${r.date.getFullYear()}` : `${r.date.getFullYear()}-${String(r.date.getMonth()+1).padStart(2,'0')}`;
-    if (!mm.has(key)) return;
-    const row = mm.get(key);
-    row.count++;
-    if (r.rating>0) { row.ratingTotal+=r.rating; row.ratingCount++; }
-    if (r.rating===5) row.star5Count++;
-    if (row.formats[r.format]!==undefined) row.formats[r.format]++;
+function buildMonthlyStats(records,buckets){
+  const fk=['ワンマン','対バン','フェス','サーキット'];
+  const mm=new Map();
+  buckets.forEach(({key})=>mm.set(key,{count:0,ratingTotal:0,ratingCount:0,star5Count:0,formats:Object.fromEntries(fk.map(f=>[f,0]))}));
+  records.forEach(r=>{
+    const key=currentPeriod==='all'?`${r.date.getFullYear()}`:`${r.date.getFullYear()}-${String(r.date.getMonth()+1).padStart(2,'0')}`;
+    if(!mm.has(key))return;
+    const row=mm.get(key);row.count++;
+    if(r.rating>0){row.ratingTotal+=r.rating;row.ratingCount++;}
+    if(r.rating===5)row.star5Count++;
+    if(row.formats[r.format]!==undefined)row.formats[r.format]++;
   });
-  return buckets.map(({key,label}) => {
-    const row = mm.get(key);
-    return {label,count:row.count,avgRating:row.ratingCount ? +(row.ratingTotal/row.ratingCount).toFixed(2):null,star5Count:row.star5Count,formats:row.formats};
-  });
+  return buckets.map(({key,label})=>{const row=mm.get(key);return{label,count:row.count,avgRating:row.ratingCount?+(row.ratingTotal/row.ratingCount).toFixed(2):null,star5Count:row.star5Count,formats:row.formats};});
 }
 
-function getPeriodSummaryText(records) {
-  const dates = records.map(r=>r.date).sort((a,b)=>a-b);
-  if (!dates.length) return '対象期間：データなし';
-  const fmt = d => `${d.getFullYear()}年${d.getMonth()+1}月`;
-  return `対象期間：${fmt(dates[0])}〜${fmt(dates[dates.length-1])}`;
-}
-
-function getConditionText() {
-  const periodName = currentPeriod==='year'?`${selectedYear}年`:currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12か月':'全期間';
-  const parts = [currentArtist==='all'?'全アーティスト':currentArtist, periodName];
-  if (currentFormat!=='all') parts.push(currentFormat);
-  if (currentRating==='star5') parts.push('★5のみ');
-  if (currentRating==='high') parts.push('★4以上');
-  if (currentRating==='low') parts.push('★3以下');
+function getConditionText(){
+  const pn=currentPeriod==='year'?`${selectedYear}年`:currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12ヶ月':'全期間';
+  const parts=[currentArtist==='all'?'全アーティスト':currentArtist,pn];
+  if(currentFormat!=='all')parts.push(currentFormat);
+  if(currentRating==='star5')parts.push('★5のみ');
+  if(currentRating==='high')parts.push('★4以上');
+  if(currentRating==='low')parts.push('★3以下');
   return parts.join(' / ');
 }
-
-function getQualityMetrics() {
-  const total = allRecords.length;
-  const missingRating = allRecords.filter(r=>!r.rating).length;
-  const missingFormat = allRecords.filter(r=>!r.format).length;
-  const missingVenue = allRecords.filter(r=>!r.venue).length;
-  const uniqueKeyCount = new Set(allRecords.map(r=>[r.liveName,r.dateStr,r.venue,r.format,r.artistRaw].join('|'))).size;
-  return {total, missingRating, missingFormat, missingVenue, duplicateLike: Math.max(total-uniqueKeyCount,0)};
+function renderQualityInline(){
+  const issues=[];
+  if(allRecords.filter(r=>!r.rating).length)issues.push(`評価なし ${allRecords.filter(r=>!r.rating).length}件`);
+  if(allRecords.filter(r=>!r.format).length)issues.push(`形式なし ${allRecords.filter(r=>!r.format).length}件`);
+  const uq=new Set(allRecords.map(r=>[r.liveName,r.dateStr,r.venue,r.format,r.artistRaw].join('|'))).size;
+  if(allRecords.length-uq>0)issues.push(`重複候補 ${allRecords.length-uq}件`);
+  const el=document.getElementById('quality-inline');
+  if(!issues.length){el.className='info-bar good';el.textContent=`データ品質：問題なし（全${allRecords.length}件）`;}
+  else{el.className='info-bar warn';el.textContent=`データ品質：${issues.join(' / ')}`;}
 }
 
-function renderQualityInline() {
-  const q = getQualityMetrics();
-  const issues = [];
-  if (q.missingRating>0) issues.push(`評価なし ${q.missingRating}件`);
-  if (q.missingFormat>0) issues.push(`形式なし ${q.missingFormat}件`);
-  if (q.missingVenue>0) issues.push(`会場なし ${q.missingVenue}件`);
-  if (q.duplicateLike>0) issues.push(`重複候補 ${q.duplicateLike}件`);
-  const el = document.getElementById('quality-inline');
-  if (!issues.length) { el.className='info-bar good'; el.textContent=`データ品質：問題なし（全${q.total}件）`; }
-  else { el.className='info-bar warn'; el.textContent=`データ品質：${issues.join(' / ')}`; }
+function getDelta(cur,prev){
+  if(prev==null)return{text:'—',cls:'zero'};
+  const d=cur-prev;
+  if(d>0)return{text:`先月比 +${d}`,cls:'pos'};
+  if(d<0)return{text:`先月比 ${d}`,cls:'neg'};
+  return{text:'先月比 ±0',cls:'zero'};
 }
 
-function getDeltaLabel(current, prev) {
-  if (prev === null || prev === undefined) return { text: '—', cls: 'zero' };
-  const diff = current - prev;
-  if (diff > 0) return { text: `先月比 +${diff}`, cls: 'pos' };
-  if (diff < 0) return { text: `先月比 ${diff}`, cls: 'neg' };
-  return { text: '先月比 ±0', cls: 'zero' };
+function renderThisMonth(){
+  const now=new Date();
+  const mo=allRecords.filter(r=>r.date.getFullYear()===now.getFullYear()&&r.date.getMonth()===now.getMonth());
+  const pm=allRecords.filter(r=>{const p=new Date(now.getFullYear(),now.getMonth()-1,1);return r.date.getFullYear()===p.getFullYear()&&r.date.getMonth()===p.getMonth();});
+  const mn=allNotes.filter(n=>n.publishedDate&&n.publishedDate.getFullYear()===now.getFullYear()&&n.publishedDate.getMonth()===now.getMonth());
+  const pn=allNotes.filter(n=>{if(!n.publishedDate)return false;const p=new Date(now.getFullYear(),now.getMonth()-1,1);return n.publishedDate.getFullYear()===p.getFullYear()&&n.publishedDate.getMonth()===p.getMonth();});
+  const star5=mo.filter(r=>r.rating===5).length;
+  const pstar5=pm.filter(r=>r.rating===5).length;
+  const lc=mo.length,nc=mn.length;
+
+  document.getElementById('this-month-label').textContent=`${now.getMonth()+1}月`;
+  document.getElementById('sc-total').innerHTML=`${lc}<span class="unit">本</span>`;
+  document.getElementById('sc-avg').innerHTML=`${nc}<span class="unit">件</span>`;
+  document.getElementById('sc-star5').innerHTML=`${star5}<span class="unit">回</span>`;
+  const setD=(id,d)=>{const el=document.getElementById(id);el.textContent=d.text;el.className=`kpi-delta ${d.cls}`;};
+  setD('kpi-live-delta',getDelta(lc,pm.length));
+  setD('kpi-note-delta',getDelta(nc,pn.length));
+  setD('kpi-star5-delta',getDelta(star5,pstar5));
+
+  const rate=lc>0?Math.round((nc/lc)*100):0;
+  const rateEl=document.getElementById('sc-note-rate');
+  if(lc>0){rateEl.innerHTML=`${rate}<span style="font-size:16px;font-weight:500;color:var(--text-2);margin-left:2px">%</span>`;}
+  else{rateEl.innerHTML=`<span style="font-size:18px;color:var(--text-3)">—</span>`;}
+  document.getElementById('sc-note-rate-sub').textContent=lc>0?`${nc}件 / ${lc}本`:'ライブ記録なし';
+  document.getElementById('note-rate-bar').style.width=(lc>0?rate:0)+'%';
+
+  document.getElementById('kpi-live-hint').textContent=lc===0?'':lc<=2?'じっくり味わう月':lc<=5?'いいペース！':'濃いライブ月間';
+  document.getElementById('kpi-note-hint').textContent=nc===0&&lc>0?`あと${lc}本書ける`:nc>0&&nc<lc?`あと${lc-nc}本残っています`:'';
+  document.getElementById('kpi-star5-hint').textContent=star5>0?'最高の体験あり':'';
+  document.getElementById('kpi-rate-hint').textContent=lc===0?'':rate===100?'全件Note済み ✓':rate>=50?'半分以上Note化済み':`あと${lc-nc}本でコンプリート`;
+
+  document.getElementById('note-rate-label').textContent=`今月 ${nc}/${lc}本`;
+  document.getElementById('note-rate-bar-panel').style.width=(lc>0?rate:0)+'%';
+  const pending=Math.max(0,lc-nc);
+  document.getElementById('note-rate-stat').textContent=pending>0?`未Note ${pending}本`:lc>0?'完了 ✓':'—';
 }
 
-function renderHeader(records) {
-  document.getElementById('header-period').textContent = getPeriodSummaryText(records);
-  document.getElementById('header-total').textContent = `総ライブ数 ${records.length} 件`;
-  document.getElementById('condition-text').textContent = getConditionText();
+function renderCharts(records){
+  if(typeof Chart==='undefined')return;
+  const bc=document.getElementById('bar-chart'),lc=document.getElementById('line-chart');
+  if(!bc||!lc)return;
+  const buckets=getMonthRange(records);
+  const stats=buildMonthlyStats(records,buckets);
+  const labels=stats.map(s=>s.label);
+  const avgRatings=stats.map(s=>s.avgRating);
+  const maxTick=labels.length>18?2:1;
+  const isAll=currentPeriod==='all';
+  document.getElementById('bar-chart-title').textContent=isAll?'年別ライブ回数':'月別ライブ回数';
+  document.getElementById('line-chart-title').textContent=isAll?'年別平均評価':'月別平均評価';
+  if(barChart)barChart.destroy();
+  barChart=new Chart(bc.getContext('2d'),{type:'bar',data:{labels,datasets:[
+    {label:'ワンマン',data:stats.map(s=>s.formats['ワンマン']),backgroundColor:'rgba(59,130,246,.8)',stack:'l'},
+    {label:'対バン',data:stats.map(s=>s.formats['対バン']),backgroundColor:'rgba(124,110,247,.8)',stack:'l'},
+    {label:'フェス',data:stats.map(s=>s.formats['フェス']),backgroundColor:'rgba(251,191,36,.8)',stack:'l'},
+    {label:'サーキット',data:stats.map(s=>s.formats['サーキット']),backgroundColor:'rgba(52,211,153,.8)',stack:'l'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8b93b8',boxWidth:10,usePointStyle:true,font:{size:10}}}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:(v,i)=>i%maxTick===0?labels[i]:''}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#545c7e',font:{size:10},stepSize:1},beginAtZero:true}}}});
+  if(lineChart)lineChart.destroy();
+  lineChart=new Chart(lc.getContext('2d'),{type:'line',data:{labels,datasets:[{label:'平均評価',data:avgRatings,borderColor:'#7c6ef7',backgroundColor:'rgba(124,110,247,.07)',pointBackgroundColor:'#a78bfa',pointRadius:3,pointHoverRadius:5,fill:true,tension:0.3,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:(v,i)=>i%maxTick===0?labels[i]:''}},y:{grid:{color:'rgba(255,255,255,.05)'},min:1,max:5,ticks:{color:'#545c7e',font:{size:10},stepSize:1}}}}});
+  // Format analysis comment
+  const totals={ワンマン:0,対バン:0,フェス:0,サーキット:0};
+  stats.forEach(s=>Object.keys(totals).forEach(k=>totals[k]+=s.formats[k]));
+  const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  const aEl=document.getElementById('bar-chart-analysis');
+  if(total>0){const top=Object.entries(totals).sort((a,b)=>b[1]-a[1])[0];const pct=Math.round(top[1]/total*100);if(pct>=45){aEl.textContent=`📊 ${top[0]}の比率が高め（${pct}%）`;aEl.style.display='block';}else aEl.style.display='none';}
+  else aEl.style.display='none';
 }
 
-function renderSummary(records) {
-  const now = new Date();
-  const monthLives = allRecords.filter(r => r.date.getFullYear()===now.getFullYear() && r.date.getMonth()===now.getMonth());
-  const prevMonthLives = allRecords.filter(r => {
-    const prev = new Date(now.getFullYear(), now.getMonth()-1, 1);
-    return r.date.getFullYear()===prev.getFullYear() && r.date.getMonth()===prev.getMonth();
-  });
-  const monthNotesAll = allNotes.filter(n => n.publishedDate && n.publishedDate.getFullYear()===now.getFullYear() && n.publishedDate.getMonth()===now.getMonth());
-  const prevMonthNotes = allNotes.filter(n => {
-    if (!n.publishedDate) return false;
-    const prev = new Date(now.getFullYear(), now.getMonth()-1, 1);
-    return n.publishedDate.getFullYear()===prev.getFullYear() && n.publishedDate.getMonth()===prev.getMonth();
-  });
-  const monthStar5 = monthLives.filter(r=>r.rating===5).length;
-  const prevStar5 = prevMonthLives.filter(r=>r.rating===5).length;
-  const liveCount = monthLives.length;
-  const noteCount = monthNotesAll.length;
-
-  // Month label
-  document.getElementById('highlight-month-label').textContent = `（${now.getMonth()+1}月）`;
-
-  // KPI values
-  document.getElementById('sc-total').innerHTML = `${liveCount}<span class="unit">本</span>`;
-  document.getElementById('sc-avg').innerHTML = `${noteCount}<span class="unit">件</span>`;
-  document.getElementById('sc-star5').innerHTML = `${monthStar5}<span class="unit">回</span>`;
-  document.getElementById('sc-total-sub').textContent = `${now.getMonth()+1}月のライブ本数`;
-  document.getElementById('sc-avg-sub').textContent = `${now.getMonth()+1}月の公開Note`;
-  document.getElementById('sc-star5-sub').textContent = `${now.getMonth()+1}月の星5ライブ`;
-
-  // Delta badges
-  const liveDelta = getDeltaLabel(liveCount, prevMonthLives.length);
-  const noteDelta = getDeltaLabel(noteCount, prevMonthNotes.length);
-  const star5Delta = getDeltaLabel(monthStar5, prevStar5);
-  const setDelta = (id, d) => { const el=document.getElementById(id); el.textContent=d.text; el.className=`kpi-delta ${d.cls}`; };
-  setDelta('kpi-live-delta', liveDelta);
-  setDelta('kpi-note-delta', noteDelta);
-  setDelta('kpi-star5-delta', star5Delta);
-
-  // Smart activity comment
-  let commentText = '';
-  if (liveCount === 0) {
-    commentText = '今月はまだライブ記録がありません。次の予定を楽しみに待ちましょう。';
-  } else if (liveCount <= 2) {
-    commentText = '今月はじっくり味わう月。印象に残った瞬間をNoteに残していきましょう。';
-  } else if (liveCount <= 5) {
-    commentText = '今月はライブもNoteも良いペース。体験を言葉にできています。';
-  } else {
-    commentText = 'かなり濃いライブ月間。記憶が薄れる前にNoteへ残していきましょう。';
-  }
-  if (monthStar5 > 0) commentText += '\n星5ライブあり。今月のベスト体験を振り返る価値があります。';
-  if (liveCount > 0 && noteCount < liveCount) commentText += '\nまだNoteにできるライブが残っています。';
-  document.getElementById('sc-comment').textContent = commentText;
-
-  // Hero stats in page header
-  const heroLive = document.getElementById('hero-live-count');
-  const heroNote = document.getElementById('hero-note-count');
-  const heroStar = document.getElementById('hero-star5-count');
-  if (heroLive) heroLive.textContent = liveCount;
-  if (heroNote) heroNote.textContent = noteCount;
-  if (heroStar) heroStar.textContent = monthStar5;
-
-  // Note progress bar (today's month)
-  const progressBar = document.getElementById('note-progress-bar');
-  const progressText = document.getElementById('note-progress-text');
-  const pendingText = document.getElementById('note-pending-text');
-  if (progressBar && progressText && pendingText) {
-    const pct = liveCount > 0 ? Math.min(100, Math.round((noteCount / liveCount) * 100)) : 0;
-    progressBar.style.width = pct + '%';
-    progressText.textContent = `${noteCount}/${liveCount}本`;
-    const pending = Math.max(0, liveCount - noteCount);
-    if (pending > 0) {
-      pendingText.innerHTML = `未Note化 <span class="note-pending-badge">${pending}本</span>`;
-    } else if (liveCount > 0) {
-      pendingText.textContent = '全記事済み ✓';
-    } else {
-      pendingText.textContent = '—';
-    }
-  }
-
-  // Period summary
-  const periodNotes = getFilteredNotes();
-  const periodStar5 = records.filter(r=>r.rating===5).length;
-  const periodAvg = records.length ? (records.reduce((s,r)=>s+(r.rating||0),0)/records.length).toFixed(2) : '—';
-  const periodLabel = currentPeriod==='thisYear'?'今年':currentPeriod==='all'?'全期間':currentPeriod==='last12'?'直近12ヶ月':`${selectedYear}年`;
-  const noteRate = records.length > 0 ? `${Math.round((periodNotes.length / records.length) * 100)}%` : '—';
-  const star5Pct = records.length > 0 ? `${Math.round((periodStar5 / records.length) * 100)}%` : '—';
-
-  document.getElementById('mini-this-year').textContent = `${records.length}回`;
-  document.getElementById('mini-this-year-sub').textContent = `${periodLabel}のライブ数`;
-  document.getElementById('mini-monthly-avg').textContent = periodAvg === '—' ? '—' : `${periodAvg}★`;
-  document.getElementById('mini-monthly-avg-sub').textContent = `${periodLabel}の平均評価`;
-  document.getElementById('mini-star5-rate').textContent = `${periodStar5}回`;
-  document.getElementById('mini-star5-rate-sub').textContent = `${periodLabel}の星5ライブ数`;
-  document.getElementById('mini-note-this-year').textContent = `${periodNotes.length}件`;
-  document.getElementById('mini-note-this-year-sub').textContent = `${periodLabel}のNote記事数`;
-  document.getElementById('mini-note-rate').textContent = noteRate;
-  document.getElementById('mini-note-rate-sub').textContent = `Note記事数 / ライブ数`;
-  document.getElementById('mini-star5-pct').textContent = star5Pct;
-  document.getElementById('mini-star5-pct-sub').textContent = `${periodLabel}の星5率`;
+function renderRankingList(id,items,isVenue=false){
+  const el=document.getElementById(id);if(!el)return;
+  if(!items.length){el.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:12px 0">データなし</div>';return;}
+  const maxVal=items[0].value;
+  el.innerHTML=items.slice(0,5).map((item,i)=>{
+    const nc=i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const bw=maxVal>0?(item.value/maxVal*100).toFixed(1):0;
+    return`<div class="ranking-item"><div class="ranking-num ${nc}">${i+1}</div><div class="ranking-bar-wrap"><div class="ranking-name" title="${escAttr(item.name)}">${esc(item.name)}</div><div class="ranking-bar-bg"><div class="ranking-bar-fill${isVenue?' venue':''}" style="width:${bw}%"></div></div></div><div class="ranking-value">${item.value}回<span class="ranking-sub">${item.sub||''}</span></div></div>`;
+  }).join('');
 }
-
-function renderCharts(records) {
-  if (typeof Chart==='undefined') return;
-  const barCanvas = document.getElementById('bar-chart');
-  const lineCanvas = document.getElementById('line-chart');
-  if (!barCanvas||!lineCanvas) return;
-
-  const buckets = getMonthRange(records);
-  const stats = buildMonthlyStats(records, buckets);
-  const labels = stats.map(s=>s.label);
-  const avgRatings = stats.map(s=>s.avgRating);
-  const maxTick = labels.length>18 ? 2 : 1;
-
-  document.getElementById('bar-chart-title').textContent = currentPeriod==='all' ? '年別ライブ回数' : '月別ライブ回数';
-  document.getElementById('line-chart-title').textContent = currentPeriod==='all' ? '年別平均評価' : '月別平均評価';
-
-  if (barChart) barChart.destroy();
-  barChart = new Chart(barCanvas.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        { label:'ワンマン', data:stats.map(s=>s.formats['ワンマン']), backgroundColor:'rgba(59,130,246,0.8)', stack:'live' },
-        { label:'対バン', data:stats.map(s=>s.formats['対バン']), backgroundColor:'rgba(124,110,247,0.8)', stack:'live' },
-        { label:'フェス', data:stats.map(s=>s.formats['フェス']), backgroundColor:'rgba(251,191,36,0.8)', stack:'live' },
-        { label:'サーキット', data:stats.map(s=>s.formats['サーキット']), backgroundColor:'rgba(52,211,153,0.8)', stack:'live' }
-      ]
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins: { legend:{ position:'bottom', labels:{ color:'#8b93b8', boxWidth:12, usePointStyle:true, font:{size:11} } } },
-      scales: {
-        x:{ stacked:true, grid:{display:false}, ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:(v,i)=>i%maxTick===0?labels[i]:''} },
-        y:{ stacked:true, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#545c7e',font:{size:10},stepSize:1}, beginAtZero:true }
-      }
-    }
-  });
-
-  if (lineChart) lineChart.destroy();
-  lineChart = new Chart(lineCanvas.getContext('2d'), {
-    type:'line',
-    data:{ labels, datasets:[{ label:'平均評価', data:avgRatings, borderColor:'#7c6ef7', backgroundColor:'rgba(124,110,247,0.08)', pointBackgroundColor:'#a78bfa', pointRadius:3, pointHoverRadius:5, fill:true, tension:0.3, spanGaps:true }] },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales:{
-        x:{ grid:{display:false}, ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:(v,i)=>i%maxTick===0?labels[i]:''} },
-        y:{ grid:{color:'rgba(255,255,255,0.05)'}, min:1, max:5, ticks:{color:'#545c7e',font:{size:10},stepSize:1} }
-      }
-    }
-  });
+function renderLeftPanel(records){
+  const map={};records.forEach(r=>r.artists.forEach(a=>{map[a]=(map[a]||0)+1;}));
+  const total=Object.values(map).reduce((s,v)=>s+v,0);
+  const items=Object.entries(map).map(([name,value])=>({name,value,sub:total?` ${((value/total)*100).toFixed(0)}%`:''})).sort((a,b)=>b.value-a.value);
+  renderRankingList('left-panel-list',items,false);
+  const aEl=document.getElementById('artist-analysis-comment');
+  if(aEl&&items.length){const top=items[0];const pct=total>0?Math.round(top.value/total*100):0;if(pct>=40){aEl.textContent=`📊 ${top.name}への集中が高め（${pct}%）`;aEl.style.display='block';}else aEl.style.display='none';}
 }
-
-function renderRankingList(containerId, items, isVenue=false) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  if (!items.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:12px 0;">データなし</div>'; return; }
-  const maxVal = items[0].value;
-  el.innerHTML = items.slice(0,5).map((item,i) => {
-    const numCls = i===0?'top1':i===1?'top2':i===2?'top3':'';
-    const barW = maxVal>0 ? (item.value/maxVal*100).toFixed(1) : 0;
-    return `<div class="ranking-item">
-      <div class="ranking-num ${numCls}">${i+1}</div>
-      <div class="ranking-bar-wrap">
-        <div class="ranking-name" title="${escAttr(item.name)}">${esc(item.name)}</div>
-        <div class="ranking-bar-bg"><div class="ranking-bar-fill${isVenue?' venue':''}" style="width:${barW}%"></div></div>
-      </div>
-      <div class="ranking-value">${item.value}回<span class="ranking-sub">${item.subDisplay||''}</span></div>
-    </div>`;
+function renderVenueRanking(records){
+  const map={};records.forEach(r=>{if(r.venue)map[r.venue]=(map[r.venue]||0)+1;});
+  const total=Object.values(map).reduce((s,v)=>s+v,0);
+  renderRankingList('venue-ranking',Object.entries(map).map(([name,value])=>({name,value,sub:total?` ${((value/total)*100).toFixed(0)}%`:''})).sort((a,b)=>b.value-a.value),true);
+}
+function renderRecentNotes(){
+  const list=document.getElementById('recent-note-list');
+  const badge=document.getElementById('notes-count-badge');
+  const notes=getFilteredNotes();
+  if(badge)badge.textContent=`${notes.length}件`;
+  if(!notes.length){list.innerHTML='<div class="notes-empty">この期間のNote記事はありません</div>';return;}
+  list.innerHTML=notes.slice(0,5).map(n=>{
+    const dt=`${n.publishedDate.getFullYear()}/${String(n.publishedDate.getMonth()+1).padStart(2,'0')}/${String(n.publishedDate.getDate()).padStart(2,'0')}`;
+    const chip=n.noteType?`<span class="note-chip">${esc(n.noteType)}</span>`:'';
+    const thumb=n.thumbnailUrl?`<img src="${escAttr(n.thumbnailUrl)}" alt="" class="note-thumb" onerror="this.style.display='none'">`:`<div class="note-thumb-ph">📝</div>`;
+    return`<a class="note-item" href="${escAttr(n.noteUrl)}" target="_blank" rel="noopener"><div class="note-thumb-wrap">${thumb}</div><div class="note-body"><div class="note-date">${dt}</div><div class="note-title">${esc(n.noteTitle||'無題')}</div><div class="note-meta">${chip}<span class="note-link-text">見る →</span></div></div></a>`;
+  }).join('');
+}
+function renderTotals(){
+  const total=allRecords.length;
+  const totalStar5=allRecords.filter(r=>r.rating===5).length;
+  const rated=allRecords.filter(r=>r.rating>0);
+  const avg=rated.length?(rated.reduce((s,r)=>s+r.rating,0)/rated.length).toFixed(2):'—';
+  document.getElementById('total-live-count').textContent=`${total}回`;
+  document.getElementById('total-note-count').textContent=`${allNotes.length}件`;
+  document.getElementById('total-star5-count').textContent=`${totalStar5}回`;
+  document.getElementById('total-avg-rating').textContent=avg==='—'?'—':`${avg}★`;
+  const yrs=[...new Set(allRecords.map(r=>r.date.getFullYear()))];
+  const span=yrs.length>1?`${Math.min(...yrs)}〜${Math.max(...yrs)}年`:`${yrs[0]||''}年`;
+  ['total-live-sub','total-note-sub','total-star5-sub','total-avg-sub'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=span;});
+  const apl=document.getElementById('all-period-label');if(apl)apl.textContent=span;
+}
+function renderStar5List(records){
+  const star5=records.filter(r=>r.rating===5).sort((a,b)=>b.date-a.date);
+  const el=document.getElementById('star5-list');
+  const label=document.getElementById('star5-count-label');
+  if(label)label.textContent=`${star5.length}件`;
+  if(!el)return;
+  if(!star5.length){el.innerHTML='<div class="star5-empty">この条件の星5ライブはありません</div>';return;}
+  el.innerHTML=star5.map(r=>{
+    const d=r.date;
+    const ds=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+    const artist=r.artists.join('・');
+    const ln=(notesByLiveId.get(r.id)||[])[0]||null;
+    const thumbHtml=r.imageUrl?`<div class="star5-thumb-wrap"><img src="${escAttr(r.imageUrl)}" alt="" class="star5-thumb" onerror="this.parentElement.style.display='none'"></div>`:'';
+    const sl=r.setlistUrl?`<a class="star5-link" href="${escAttr(r.setlistUrl)}" target="_blank" rel="noopener">セットリスト</a>`:'';
+    const nl=ln?`<a class="star5-link" href="${escAttr(ln.noteUrl)}" target="_blank" rel="noopener">Note</a>`:'';
+    return`<div class="star5-card">${thumbHtml}<div class="star5-body"><div class="star5-date">${ds}</div><div class="star5-name">${esc(r.liveName||'—')}</div><div class="star5-artist">${esc(artist||'—')}</div><div class="star5-meta"><div class="star5-meta-row">📍 ${esc(r.venue||'—')}</div><div class="star5-meta-row"><span class="star5-rating">★${r.rating}</span></div></div><div class="star5-actions">${sl}${nl}</div></div></div>`;
   }).join('');
 }
 
-function renderLeftPanel(records) {
-  const map = {};
-  records.forEach(r => r.artists.forEach(a => { map[a] = (map[a]||0)+1; }));
-  const total = Object.values(map).reduce((s,v)=>s+v,0);
-  const items = Object.entries(map).map(([name,value]) => ({name,value,subDisplay:total?`${((value/total)*100).toFixed(1)}%`:''})).sort((a,b)=>b.value-a.value);
-  renderRankingList('left-panel-list', items, false);
+function renderHeader(records){
+  const ct=getConditionText();
+  document.getElementById('condition-text').textContent=ct;
+  document.getElementById('filter-status-text').textContent=ct;
 }
-
-function renderVenueRanking(records) {
-  const map = {};
-  records.forEach(r => { if (r.venue) map[r.venue]=(map[r.venue]||0)+1; });
-  const total = Object.values(map).reduce((s,v)=>s+v,0);
-  const items = Object.entries(map).map(([name,value]) => ({name,value,subDisplay:total?`${((value/total)*100).toFixed(1)}%`:''})).sort((a,b)=>b.value-a.value);
-  renderRankingList('venue-ranking', items, true);
+function renderDashboard(){
+  const records=getFilteredRecords();
+  try{renderHeader(records);}catch(e){console.error('header',e);}
+  try{renderQualityInline();}catch(e){console.error('quality',e);}
+  try{renderThisMonth();}catch(e){console.error('thisMonth',e);}
+  try{renderCharts(records);}catch(e){console.error('charts',e);}
+  try{renderRecentNotes();}catch(e){console.error('notes',e);}
+  try{renderLeftPanel(records);}catch(e){console.error('artist',e);}
+  try{renderVenueRanking(records);}catch(e){console.error('venue',e);}
+  try{renderTotals();}catch(e){console.error('totals',e);}
+  try{renderStar5List(records);}catch(e){console.error('star5',e);}
 }
+function showDashboard(){document.getElementById('no-data-screen').classList.add('hidden');document.getElementById('app-pages').classList.remove('hidden');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
-function renderStar5List(records) {
-  const star5 = records.filter(r=>r.rating===5).sort((a,b)=>b.date-a.date);
-  const el = document.getElementById('star5-list');
-  const label = document.getElementById('star5-count-label');
-  if (label) label.textContent = `（${getConditionText().split(' / ')[1]||''}　${star5.length}件）`;
-  if (!el) return;
-  if (!star5.length) { el.innerHTML = '<div class="star5-empty">この条件の星5ライブはありません</div>'; return; }
-  el.innerHTML = star5.map(r => {
-    const d = r.date;
-    const dateStr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
-    const artistDisplay = r.artists.join('・');
-    const linkedNotes = notesByLiveId.get(r.id)||[];
-    const primaryNote = linkedNotes[0]||null;
-    // Only show thumb area if there's a real image URL
-    const thumbHtml = r.imageUrl ? `<img src="${escAttr(r.imageUrl)}" alt="" class="star5-thumb" onerror="this.parentElement.style.display='none'">` : '';
-    const setlistLink = r.setlistUrl ? `<a class="star5-link" href="${escAttr(r.setlistUrl)}" target="_blank" rel="noopener">セットリスト</a>` : '';
-    const noteLink = primaryNote ? `<a class="star5-link" href="${escAttr(primaryNote.noteUrl)}" target="_blank" rel="noopener">Note記事</a>` : '';
-    return `<div class="star5-card">
-      ${thumbHtml ? `<div class="star5-thumb-wrap">${thumbHtml}</div>` : ''}
-      <div class="star5-body">
-        <div class="star5-date">${dateStr}</div>
-        <div class="star5-name">${esc(r.liveName||'—')}</div>
-        <div class="star5-artist">${esc(artistDisplay||'—')}</div>
-        <div class="star5-meta">
-          <div class="star5-meta-row">📍 ${esc(r.venue||'—')}</div>
-          <div class="star5-meta-row"><span class="star5-rating">★${r.rating}</span></div>
-        </div>
-        <div class="star5-actions">${setlistLink}${noteLink}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function renderRecentNotes() {
-  const section = document.getElementById('recent-notes-section');
-  const list = document.getElementById('recent-note-list');
-  const badge = document.getElementById('notes-count-badge');
-  const notes = getFilteredNotes();
-  if (badge) badge.textContent = `${notes.length}件`;
-  if (!notes.length) {
-    list.innerHTML = '<div class="notes-empty">この期間のNote記事はありません</div>';
-    return;
-  }
-  list.innerHTML = notes.slice(0,5).map((n, idx) => {
-    const dateText = `${n.publishedDate.getFullYear()}/${String(n.publishedDate.getMonth()+1).padStart(2,'0')}/${String(n.publishedDate.getDate()).padStart(2,'0')}`;
-    const typeChip = n.noteType ? `<span class="note-chip">${esc(n.noteType)}</span>` : '';
-    const thumbHtml = n.thumbnailUrl
-      ? `<img src="${escAttr(n.thumbnailUrl)}" alt="" class="note-thumb" onerror="this.style.display='none'">`
-      : `<div class="note-thumb-placeholder">📝</div>`;
-    return `<a class="note-item" href="${escAttr(n.noteUrl)}" target="_blank" rel="noopener">
-      <div class="note-thumb-wrap">${thumbHtml}</div>
-      <div class="note-body">
-        <div class="note-date">${dateText}</div>
-        <div class="note-title">${esc(n.noteTitle||'無題')}</div>
-        <div class="note-meta">${typeChip}<span class="note-link">記事を見る →</span></div>
-      </div>
-    </a>`;
-  }).join('');
-}
-
-function renderDashboard() {
-  const records = getFilteredRecords();
-  try { renderHeader(records); } catch(e) { console.error('header',e); }
-  try { renderQualityInline(); } catch(e) { console.error('quality',e); }
-  try { renderSummary(records); } catch(e) { console.error('summary',e); }
-  try { renderCharts(records); } catch(e) { console.error('charts',e); }
-  try { renderRecentNotes(); } catch(e) { console.error('notes',e); }
-  try { renderLeftPanel(records); } catch(e) { console.error('artist',e); }
-  try { renderVenueRanking(records); } catch(e) { console.error('venue',e); }
-  try { renderStar5List(records); } catch(e) { console.error('star5',e); }
-}
-
-function showDashboard() {
-  document.getElementById('no-data-screen').classList.add('hidden');
-  document.getElementById('app-pages').classList.remove('hidden');
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-function openDrawer() {
+function openDrawer(){
   document.getElementById('filter-drawer').classList.add('open');
   document.getElementById('drawer-backdrop').classList.add('open');
   renderArtistOptions(document.getElementById('artist-search-input').value||'');
 }
-
-function closeDrawer() {
+function closeDrawer(){
   document.getElementById('filter-drawer').classList.remove('open');
   document.getElementById('drawer-backdrop').classList.remove('open');
-  document.getElementById('artist-options').classList.remove('open');
+  document.getElementById('artist-options').classList.remove('show');
 }
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-backdrop').classList.add('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-backdrop').classList.remove('open');}
 
-function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-backdrop').classList.add('open'); }
-function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-backdrop').classList.remove('open'); }
-
-function renderArtistOptions(keyword) {
-  const container = document.getElementById('artist-options');
-  const q = keyword.trim().toLowerCase();
-  const filtered = ['all', ...allArtists.filter(a=>a.toLowerCase().includes(q))];
-  container.innerHTML = filtered.map(name => {
-    const display = name==='all'?'全アーティスト':name;
-    return `<div class="artist-option${name===currentArtist?' active':''}" data-value="${escAttr(name)}">${esc(display)}</div>`;
-  }).join('');
-  container.classList.add('show');
+function renderArtistOptions(kw){
+  const c=document.getElementById('artist-options');
+  const q=kw.trim().toLowerCase();
+  const f=['all',...allArtists.filter(a=>a.toLowerCase().includes(q))];
+  c.innerHTML=f.map(n=>`<div class="artist-option${n===currentArtist?' active':''}" data-value="${escAttr(n)}">${esc(n==='all'?'全アーティスト':n)}</div>`).join('');
+  c.classList.add('show');
 }
-
-function selectArtist(name) {
-  currentArtist = name;
-  document.getElementById('artist-search-input').value = name==='all'?'':name;
-  document.getElementById('artist-current-label').textContent = `現在：${name==='all'?'全アーティスト':name}`;
+function selectArtist(name){
+  currentArtist=name;
+  document.getElementById('artist-search-input').value=name==='all'?'':name;
+  document.getElementById('artist-current-label').textContent=`現在：${name==='all'?'全アーティスト':name}`;
   document.getElementById('artist-options').classList.remove('show');
   renderDashboard();
 }
-
-function initYearOptions() {
-  const nowYear = new Date().getFullYear();
-  const yearSet = new Set([nowYear]);
-  allRecords.forEach(r => yearSet.add(r.date.getFullYear()));
-  allNotes.forEach(n => { if (n.publishedDate) yearSet.add(n.publishedDate.getFullYear()); });
-  const years = [...yearSet].sort((a,b)=>b-a);
-  document.getElementById('year-select').innerHTML = '<option value="">年選択</option>' + years.map(y=>`<option value="${y}">${y}</option>`).join('');
+function initYearOptions(){
+  const ys=new Set([new Date().getFullYear()]);
+  allRecords.forEach(r=>ys.add(r.date.getFullYear()));
+  allNotes.forEach(n=>{if(n.publishedDate)ys.add(n.publishedDate.getFullYear());});
+  document.getElementById('year-select').innerHTML='<option value="">年を選択</option>'+[...ys].sort((a,b)=>b-a).map(y=>`<option value="${y}">${y}</option>`).join('');
+}
+function updatePeriodControls(){
+  document.querySelectorAll('#period-filter-drawer .filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.value===currentPeriod));
+  document.getElementById('year-select').value=currentPeriod==='year'?String(selectedYear):'';
 }
 
-function updatePeriodControls() {
-  document.querySelectorAll('#period-filter .period-btn').forEach(b => b.classList.toggle('active', b.dataset.value===currentPeriod));
-  document.getElementById('year-select').value = currentPeriod==='year' ? String(selectedYear) : '';
-}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escAttr(s){return esc(s).replace(/'/g,'&#39;');}
 
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function escAttr(s) { return esc(s).replace(/'/g,'&#39;'); }
-
-async function loadFromApi() {
-  try {
-    const [liveRes, noteRes] = await Promise.all([fetch('/api/live-log'), fetch('/api/note-log')]);
-    const [liveData, noteData] = await Promise.all([liveRes.json(), noteRes.json()]);
-    if (!liveRes.ok) throw new Error(liveData.error||'ライブAPIの取得に失敗しました');
-    if (!noteRes.ok) throw new Error(noteData.error||'NOTE APIの取得に失敗しました');
-    allRecords = normalizeApiRecords(liveData).sort((a,b)=>a.date-b.date);
-    allNotes = normalizeNoteRecords(noteData);
-    notesByLiveId = buildNotesByLiveIdMap(allNotes);
-    allArtists = [...new Set(allRecords.flatMap(r=>r.artists))].sort((a,b)=>a.localeCompare(b,'ja'));
-    if (!allRecords.length) { showToast('データは取得できましたが、表示対象がありません'); return; }
-    const now = new Date();
-    document.getElementById('sidebar-updated').textContent = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
-    initYearOptions();
-    updatePeriodControls();
-    renderArtistOptions('');
+async function loadFromApi(){
+  try{
+    const[lr,nr]=await Promise.all([fetch('/api/live-log'),fetch('/api/note-log')]);
+    const[ld,nd]=await Promise.all([lr.json(),nr.json()]);
+    if(!lr.ok)throw new Error(ld.error||'ライブAPIの取得に失敗しました');
+    if(!nr.ok)throw new Error(nd.error||'NOTE APIの取得に失敗しました');
+    allRecords=normalizeApiRecords(ld).sort((a,b)=>a.date-b.date);
+    allNotes=normalizeNoteRecords(nd);
+    notesByLiveId=buildNotesByLiveIdMap(allNotes);
+    allArtists=[...new Set(allRecords.flatMap(r=>r.artists))].sort((a,b)=>a.localeCompare(b,'ja'));
+    if(!allRecords.length){showToast('データは取得できましたが、表示対象がありません');return;}
+    const now=new Date();
+    document.getElementById('sidebar-updated').textContent=`${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+    initYearOptions();updatePeriodControls();renderArtistOptions('');
     document.getElementById('artist-options').classList.remove('show');
-    showDashboard();
-    renderDashboard();
+    showDashboard();renderDashboard();
     showToast(`${allRecords.length} 件のNotionデータを読み込みました`);
-  } catch(err) {
-    console.error(err);
-    showToast(`読み込み失敗: ${err.message}`);
-  }
+  }catch(err){console.error(err);showToast(`読み込み失敗: ${err.message}`);}
 }
 
-// Events
-document.getElementById('fab-filter').addEventListener('click', openDrawer);
-document.getElementById('drawer-close').addEventListener('click', closeDrawer);
-document.getElementById('drawer-backdrop').addEventListener('click', closeDrawer);
-document.getElementById('sidebar-toggle').addEventListener('click', openSidebar);
-document.getElementById('sidebar-backdrop').addEventListener('click', closeSidebar);
-
-document.getElementById('artist-search-input').addEventListener('focus', e => renderArtistOptions(e.target.value||''));
-document.getElementById('artist-search-input').addEventListener('input', e => renderArtistOptions(e.target.value||''));
-
-document.getElementById('artist-options').addEventListener('click', e => {
-  const opt = e.target.closest('.artist-option');
-  if (opt) selectArtist(opt.dataset.value);
+document.getElementById('fab-filter').addEventListener('click',openDrawer);
+document.getElementById('topbar-filter-btn').addEventListener('click',openDrawer);
+document.getElementById('filter-status-pill').addEventListener('click',openDrawer);
+document.getElementById('drawer-close').addEventListener('click',closeDrawer);
+document.getElementById('drawer-backdrop').addEventListener('click',closeDrawer);
+document.getElementById('sidebar-toggle').addEventListener('click',openSidebar);
+document.getElementById('sidebar-backdrop').addEventListener('click',closeSidebar);
+document.getElementById('artist-search-input').addEventListener('focus',e=>renderArtistOptions(e.target.value||''));
+document.getElementById('artist-search-input').addEventListener('input',e=>renderArtistOptions(e.target.value||''));
+document.getElementById('artist-options').addEventListener('click',e=>{const o=e.target.closest('.artist-option');if(o)selectArtist(o.dataset.value);});
+document.addEventListener('click',e=>{const w=document.querySelector('.search-combobox');if(w&&!w.contains(e.target))document.getElementById('artist-options').classList.remove('show');});
+document.getElementById('period-filter-drawer').addEventListener('click',e=>{
+  const btn=e.target.closest('.filter-btn');if(!btn)return;
+  currentPeriod=btn.dataset.value;if(currentPeriod==='thisYear')selectedYear=new Date().getFullYear();
+  updatePeriodControls();renderDashboard();
 });
-
-document.addEventListener('click', e => {
-  const wrap = document.querySelector('.search-combobox');
-  if (wrap && !wrap.contains(e.target)) document.getElementById('artist-options').classList.remove('show');
+document.getElementById('year-select').addEventListener('change',e=>{
+  if(!e.target.value)return;selectedYear=Number(e.target.value);currentPeriod='year';
+  updatePeriodControls();renderDashboard();
 });
-
-document.getElementById('period-filter').addEventListener('click', e => {
-  const btn = e.target.closest('.period-btn');
-  if (!btn) return;
-  currentPeriod = btn.dataset.value;
-  if (currentPeriod==='thisYear') selectedYear = new Date().getFullYear();
-  updatePeriodControls();
-  renderDashboard();
+document.getElementById('format-filter').addEventListener('click',e=>{
+  const btn=e.target.closest('.filter-btn');if(!btn)return;
+  document.querySelectorAll('#format-filter .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');currentFormat=btn.dataset.value;renderDashboard();
 });
-
-document.getElementById('year-select').addEventListener('change', e => {
-  if (!e.target.value) return;
-  selectedYear = Number(e.target.value);
-  currentPeriod = 'year';
-  updatePeriodControls();
-  renderDashboard();
-});
-
-document.getElementById('format-filter').addEventListener('click', e => {
-  const btn = e.target.closest('.filter-btn');
-  if (!btn) return;
-  document.querySelectorAll('#format-filter .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentFormat = btn.dataset.value;
-  renderDashboard();
-});
-
-document.getElementById('rating-filter').addEventListener('click', e => {
-  const btn = e.target.closest('.filter-btn');
-  if (!btn) return;
-  document.querySelectorAll('#rating-filter .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentRating = btn.dataset.value;
-  renderDashboard();
+document.getElementById('rating-filter').addEventListener('click',e=>{
+  const btn=e.target.closest('.filter-btn');if(!btn)return;
+  document.querySelectorAll('#rating-filter .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');currentRating=btn.dataset.value;renderDashboard();
 });
 
 loadFromApi();
