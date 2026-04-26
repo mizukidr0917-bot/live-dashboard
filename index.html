@@ -816,9 +816,15 @@ function renderThisMonth(){
   // Pending note
   const pendingRow=document.getElementById('note-pending-row');
   const pendingText=document.getElementById('note-pending-text');
-  const pending=Math.max(0,lc-lrTotal);
-  if(pendingRow&&pendingText){
-    if(pending>0&&lc>0){pendingRow.style.display='flex';pendingText.textContent=`未Note化ライブ：${pending}件`;}
+  const pendingNoteCount = Math.max(0, lc - lrTotal);
+if (pendingRow && pendingText) {
+  if (pendingNoteCount > 0 && lc > 0) {
+    pendingRow.style.display = 'flex';
+    pendingText.textContent = `未Note化ライブ：${pendingNoteCount}件`;
+  } else {
+    pendingRow.style.display = 'none';
+  }
+}
     else{pendingRow.style.display='none';}
   }
 
