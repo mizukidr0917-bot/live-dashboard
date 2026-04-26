@@ -438,6 +438,11 @@ a:hover{text-decoration:underline}
   .kpi-value{font-size:34px}
   .today-bottom{grid-template-columns:1fr 1fr}
 }
+/* ① ライトモード：モバイル閉じた状態の影帯を完全消去 */
+@media(max-width:960px){
+  [data-theme="light"] .sidebar{box-shadow:none}
+  [data-theme="light"] .sidebar.open{box-shadow:4px 0 20px rgba(0,0,0,.12)}
+}
 @media(max-width:640px){
   body{padding-bottom:env(safe-area-inset-bottom,0px)}
   .main{padding:10px 12px calc(68px + env(safe-area-inset-bottom,12px))}
@@ -476,6 +481,39 @@ a:hover{text-decoration:underline}
 ═══════════════════════════════════════ */
 #page-artist{display:none}
 #page-artist.active{display:block}
+
+/* Artist list (initial view) */
+.ap-list-header{margin-bottom:16px}
+.ap-list-title{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
+.ap-list-sub{font-size:11px;color:var(--text-2)}
+.ap-list-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.ap-list-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+  padding:14px 16px;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s;
+  box-shadow:var(--shadow-card);display:flex;align-items:center;gap:12px;
+}
+.ap-list-card:hover{transform:translateY(-2px);border-color:rgba(124,110,247,.28);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+[data-theme="light"] .ap-list-card{background:#fff}
+.ap-list-rank{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;flex-shrink:0}
+.ap-list-rank.r1{background:var(--amber-soft);color:var(--amber)}
+.ap-list-rank.r2{background:rgba(156,163,175,.15);color:#9ca3af}
+.ap-list-rank.r3{background:rgba(200,160,104,.15);color:#c8a068}
+.ap-list-rank.rn{background:var(--bg-3);color:var(--text-3)}
+.ap-list-body{flex:1;min-width:0}
+.ap-list-name{font-size:13px;font-weight:700;color:var(--text);font-family:'Space Grotesk','Noto Sans JP',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.ap-list-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:10px;color:var(--text-3)}
+.ap-list-meta span{white-space:nowrap}
+.ap-list-arrow{font-size:12px;color:var(--text-3);flex-shrink:0}
+
+@media(max-width:640px){
+  .ap-list-grid{grid-template-columns:1fr}
+}
+
+/* Insight row */
+.ap-insight-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.ap-insight{background:rgba(124,110,247,.08);border:1px solid rgba(124,110,247,.16);border-radius:10px;padding:8px 12px;font-size:11px;color:var(--text-2)}
+.ap-insight strong{color:var(--accent-2);font-weight:700}
+[data-theme="light"] .ap-insight{background:rgba(109,92,224,.06);border-color:rgba(109,92,224,.14)}
 
 /* Artist header */
 .ap-header{
@@ -742,41 +780,61 @@ a:hover{text-decoration:underline}
 
       <!-- ══ ARTIST PAGE ══ -->
       <section id="page-artist">
-        <div class="info-bar" id="ap-condition-bar" style="display:none"></div>
 
-        <!-- Header -->
-        <div class="ap-header">
-          <button class="ap-back" id="ap-back-btn">← ダッシュボードへ</button>
-          <div class="ap-name" id="ap-name">—</div>
-          <div class="ap-tagline" id="ap-tagline"></div>
-          <div class="ap-stats-row" id="ap-stats-row"></div>
+        <!-- Artist list (default view) -->
+        <div id="ap-list-view">
+          <div class="ap-list-header">
+            <div class="ap-list-title">🎤 アーティスト</div>
+            <div class="ap-list-sub">ライブ回数順 TOP10 — 名前をクリックで詳細表示</div>
+          </div>
+          <div class="ap-list-grid" id="ap-list-grid"></div>
         </div>
 
-        <!-- Best live -->
-        <div class="sec-label">⭐ ベストライブ</div>
-        <div class="ap-best-card" id="ap-best-card">
-          <div class="ap-best-tag">BEST</div>
-          <div class="ap-best-name" id="ap-best-name">—</div>
-          <div class="ap-best-meta" id="ap-best-meta"></div>
-          <div class="ap-best-actions" id="ap-best-actions"></div>
+        <!-- Artist detail view -->
+        <div id="ap-detail-view" style="display:none">
+          <div class="info-bar" id="ap-condition-bar" style="display:none"></div>
+
+          <!-- Header -->
+          <div class="ap-header">
+            <button class="ap-back" id="ap-back-btn">← アーティスト一覧へ</button>
+            <div class="ap-name" id="ap-name">—</div>
+            <div class="ap-tagline" id="ap-tagline"></div>
+            <div class="ap-stats-row" id="ap-stats-row"></div>
+          </div>
+
+          <!-- Insight row -->
+          <div class="ap-insight-row" id="ap-insight-row"></div>
+
+          <!-- Best live -->
+          <div class="sec-label" style="margin-bottom:10px">⭐ ベストライブ</div>
+          <div class="ap-best-card" id="ap-best-card">
+            <div class="ap-best-tag">BEST</div>
+            <div class="ap-best-name" id="ap-best-name">—</div>
+            <div class="ap-best-meta" id="ap-best-meta"></div>
+            <div class="ap-best-actions" id="ap-best-actions"></div>
+          </div>
+
+          <!-- Chart (compact, collapsible) -->
+          <details style="margin-bottom:20px">
+            <summary style="cursor:pointer;font-size:11px;color:var(--text-2);padding:8px 0;user-select:none;list-style:none;display:flex;align-items:center;gap:6px">
+              <span>📊</span><span>ライブ推移グラフ</span><span style="margin-left:auto;font-size:10px;color:var(--text-3)">▼</span>
+            </summary>
+            <div class="ap-chart-card" style="margin-top:8px">
+              <div style="font-size:11px;color:var(--text-3);margin-bottom:8px" id="ap-chart-label">月別ライブ回数</div>
+              <div style="position:relative;height:140px"><canvas id="ap-chart"></canvas></div>
+              <div class="chart-comment" id="ap-chart-comment" style="display:none;margin-top:8px"></div>
+            </div>
+          </details>
+
+          <!-- History -->
+          <div class="sec-label" style="margin-bottom:10px">📅 ライブ履歴 <span class="sub" id="ap-history-count"></span></div>
+          <div class="ap-history-grid" id="ap-history-grid"></div>
+          <button class="ap-history-more hidden" id="ap-history-more">もっと見る</button>
+
+          <!-- Related notes -->
+          <div class="sec-label" style="margin-top:20px;margin-bottom:10px">📝 関連Note <span class="sub" id="ap-notes-count"></span></div>
+          <div class="ap-notes-grid" id="ap-notes-grid"></div>
         </div>
-
-        <!-- Chart -->
-        <div class="sec-label">📊 ライブ推移</div>
-        <div class="ap-chart-card">
-          <div style="font-size:11px;color:var(--text-3);margin-bottom:10px" id="ap-chart-label">月別ライブ回数</div>
-          <div style="position:relative;height:160px"><canvas id="ap-chart"></canvas></div>
-          <div class="chart-comment" id="ap-chart-comment" style="display:none;margin-top:8px"></div>
-        </div>
-
-        <!-- History -->
-        <div class="sec-label">📅 ライブ履歴 <span class="sub" id="ap-history-count"></span></div>
-        <div class="ap-history-grid" id="ap-history-grid"></div>
-        <button class="ap-history-more hidden" id="ap-history-more">もっと見る</button>
-
-        <!-- Related notes -->
-        <div class="sec-label" style="margin-top:20px">📝 関連Note <span class="sub" id="ap-notes-count"></span></div>
-        <div class="ap-notes-grid" id="ap-notes-grid"></div>
       </section>
     </div>
   </div>
@@ -1248,19 +1306,33 @@ function renderStar5List(records){
 var apChart=null;
 var currentArtistPage='';
 
-function openArtistPage(artistName){
-  currentArtistPage=artistName;
-  /* Nav highlight */
+function openArtistPageSection(){
   document.getElementById('nav-dashboard').classList.remove('active');
   document.getElementById('nav-artist').classList.add('active');
-  /* Show/hide sections */
   document.getElementById('page-dashboard').style.display='none';
   var ap=document.getElementById('page-artist');
-  ap.classList.add('active');
-  ap.style.display='block';
-  /* Close sidebar on mobile */
+  ap.classList.add('active');ap.style.display='block';
   closeSidebar();
+}
+
+/* Open artist list (no artist selected) */
+function openArtistListView(){
+  openArtistPageSection();
+  currentArtistPage='';
+  document.getElementById('ap-list-view').style.display='block';
+  document.getElementById('ap-detail-view').style.display='none';
+  renderArtistList();
+  window.scrollTo(0,0);
+}
+
+/* Open specific artist detail */
+function openArtistPage(artistName){
+  openArtistPageSection();
+  currentArtistPage=artistName;
+  document.getElementById('ap-list-view').style.display='none';
+  document.getElementById('ap-detail-view').style.display='block';
   renderArtistPage(artistName);
+  window.scrollTo(0,0);
 }
 
 function openDashboardPage(){
@@ -1272,47 +1344,106 @@ function openDashboardPage(){
   currentArtistPage='';
 }
 
+/* Render artist list — TOP10 ranking cards */
+function renderArtistList(){
+  var grid=document.getElementById('ap-list-grid');if(!grid)return;
+  /* Build artist map from ALL records */
+  var map={};
+  allRecords.forEach(function(r){r.artists.forEach(function(a){if(!map[a])map[a]=[];map[a].push(r);});});
+  var items=Object.entries(map).map(function(e){
+    var recs=e[1].sort(function(a,b){return a.date-b.date;});
+    var rated=recs.filter(function(r){return r.rating>0;});
+    var avg=rated.length?(rated.reduce(function(s,r){return s+r.rating;},0)/rated.length).toFixed(1):'—';
+    var first=recs[0];var last=recs[recs.length-1];
+    return{name:e[0],count:recs.length,avg:avg,first:first,last:last};
+  }).sort(function(a,b){return b.count-a.count;}).slice(0,10);
+  if(!items.length){grid.innerHTML='<div style="color:var(--text-3);font-size:12px;padding:20px 0">データがありません</div>';return;}
+  var fmt=function(d){return d?d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate():'—';};
+  grid.innerHTML=items.map(function(item,i){
+    var rankCls=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
+    return '<div class="ap-list-card" onclick="openArtistPage(\''+escAttr(item.name)+'\')">'+
+      '<div class="ap-list-rank '+rankCls+'">'+(i+1)+'</div>'+
+      '<div class="ap-list-body">'+
+        '<div class="ap-list-name">'+esc(item.name)+'</div>'+
+        '<div class="ap-list-meta">'+
+          '<span>🎤 '+item.count+'回</span>'+
+          '<span>★ '+item.avg+'</span>'+
+          '<span>初回 '+fmt(item.first?item.first.date:null)+'</span>'+
+          '<span>直近 '+fmt(item.last?item.last.date:null)+'</span>'+
+          (item.last&&item.last.venue?'<span>📍 '+esc(item.last.venue)+'</span>':'')+
+        '</div>'+
+      '</div>'+
+      '<div class="ap-list-arrow">›</div>'+
+    '</div>';
+  }).join('');
+}
+
+/* Render artist detail page */
 function renderArtistPage(artistName){
-  /* All records for this artist (no period filter for history) */
+  var fmt=function(d){return d?d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate():'—';};
+  /* All records for this artist (no period filter) */
   var recs=allRecords.filter(function(r){return r.artists.indexOf(artistName)>=0;}).sort(function(a,b){return b.date-a.date;});
   var rated=recs.filter(function(r){return r.rating>0;});
   var avg=rated.length?(rated.reduce(function(s,r){return s+r.rating;},0)/rated.length).toFixed(2):'—';
-  var s5=recs.filter(function(r){return r.rating===5;});
+  var s5Count=recs.filter(function(r){return r.rating===5;}).length;
   var first=recs.length?recs[recs.length-1]:null;
   var last=recs.length?recs[0]:null;
 
   setEl('ap-name',artistName);
 
-  /* Tagline */
-  var taglines=['気づいたら一番観ているアーティスト','毎回更新されるからやめられない','ライブのたびに新しい発見がある','この熱量、ずっと続けていたい'];
-  var ti=Math.abs(artistName.length)%taglines.length;
-  setEl('ap-tagline',taglines[ti]);
+  /* Tagline based on count */
+  var tagline='';
+  if(recs.length>=20)tagline='気づいたら一番観ているアーティスト';
+  else if(recs.length>=10)tagline='毎回更新されるからやめられない';
+  else if(recs.length>=5)tagline='ライブのたびに新しい発見がある';
+  else tagline='この熱量、ずっと続けていたい';
+  setEl('ap-tagline',tagline);
 
-  /* Stats */
-  var fmt=function(d){return d?d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate():'—';};
+  /* Stats row */
   var statsRow=document.getElementById('ap-stats-row');
   if(statsRow){
     var statsData=[
-      {val:recs.length+'回',label:'ライブ回数'},
+      {val:recs.length+'回',label:'総ライブ数'},
       {val:avg==='—'?'—':avg+'★',label:'平均評価'},
+      {val:s5Count+'回',label:'星5ライブ'},
       {val:first?fmt(first.date):'—',label:'初回'},
       {val:last?fmt(last.date):'—',label:'直近'},
-      {val:first?(first.venue||'—'):'—',label:'初会場'},
       {val:last?(last.venue||'—'):'—',label:'直近会場'}
     ];
     statsRow.innerHTML=statsData.map(function(s){return '<div class="ap-stat"><div class="ap-stat-val">'+esc(s.val)+'</div><div class="ap-stat-label">'+s.label+'</div></div>';}).join('');
   }
 
-  /* Best live */
-  var bestRec=null;
-  var maxRating=0;
-  recs.forEach(function(r){if(r.rating>maxRating||(r.rating===maxRating&&(!bestRec||r.date>bestRec.date))){maxRating=r.rating;bestRec=r;}});
-  var apBestName=document.getElementById('ap-best-name');
-  var apBestMeta=document.getElementById('ap-best-meta');
-  var apBestActions=document.getElementById('ap-best-actions');
-  if(bestRec&&apBestName){
-    apBestName.textContent=bestRec.liveName||'—';
-    if(apBestMeta)apBestMeta.textContent=fmt(bestRec.date)+(bestRec.venue?' 📍 '+bestRec.venue:'')+'　★'+bestRec.rating;
+  /* Insight row — 熱量を数値で伝える */
+  var insightRow=document.getElementById('ap-insight-row');
+  if(insightRow&&first&&last){
+    var insights=[];
+    /* 初めて観た日から何年 */
+    var nowY=new Date();
+    var yearsSince=((nowY-first.date)/(365.25*24*3600*1000));
+    if(yearsSince>=1)insights.push('初めて観た日から<strong>'+Math.floor(yearsSince)+'年</strong>');
+    /* 平均何ヶ月に1回 */
+    if(recs.length>=2){
+      var spanMs=last.date-first.date;
+      var avgMonths=(spanMs/(30.4*24*3600*1000)/Math.max(1,recs.length-1));
+      if(avgMonths<1)insights.push('平均<strong>月に'+Math.round(1/avgMonths)+'回</strong>のペース');
+      else insights.push('平均<strong>'+avgMonths.toFixed(1)+'ヶ月に1回</strong>のペース');
+    }
+    /* 最多の年 */
+    var yearMap={};recs.forEach(function(r){var y=r.date.getFullYear();yearMap[y]=(yearMap[y]||0)+1;});
+    var bestYear=Object.entries(yearMap).sort(function(a,b){return b[1]-a[1];})[0];
+    if(bestYear)insights.push('<strong>'+bestYear[0]+'年</strong>が最多（'+bestYear[1]+'本）');
+    /* 星5率 */
+    if(recs.length>0){var s5pct=Math.round(s5Count/recs.length*100);if(s5pct>0)insights.push('星5率 <strong>'+s5pct+'%</strong>');}
+    insightRow.innerHTML=insights.map(function(t){return '<div class="ap-insight">'+t+'</div>';}).join('');
+  }
+
+  /* Best live — max rating, tie → most recent */
+  var bestRec=null,maxRating=0;
+  recs.forEach(function(r){if(r.rating>maxRating||(r.rating===maxRating&&bestRec&&r.date>bestRec.date)){maxRating=r.rating;bestRec=r;}});
+  if(bestRec){
+    setEl('ap-best-name',bestRec.liveName||'—');
+    setEl('ap-best-meta',fmt(bestRec.date)+(bestRec.venue?' 📍 '+bestRec.venue:'')+'　★'+bestRec.rating);
+    var apBestActions=document.getElementById('ap-best-actions');
     if(apBestActions){
       var bLinks='';
       if(bestRec.setlistUrl)bLinks+='<a class="ap-link" href="'+escAttr(bestRec.setlistUrl)+'" target="_blank" rel="noopener">セットリスト</a>';
@@ -1322,79 +1453,49 @@ function renderArtistPage(artistName){
     }
   }
 
-  /* Chart — use current period for trend */
-  var chartRecs=recs.filter(function(r){
-    var now=new Date();
-    if(currentPeriod==='thisYear')return r.date.getFullYear()===now.getFullYear();
-    if(currentPeriod==='year')return r.date.getFullYear()===selectedYear;
-    if(currentPeriod==='last12'){var c=new Date(now.getFullYear(),now.getMonth()-11,1);return r.date>=c;}
-    return true;
-  });
-  var buckets=getMonthRange(chartRecs.length?chartRecs:recs);
-  var stats=buildMonthlyStats(chartRecs.length?chartRecs:recs,buckets);
-  var isAll=currentPeriod==='all';
+  /* Chart */
+  var chartRecs=recs.slice();/* use all records for artist chart */
+  var buckets=getMonthRange(chartRecs);
+  var stats=buildMonthlyStats(chartRecs,buckets);
+  var isAll=(currentPeriod==='all'||recs.length>36);
+  if(isAll){var yrs=[...new Set(recs.map(function(r){return r.date.getFullYear();}))].sort(function(a,b){return a-b;});buckets=yrs.map(function(y){return{y:y,m:null,key:''+y,label:''+y};});stats=buildMonthlyStats(recs,buckets);}
   setEl('ap-chart-label',(isAll?'年別':'月別')+'ライブ回数');
   var apCvs=document.getElementById('ap-chart');
   if(apCvs){
     if(apChart)apChart.destroy();
-    apChart=new Chart(apCvs.getContext('2d'),{
-      type:'bar',
-      data:{labels:stats.map(function(s){return s.label;}),datasets:[{label:'回数',data:stats.map(function(s){return s.count;}),backgroundColor:'rgba(124,110,247,.7)',borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#545c7e',font:{size:10},maxRotation:45}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#545c7e',font:{size:10},stepSize:1},beginAtZero:true}}}
-    });
+    var isDark=(document.documentElement.getAttribute('data-theme')||'dark')==='dark';
+    var tickColor=isDark?'#545c7e':'#9299b8';
+    apChart=new Chart(apCvs.getContext('2d'),{type:'bar',data:{labels:stats.map(function(s){return s.label;}),datasets:[{label:'回数',data:stats.map(function(s){return s.count;}),backgroundColor:'rgba(124,110,247,.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:tickColor,font:{size:10},maxRotation:45}},y:{grid:{color:isDark?'rgba(255,255,255,.04)':'rgba(0,0,0,.05)'},ticks:{color:tickColor,font:{size:10},stepSize:1},beginAtZero:true}}}});
   }
-  /* Chart comment */
   var apCmt=document.getElementById('ap-chart-comment');
-  if(apCmt&&recs.length>3){
-    var half=Math.floor(stats.length/2);
-    var firstHalf=stats.slice(0,half).reduce(function(s,x){return s+x.count;},0);
-    var secHalf=stats.slice(half).reduce(function(s,x){return s+x.count;},0);
-    if(secHalf>firstHalf*1.5&&secHalf>2){apCmt.textContent='📈 後半にライブが集中しています';apCmt.style.display='block';}
-    else if(firstHalf>secHalf*1.5&&firstHalf>2){apCmt.textContent='📉 前半にライブが多い傾向があります';apCmt.style.display='block';}
-    else{apCmt.style.display='none';}
-  }
+  if(apCmt&&recs.length>=4){var half=Math.floor(stats.length/2);var fh=stats.slice(0,half).reduce(function(s,x){return s+x.count;},0);var sh=stats.slice(half).reduce(function(s,x){return s+x.count;},0);if(sh>fh*1.5&&sh>2){apCmt.textContent='📈 後半にライブが集中しています';apCmt.style.display='block';}else if(fh>sh*1.5&&fh>2){apCmt.textContent='📉 前半にライブが多い傾向があります';apCmt.style.display='block';}else apCmt.style.display='none';}
 
   /* History */
   var HIST_LIMIT=8;
   var histEl=document.getElementById('ap-history-grid');
   var histMore=document.getElementById('ap-history-more');
-  var histCount=document.getElementById('ap-history-count');
-  if(histCount)histCount.textContent=recs.length+'件';
-  var renderHistCards=function(items){
-    return items.map(function(r){
-      var ds=fmt(r.date);
-      var ln=(notesByLiveId.get(r.id)||[])[0]||null;
-      var sl=r.setlistUrl?'<a class="ap-link" href="'+escAttr(r.setlistUrl)+'" target="_blank" rel="noopener">SL</a>':'';
-      var nl=ln?'<a class="ap-link" href="'+escAttr(ln.noteUrl)+'" target="_blank" rel="noopener">Note</a>':'';
-      return '<div class="ap-live-card"><div class="apl-date">'+ds+'</div><div class="apl-name">'+esc(r.liveName||'—')+'</div><div class="apl-venue">📍 '+esc(r.venue||'—')+'</div><div class="apl-meta"><span class="apl-format">'+esc(r.format||'—')+'</span><span class="apl-rating">'+( r.rating?'★'+r.rating:'—')+'</span></div><div class="apl-actions">'+sl+nl+'</div></div>';
-    }).join('');
+  if(document.getElementById('ap-history-count'))document.getElementById('ap-history-count').textContent=recs.length+'件';
+  var mkHistCard=function(r){
+    var ds=fmt(r.date);
+    var ln=(notesByLiveId.get(r.id)||[])[0]||null;
+    var sl=r.setlistUrl?'<a class="ap-link" href="'+escAttr(r.setlistUrl)+'" target="_blank" rel="noopener">SL</a>':'';
+    var nl=ln?'<a class="ap-link" href="'+escAttr(ln.noteUrl)+'" target="_blank" rel="noopener">Note</a>':'';
+    return '<div class="ap-live-card"><div class="apl-date">'+ds+'</div><div class="apl-name">'+esc(r.liveName||'—')+'</div><div class="apl-venue">📍 '+esc(r.venue||'—')+'</div><div class="apl-meta"><span class="apl-format">'+esc(r.format||'—')+'</span><span class="apl-rating">'+(r.rating?'★'+r.rating:'—')+'</span></div><div class="apl-actions">'+sl+nl+'</div></div>';
   };
   if(histEl){
-    histEl.innerHTML=renderHistCards(recs.slice(0,HIST_LIMIT));
+    histEl.innerHTML=recs.slice(0,HIST_LIMIT).map(mkHistCard).join('');
     if(histMore){
-      if(recs.length>HIST_LIMIT){
-        histMore.classList.remove('hidden');
-        histMore.textContent='もっと見る（あと'+(recs.length-HIST_LIMIT)+'件）';
-        histMore.onclick=function(){
-          histEl.innerHTML=renderHistCards(recs);
-          histMore.classList.add('hidden');
-        };
-      } else {
-        histMore.classList.add('hidden');
-      }
+      if(recs.length>HIST_LIMIT){histMore.classList.remove('hidden');histMore.textContent='もっと見る（あと'+(recs.length-HIST_LIMIT)+'件）';histMore.onclick=function(){histEl.innerHTML=recs.map(mkHistCard).join('');histMore.classList.add('hidden');};}
+      else histMore.classList.add('hidden');
     }
   }
 
   /* Related notes */
-  var artistNoteIds=new Set();
-  recs.forEach(function(r){
-    var ns=notesByLiveId.get(r.id)||[];
-    ns.forEach(function(n){artistNoteIds.add(n.id);});
-  });
-  var artistNotes=allNotes.filter(function(n){return artistNoteIds.has(n.id);}).sort(function(a,b){return(b.publishedDate?b.publishedDate.getTime():0)-(a.publishedDate?a.publishedDate.getTime():0);});
+  var noteIds=new Set();
+  recs.forEach(function(r){(notesByLiveId.get(r.id)||[]).forEach(function(n){noteIds.add(n.id);});});
+  var artistNotes=allNotes.filter(function(n){return noteIds.has(n.id);}).sort(function(a,b){return(b.publishedDate?b.publishedDate.getTime():0)-(a.publishedDate?a.publishedDate.getTime():0);});
+  if(document.getElementById('ap-notes-count'))document.getElementById('ap-notes-count').textContent=artistNotes.length+'件';
   var apNotesGrid=document.getElementById('ap-notes-grid');
-  var apNotesCount=document.getElementById('ap-notes-count');
-  if(apNotesCount)apNotesCount.textContent=artistNotes.length+'件';
   if(apNotesGrid){
     if(!artistNotes.length){apNotesGrid.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:10px 0">関連Noteはありません</div>';}
     else{
@@ -1402,9 +1503,8 @@ function renderArtistPage(artistName){
         var dt=n.publishedDate?n.publishedDate.getFullYear()+'/'+(n.publishedDate.getMonth()+1)+'/'+n.publishedDate.getDate():'';
         var cfg=getNTC(n.noteType);
         var chip=n.noteType?'<span class="nt-chip '+cfg.cls+'">'+cfg.icon+' '+esc(n.noteType)+'</span>':'';
-        var thumbHtml=n.thumbnailUrl?'<img src="'+escAttr(n.thumbnailUrl)+'" alt="" class="note-card-thumb" onerror="this.style.display=\'none\'">'
-          :'<div class="note-card-ph" style="background:'+cfg.ph+'">'+cfg.icon+'</div>';
-        return '<a class="note-card" href="'+escAttr(n.noteUrl)+'" target="_blank" rel="noopener">'+thumbHtml+'<div class="note-card-body"><div class="note-card-title">'+esc(n.noteTitle||'無題')+'</div><div class="note-card-date">'+dt+'</div><div class="note-card-footer">'+chip+'<span class="note-card-link">見る →</span></div></div></a>';
+        var thumb=n.thumbnailUrl?'<img src="'+escAttr(n.thumbnailUrl)+'" alt="" class="note-card-thumb" onerror="this.style.display=\'none\'">':'<div class="note-card-ph" style="background:'+cfg.ph+'">'+cfg.icon+'</div>';
+        return '<a class="note-card" href="'+escAttr(n.noteUrl)+'" target="_blank" rel="noopener">'+thumb+'<div class="note-card-body"><div class="note-card-title">'+esc(n.noteTitle||'無題')+'</div><div class="note-card-date">'+dt+'</div><div class="note-card-footer">'+chip+'<span class="note-card-link">見る →</span></div></div></a>';
       }).join('');
     }
   }
@@ -1428,8 +1528,11 @@ function renderDashboard(){
   try{renderVenueRanking(records);}catch(e){console.error('venue',e);}
   try{renderPeriodSummary(records);}catch(e){console.error('periodSummary',e);}
   try{renderStar5List(records);}catch(e){console.error('star5',e);}
-  /* If artist page is open, refresh it too */
+  /* If artist page is open, refresh it */
   if(currentArtistPage){try{renderArtistPage(currentArtistPage);}catch(e){console.error('artistPage',e);}}
+  else if(document.getElementById('page-artist')&&document.getElementById('page-artist').style.display==='block'){
+    try{renderArtistList();}catch(e){console.error('artistList',e);}
+  }
 }
 function showDashboard(){document.getElementById('no-data-screen').classList.add('hidden');document.getElementById('app-pages').classList.remove('hidden');}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
@@ -1558,12 +1661,15 @@ document.getElementById('rating-filter').addEventListener('click',function(e){
 initAnalysisToggle();
 /* Artist page nav */
 document.getElementById('nav-dashboard').addEventListener('click',function(){openDashboardPage();closeSidebar();});
-document.getElementById('nav-artist').addEventListener('click',function(){
-  /* Open artist list — show first artist or prompt */
-  if(allArtists.length>0){openArtistPage(allArtists[0]);}else{showToast('データを読み込んでください');}
-  closeSidebar();
+document.getElementById('nav-artist').addEventListener('click',function(){openArtistListView();});
+document.getElementById('ap-back-btn').addEventListener('click',function(){
+  /* From detail → go back to list */
+  document.getElementById('ap-list-view').style.display='block';
+  document.getElementById('ap-detail-view').style.display='none';
+  currentArtistPage='';
+  renderArtistList();
+  window.scrollTo(0,0);
 });
-document.getElementById('ap-back-btn').addEventListener('click',function(){openDashboardPage();});
 loadFromApi();
 </script>
 </body>
