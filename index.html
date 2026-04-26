@@ -3,1041 +3,1219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LIVE LOG Dashboard v4</title>
+<title>LIVE LOG Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg: #0b0e1a;
+  --bg-2: #111526;
+  --bg-3: #171c30;
+  --bg-card: #1a2035;
+  --bg-card-hover: #1f2640;
+  --border: rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.13);
+  --text: #f0f2ff;
+  --text-2: #8b93b8;
+  --text-3: #545c7e;
+  --accent: #7c6ef7;
+  --accent-2: #a78bfa;
+  --accent-glow: rgba(124,110,247,0.25);
+  --blue: #3b82f6;
+  --blue-soft: rgba(59,130,246,0.15);
+  --green: #34d399;
+  --green-soft: rgba(52,211,153,0.15);
+  --amber: #fbbf24;
+  --amber-soft: rgba(251,191,36,0.15);
+  --pink: #f472b6;
+  --pink-soft: rgba(244,114,182,0.15);
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --sidebar-w: 230px;
+  --font-display: 'Space Grotesk', 'Noto Sans JP', sans-serif;
+  --font-body: 'DM Sans', 'Noto Sans JP', sans-serif;
+}
 
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; min-height: 100vh; }
 
-  :root {
-    --bg: #f4f7fb;
-    --surface: #ffffff;
-    --surface-soft: #f8fbff;
-    --line: #e5e7eb;
-    --text: #111827;
-    --muted: #6b7280;
-    --muted-2: #9ca3af;
-    --blue: #2563eb;
-    --blue-600: #1d4ed8;
-    --blue-soft: #eaf1ff;
-    --green: #059669;
-    --amber: #d97706;
-    --red: #dc2626;
-    --radius: 12px;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.55;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
 
-  html, body { width: 100%; min-height: 100%; }
+.hidden { display: none !important; }
 
-  body {
-    font-family: 'Inter', 'Noto Sans JP', sans-serif;
-    background: #eef3fb;
-    color: var(--text);
-    font-size: 13px;
-    line-height: 1.5;
-  }
+/* ── Layout ── */
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0,1fr);
+  min-height: 100vh;
+}
 
-  .hidden { display: none !important; }
+/* ── Sidebar ── */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 22px 16px 20px;
+  z-index: 30;
+  overflow: hidden;
+}
 
-  .app-shell {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
-    background: #f6f8fc;
-  }
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  left: -60px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(124,110,247,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
 
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.logo-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), #5b6ef0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(124,110,247,0.35);
+}
+
+.logo-text { font-family: var(--font-display); font-size: 16px; font-weight: 700; letter-spacing: .04em; }
+.logo-text span { color: var(--accent-2); }
+.logo-sub { font-size: 9px; color: var(--text-3); letter-spacing: .1em; text-transform: uppercase; margin-top: 1px; }
+
+.sidebar-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+
+.sidebar-link {
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all .16s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+.sidebar-link.active { color: var(--accent-2); background: rgba(124,110,247,0.14); font-weight: 600; }
+.sidebar-link-icon { font-size: 14px; width: 18px; text-align: center; }
+
+.sidebar-quote {
+  background: rgba(124,110,247,0.08);
+  border: 1px solid rgba(124,110,247,0.2);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-top: 16px;
+}
+
+.sidebar-quote-text {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-2);
+  font-style: italic;
+}
+
+.sidebar-character {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.sidebar-char-caption {
+  text-align: center;
+  font-size: 10px;
+  color: var(--accent-2);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.sidebar-foot {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.sidebar-foot-row { display: flex; justify-content: space-between; align-items: center; }
+.sidebar-foot-val { color: var(--text-2); font-weight: 500; }
+
+/* ── Sidebar backdrop (mobile) ── */
+.sidebar-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  opacity: 0; visibility: hidden;
+  transition: opacity .2s;
+  z-index: 70;
+}
+.sidebar-backdrop.open { opacity: 1; visibility: visible; }
+
+/* ── Content ── */
+.content-area { min-width: 0; display: flex; flex-direction: column; }
+
+/* ── Topbar ── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(11,14,26,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 22px;
+}
+
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+
+.sidebar-toggle {
+  display: none;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card);
+  color: var(--text-2);
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 14px;
+  align-items: center; justify-content: center;
+}
+
+.topbar-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; letter-spacing: .04em; }
+.topbar-title span { color: var(--accent-2); }
+.topbar-sub { font-size: 10px; color: var(--text-3); }
+
+.period-controls { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+
+.period-btn {
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  border-radius: 99px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: var(--font-body);
+}
+
+.period-btn:hover { border-color: var(--accent); color: var(--accent-2); }
+.period-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 2px 10px rgba(124,110,247,0.35); }
+
+.year-select {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  background: var(--bg-card);
+  color: var(--text-2);
+  padding: 4px 8px;
+  font-family: var(--font-body);
+}
+
+/* ── Main ── */
+.main {
+  flex: 1;
+  max-width: 1500px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 22px 22px 40px;
+}
+
+/* ── No data ── */
+.no-data-screen {
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--bg-card);
+}
+.no-data-icon { font-size: 36px; margin-bottom: 12px; }
+.no-data-title { font-size: 18px; font-weight: 700; font-family: var(--font-display); }
+.no-data-sub { font-size: 12px; color: var(--text-2); margin-top: 6px; }
+
+/* ── Page header ── */
+.page-header { margin-bottom: 20px; }
+.page-title { font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: .03em; }
+.page-title span { color: var(--accent-2); }
+.page-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 5px; }
+.page-meta-text { font-size: 12px; color: var(--text-2); }
+.page-badge {
+  background: rgba(124,110,247,0.18);
+  color: var(--accent-2);
+  border: 1px solid rgba(124,110,247,0.3);
+  border-radius: 99px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ── Condition / Quality bars ── */
+.info-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.info-bar.warn { border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.07); color: #fcd34d; }
+.info-bar.good { border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.07); color: var(--green); }
+
+/* ── Highlight section ── */
+.highlight-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  flex-shrink: 0;
+}
+
+.section-note { font-size: 10px; color: var(--text-3); font-family: var(--font-body); font-weight: 400; }
+
+/* ── KPI Cards ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 16px;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.kpi-card.c-blue::after { background: linear-gradient(90deg, var(--blue), transparent); }
+.kpi-card.c-green::after { background: linear-gradient(90deg, var(--green), transparent); }
+.kpi-card.c-amber::after { background: linear-gradient(90deg, var(--amber), transparent); }
+.kpi-card.c-purple::after { background: linear-gradient(90deg, var(--accent), transparent); }
+
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.25); border-color: var(--border-strong); }
+
+.kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+
+.kpi-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.kpi-icon.ib { background: var(--blue-soft); }
+.kpi-icon.ig { background: var(--green-soft); }
+.kpi-icon.ia { background: var(--amber-soft); }
+.kpi-icon.ip { background: var(--accent-glow); }
+
+.kpi-delta {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 99px;
+}
+
+.kpi-delta.pos { background: rgba(52,211,153,0.15); color: var(--green); }
+.kpi-delta.zero { background: rgba(139,147,184,0.12); color: var(--text-3); }
+.kpi-delta.neg { background: rgba(244,114,182,0.12); color: var(--pink); }
+
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.01em;
+  margin-bottom: 4px;
+}
+
+.kpi-value .unit { font-size: 13px; font-weight: 500; color: var(--text-2); margin-left: 3px; }
+.kpi-label { font-size: 12px; color: var(--text-2); font-weight: 500; }
+.kpi-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+
+/* KPI comment card */
+.kpi-comment-card {
+  background: linear-gradient(135deg, rgba(124,110,247,0.12), rgba(91,110,240,0.08));
+  border: 1px solid rgba(124,110,247,0.2);
+  border-radius: var(--radius-lg);
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  transition: transform .16s ease;
+}
+
+.kpi-comment-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.kpi-comment-card:hover { transform: translateY(-2px); }
+
+.kpi-comment-head {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-2);
+  margin-bottom: 8px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.kpi-comment-body {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.kpi-comment-foot { font-size: 11px; color: var(--text-3); margin-top: 10px; }
+
+/* ── Summary row ── */
+.summary-row {
+  display: grid;
+  grid-template-columns: minmax(0,1.6fr) minmax(0,1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+  align-items: start;
+}
+
+/* ── Period summary ── */
+.period-summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.period-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.period-stat {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+
+.period-stat-icon { font-size: 14px; margin-bottom: 6px; }
+.period-stat-value { font-family: var(--font-display); font-size: 22px; font-weight: 700; line-height: 1; }
+.period-stat-label { font-size: 10px; color: var(--text-3); margin-top: 3px; }
+.period-stat-sub { font-size: 10px; color: var(--text-2); margin-top: 2px; }
+
+/* ── Recent Notes card ── */
+.notes-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.note-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+
+.note-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  border-radius: var(--radius);
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  transition: border-color .15s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.note-item:hover { border-color: rgba(124,110,247,0.3); }
+
+.note-thumb {
+  width: 56px; height: 56px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--bg-2);
+  flex-shrink: 0;
+}
+
+.note-thumb-placeholder {
+  width: 56px; height: 56px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, rgba(124,110,247,0.2), rgba(91,110,240,0.1));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.note-body { flex: 1; min-width: 0; }
+.note-date { font-size: 10px; color: var(--text-3); margin-bottom: 3px; }
+.note-title { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.note-meta { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+
+.note-chip {
+  background: rgba(124,110,247,0.15);
+  color: var(--accent-2);
+  border: 1px solid rgba(124,110,247,0.2);
+  border-radius: 99px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.note-link {
+  font-size: 10px;
+  color: var(--accent-2);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 2px;
+}
+
+.note-link:hover { text-decoration: underline; }
+
+/* ── Charts row ── */
+.charts-row {
+  display: grid;
+  grid-template-columns: minmax(0,2fr) minmax(0,1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.chart-scroll { overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
+.chart-wrap { position: relative; height: 210px; }
+.chart-inner-normal { width: 100%; min-width: 0; }
+.chart-inner-wide { width: 100%; min-width: 0; }
+
+/* ── Analysis row ── */
+.analysis-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.list-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ranking-item:last-child { border-bottom: none; }
+
+.ranking-num {
+  width: 20px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-3);
+  font-family: var(--font-display);
+  flex-shrink: 0;
+}
+
+.ranking-num.top1 { color: #fbbf24; }
+.ranking-num.top2 { color: #9ca3af; }
+.ranking-num.top3 { color: #b45309; }
+
+.ranking-bar-wrap { flex: 1; min-width: 0; }
+.ranking-name { font-size: 12px; color: var(--text); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ranking-bar-bg { height: 3px; border-radius: 99px; background: var(--bg-3); overflow: hidden; }
+.ranking-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.ranking-bar-fill.venue { background: linear-gradient(90deg, var(--blue), #60a5fa); }
+.ranking-value { font-size: 11px; color: var(--text-2); font-weight: 600; white-space: nowrap; }
+.ranking-sub { font-size: 10px; color: var(--text-3); margin-left: 3px; }
+
+/* ── Star5 section ── */
+.star5-section { margin-bottom: 30px; }
+
+.star5-scroll-wrap {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-top: 10px;
+  scroll-snap-type: x mandatory;
+}
+
+.star5-scroll-wrap::-webkit-scrollbar { height: 4px; }
+
+.star5-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  flex-shrink: 0;
+  width: 220px;
+  scroll-snap-align: start;
+  transition: transform .16s ease, border-color .16s ease;
+}
+
+.star5-card:hover { transform: translateY(-3px); border-color: rgba(124,110,247,0.35); }
+
+.star5-thumb {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #1a1f3a, #2a1f4a);
+  display: block;
+}
+
+.star5-thumb-placeholder {
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(135deg, #1a1f3a 0%, #2a1f4a 50%, #1f2a3a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.star5-body { padding: 10px; }
+.star5-date { font-size: 10px; color: var(--text-3); margin-bottom: 4px; }
+.star5-name { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
+.star5-artist { font-size: 11px; color: var(--text-2); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.star5-meta { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; }
+.star5-meta-row { font-size: 10px; color: var(--text-3); display: flex; align-items: center; gap: 4px; }
+
+.star5-rating { color: var(--amber); font-weight: 700; font-size: 12px; }
+
+.star5-actions { display: flex; gap: 6px; }
+
+.star5-link {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent-2);
+  text-decoration: none;
+  padding: 3px 7px;
+  border: 1px solid rgba(124,110,247,0.25);
+  border-radius: 99px;
+  transition: background .15s;
+}
+
+.star5-link:hover { background: rgba(124,110,247,0.12); text-decoration: none; }
+
+.star5-empty {
+  font-size: 13px;
+  color: var(--text-3);
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+/* ── Footer ── */
+.page-footer {
+  text-align: center;
+  padding: 24px 0 12px;
+  font-size: 12px;
+  color: var(--text-3);
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+
+.page-footer span { color: var(--accent-2); }
+
+/* ── Filter FAB ── */
+.fab-filter {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  border: none;
+  border-radius: 99px;
+  background: linear-gradient(135deg, var(--accent), #5b6ef0);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(124,110,247,0.4);
+  display: none;
+  z-index: 80;
+  font-family: var(--font-body);
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Filter Drawer ── */
+.filter-drawer-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  opacity: 0; visibility: hidden;
+  transition: opacity .2s;
+  z-index: 70;
+}
+
+.filter-drawer-backdrop.open { opacity: 1; visibility: visible; }
+
+.filter-drawer {
+  position: fixed;
+  right: 0; top: 0;
+  height: 100vh;
+  width: min(360px, 92vw);
+  background: var(--bg-2);
+  border-left: 1px solid var(--border-strong);
+  transform: translateX(100%);
+  transition: transform .24s ease;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-drawer.open { transform: translateX(0); }
+
+.drawer-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-title { font-size: 13px; font-weight: 700; font-family: var(--font-display); }
+
+.drawer-close {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  width: 28px; height: 28px;
+  background: var(--bg-card);
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.drawer-body { padding: 14px 16px; overflow: auto; flex: 1; }
+
+.filter-group { margin-bottom: 16px; }
+
+.filter-label {
+  font-size: 10px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.filter-btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.filter-btn {
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  border-radius: 99px;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: var(--font-body);
+}
+
+.filter-btn:hover { border-color: var(--accent); color: var(--accent-2); }
+
+.filter-btn.active {
+  background: rgba(124,110,247,0.18);
+  border-color: rgba(124,110,247,0.4);
+  color: var(--accent-2);
+  font-weight: 600;
+}
+
+/* ── Artist search ── */
+.search-combobox { position: relative; }
+
+.artist-search-input {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  padding: 8px 10px;
+  background: var(--bg-card);
+  color: var(--text);
+  font-family: var(--font-body);
+  outline: none;
+}
+
+.artist-search-input:focus { border-color: rgba(124,110,247,0.5); }
+
+.artist-options {
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(100% + 4px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+  max-height: 220px;
+  overflow: auto;
+  z-index: 10;
+  display: none;
+}
+
+.artist-options.show { display: block; }
+
+.artist-option {
+  padding: 8px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+.artist-option:last-child { border-bottom: none; }
+.artist-option:hover, .artist-option.active { background: rgba(124,110,247,0.12); color: var(--accent-2); }
+
+.artist-current { margin-top: 6px; font-size: 11px; color: var(--text-3); }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  bottom: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 9px 14px;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: .2s ease;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  white-space: nowrap;
+}
+
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Chips ── */
+.chip { display: inline-flex; align-items: center; border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 600; }
+.chip-format { background: var(--bg-3); color: var(--text-2); border: 1px solid var(--border); }
+.chip-rating-high { background: var(--green-soft); color: var(--green); }
+.chip-rating-mid { background: var(--amber-soft); color: var(--amber); }
+.chip-rating-low { background: var(--pink-soft); color: var(--pink); }
+
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+  .analysis-row { grid-template-columns: 1fr; }
+  .charts-row { grid-template-columns: 1fr; }
+  .summary-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 960px) {
+  .app-shell { grid-template-columns: 1fr; }
   .sidebar {
-    border-right: 1px solid #dfe7f5;
-    padding: 18px 14px;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    background: transparent;
-    z-index: 30;
-  }
-
-  .sidebar-head { margin-bottom: 10px; }
-
-  .sidebar-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 16px;
-    letter-spacing: .06em;
-    font-weight: 700;
-    color: #0f172a;
-  }
-
-  .sidebar-subtitle {
-    margin-top: 2px;
-    font-size: 10px;
-    color: var(--muted-2);
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
-
-  .sidebar-profile { display: none; }
-
-  .sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin-top: 10px;
-  }
-
-  .sidebar-link {
-    border: none;
-    background: transparent;
-    color: #4b5563;
-    border-radius: 8px;
-    text-align: left;
-    padding: 6px 8px;
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: color .15s ease, background .15s ease;
-  }
-
-  .sidebar-link:hover { color: var(--blue-600); }
-
-  .sidebar-link.active {
-    color: var(--blue-600);
-    background: #dbeafe;
-    font-weight: 600;
-  }
-
-  .sidebar-foot {
-    margin-top: 10px;
-    border-top: 1px solid var(--line);
-    padding-top: 8px;
-  }
-
-  .sidebar-foot-label {
-    font-size: 10px;
-    color: var(--muted-2);
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
-
-  .sidebar-foot-value { margin-top: 3px; font-size: 11px; color: var(--muted); }
-
-  .content-area { min-width: 0; }
-
-  .topbar {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: #ffffff;
-    border-bottom: 1px solid #e3e9f6;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 18px;
-  }
-
-  .topbar-left { display: flex; align-items: center; gap: 10px; }
-
-  .sidebar-toggle {
-    display: none;
-    border: 1px solid var(--line);
-    background: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  .topbar-brand {
-    font-family: 'Outfit', sans-serif;
-    color: var(--blue-600);
-    font-size: 15px;
-    letter-spacing: .06em;
-    font-weight: 700;
-  }
-
-  .topbar-caption { font-size: 10px; color: var(--muted-2); }
-
-  .period-controls { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-
-  .period-btn {
-    border: 1px solid #dbe3ef;
-    background: #fff;
-    border-radius: 999px;
-    padding: 2px 8px;
-    font-size: 10px;
-    font-weight: 600;
-    color: #475569;
-    cursor: pointer;
-  }
-
-  .period-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
-
-  .year-select {
-    border: 1px solid #dbe3ef;
-    border-radius: 8px;
-    font-size: 11px;
-    background: #fff;
-    color: #475569;
-    padding: 4px 8px;
-  }
-
-  .main {
-    max-width: 1460px;
-    margin: 0 auto;
-    padding: 20px 20px 28px;
-  }
-
-  .no-data-screen {
-    border: 1px dashed #cdd6e3;
-    border-radius: 14px;
-    text-align: center;
-    padding: 38px 12px;
-    background: var(--surface);
-  }
-
-  .no-data-icon { font-size: 28px; margin-bottom: 8px; }
-  .no-data-title { font-size: 16px; font-weight: 700; }
-  .no-data-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
-
-  .header {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
-
-  .header-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 26px;
-    letter-spacing: .05em;
-    font-weight: 700;
-  }
-
-  .header-title span { color: var(--blue); }
-
-  .header-subtitle {
-    margin-top: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .header-badge {
-    background: var(--blue-soft);
-    color: var(--blue-600);
-    border-radius: 999px;
-    padding: 2px 8px;
-    font-weight: 600;
-    font-size: 11px;
-  }
-
-  .condition-bar,
-  .quality-inline {
-    background: #ffffff;
-    border: 1px solid #dbe4f4;
-    border-radius: 14px;
-    box-shadow: var(--shadow);
-    padding: 6px 8px;
-    margin-bottom: 10px;
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .quality-inline.warn { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
-  .quality-inline.good { color: var(--green); }
-
-  .hero-panel {
-    background: linear-gradient(135deg, #f3f6ff, #eef9ff);
-    border: 1px solid #dde7fb;
-    border-radius: 18px;
-    padding: 14px;
-    margin-bottom: 16px;
-  }
-
-  .dashboard-hero {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
-    align-items: stretch;
-  }
-
-  .summary-grid { display: contents; }
-
-  .card,
-  .chart-card,
-  .mini-card,
-  .star5-card,
-  .recent-note-card,
-  .list-card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-  }
-
-  .card,
-  .chart-card { padding: 10px; }
-
-  .summary-grid .card {
-    height: 168px;
-    min-height: 168px;
-    padding: 16px;
-    border-radius: 18px;
-    border: 1px solid #dde6f5;
-    box-shadow: 0 10px 24px rgba(31, 72, 142, 0.08);
-    background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
-    transition: transform .16s ease, box-shadow .16s ease;
-  }
-
-  .summary-grid .card:hover,
-  .chart-card:hover,
-  .mini-card:hover,
-  .recent-note-card:hover,
-  .list-card:hover,
-  .star5-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12); }
-
-  .kpi-main {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 2px;
-  }
-
-  .summary-card-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 6px;
-    display: grid;
-    place-items: center;
-    font-size: 11px;
-  }
-
-  .icon-blue { background: #dbeafe; }
-  .icon-green { background: #dcfce7; }
-  .icon-amber { background: #ffedd5; }
-
-  .summary-card-value {
-    font-family: 'Outfit', sans-serif;
-    font-size: 46px;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -.01em;
-  }
-
-  .summary-card-value span {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-    margin-left: 4px;
-  }
-
-  .summary-card-label { font-size: 24px; color: var(--text); font-weight: 700; line-height: 1.25; }
-
-  .summary-card-sub {
-    border-top: 1px solid var(--line);
-    padding-top: 6px;
-    font-size: 14px;
-    color: #3b82f6;
-    font-weight: 700;
-  }
-
-  .recent-notes-panel {
-    height: 132px;
-    min-height: 132px;
-    padding: 10px;
-    border-radius: 18px;
-    border: 1px solid #dde6f5;
-    box-shadow: 0 10px 24px rgba(31, 72, 142, 0.08);
-    background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    overflow: hidden;
-  }
-
-  .section-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: #0f172a;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .section-title::before {
-    content: '';
-    width: 3px;
-    height: 14px;
-    border-radius: 4px;
-    background: linear-gradient(180deg, #60a5fa, #2563eb);
-  }
-
-  .section-note { font-size: 10px; color: var(--muted-2); }
-
-  .recent-note-list {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-    margin-top: 6px;
-  }
-
-  .recent-notes-panel .recent-note-list {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    margin-top: 0;
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding-right: 2px;
-  }
-
-
-  .note-summary-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1fr);
-    gap: 12px;
-    align-items: start;
-    margin-bottom: 16px;
-  }
-
-  #recent-notes-section { margin-bottom: 0 !important; }
-  .compact-summary .section-title { margin-bottom: 8px; }
-  .compact-summary .mini-card { padding: 10px; }
-  .compact-summary .mini-value { font-size: 36px; }
-  .compact-summary .mini-label { font-size: 12px; }
-
-.summary-subgrid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin-bottom: 0;
-  }
-
-  .mini-card { padding: 8px 10px; }
-  .mini-label { font-size: 10px; color: var(--muted); }
-  .mini-value { margin-top: 3px; font-size: 20px; font-weight: 700; font-family: 'Outfit', sans-serif; }
-  .mini-sub { margin-top: 3px; font-size: 10px; color: var(--muted-2); }
-
-  .charts-row {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-
-  .chart-scroll { overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
-  .chart-scroll::-webkit-scrollbar { height: 6px; }
-  .chart-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
-  .chart-wrap { position: relative; height: 220px; }
-  .chart-inner-normal { width: 100%; min-width: 0; }
-  .chart-inner-wide { width: 100%; min-width: 0; }
-
-  .analysis-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin-bottom: 22px;
-  }
-
-  .scroll-list { max-height: 320px; overflow: auto; padding-right: 2px; }
-  .scroll-list::-webkit-scrollbar { width: 6px; }
-  .scroll-list::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 999px; }  .ranking-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .ranking-item:last-child { border-bottom: none; }
-  .ranking-num { width: 20px; text-align: center; font-size: 12px; color: var(--muted-2); font-weight: 700; }
-  .ranking-num.top1 { color: #b45309; }
-  .ranking-num.top2 { color: #6b7280; }
-  .ranking-num.top3 { color: #92400e; }
-  .ranking-bar-wrap { flex: 1; min-width: 0; }
-  .ranking-name { font-size: 12px; margin-bottom: 3px; color: #1f2937; }
-  .ranking-bar-bg { height: 4px; border-radius: 4px; background: #e5e7eb; overflow: hidden; }
-  .ranking-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #60a5fa, #2563eb); }
-  .ranking-value { font-size: 11px; color: #334155; font-weight: 600; }
-
-  .star5-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 8px;
-  }
-
-  .star5-card { padding: 10px; }
-  .star5-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-  .star5-title { font-size: 12px; font-weight: 600; color: #111827; }
-  .star5-date { font-size: 10px; color: var(--muted-2); }
-  .star5-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
-
-  .note-type-chip {
-    border: 1px solid #dbeafe;
-    background: #eff6ff;
-    color: var(--blue-600);
-    padding: 1px 6px;
-    border-radius: 999px;
-    font-size: 10px;
-    font-weight: 600;
-  }
-
-  .recent-note-card { padding: 8px; }
-  .recent-note-thumb { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; background: #f1f5f9; }
-  .recent-note-date { font-size: 10px; color: var(--muted-2); }
-  .recent-note-title { margin-top: 3px; font-size: 12px; color: #1f2937; font-weight: 600; line-height: 1.4; }
-  .recent-note-meta { margin-top: 6px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-
-  .recent-notes-panel .recent-note-card {
-    border: none;
-    border-radius: 0;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 6px 2px;
-    background: transparent;
-  }
-
-  .recent-notes-panel .recent-note-card:last-child { border-bottom: none; }
-
-
-  .list-table-wrap {
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: #fff;
-    overflow: auto;
-    margin-bottom: 10px;
-  }
-
-  .list-table { width: 100%; border-collapse: collapse; min-width: 860px; }
-  .list-table th,
-  .list-table td {
-    font-size: 12px;
-    padding: 8px;
-    border-bottom: 1px solid var(--line);
-    text-align: left;
-    white-space: nowrap;
-  }
-
-  .list-table th {
-    background: #f8fafc;
-    color: #475569;
-    font-weight: 600;
-    position: sticky;
-    top: 0;
-  }
-
-  .list-cards { display: none; gap: 8px; }
-  .list-card { padding: 9px; }
-  .list-card-title { font-size: 12px; font-weight: 700; }
-  .list-card-meta { margin-top: 5px; font-size: 11px; color: var(--muted); }
-
-  a { color: var(--blue-600); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 999px;
-    padding: 2px 7px;
-    font-size: 10px;
-    font-weight: 600;
-  }
-
-  .chip-format { background: #f1f5f9; color: #334155; }
-  .chip-rating-high { background: #dcfce7; color: #166534; }
-  .chip-rating-mid { background: #fef3c7; color: #92400e; }
-  .chip-rating-low { background: #fee2e2; color: #991b1b; }
-
-  .fab-filter {
-    position: fixed;
-    right: 14px;
-    bottom: 14px;
-    border: none;
-    border-radius: 999px;
-    background: var(--blue);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 10px 14px;
-    cursor: pointer;
-    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.28);
-    display: none;
-    z-index: 80;
-  }
-
-  .filter-drawer-backdrop,
-  .sidebar-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.35);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity .2s ease;
-    z-index: 70;
-  }
-
-  .filter-drawer-backdrop.open,
-  .sidebar-backdrop.open { opacity: 1; visibility: visible; }
-
-  .filter-drawer {
-    position: fixed;
-    right: 0;
-    top: 0;
-    height: 100vh;
-    width: min(360px, 92vw);
-    background: #fff;
-    border-left: 1px solid var(--line);
-    transform: translateX(100%);
+    position: fixed; top: 0; left: 0;
+    width: min(250px, 80vw);
+    transform: translateX(-100%);
     transition: transform .24s ease;
-    z-index: 80;
-    display: flex;
-    flex-direction: column;
+    box-shadow: 8px 0 32px rgba(0,0,0,0.4);
+    z-index: 75;
   }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-toggle { display: flex; }
+  .fab-filter { display: inline-flex; }
+  .kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .period-stat-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
 
-  .filter-drawer.open { transform: translateX(0); }
-
-  .drawer-header {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .drawer-title { font-size: 13px; font-weight: 700; }
-
-  .drawer-close {
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    width: 28px;
-    height: 28px;
-    background: #fff;
-    cursor: pointer;
-  }
-
-  .drawer-body { padding: 10px 12px; overflow: auto; }
-
-  .filter-group { margin-bottom: 12px; }
-  .filter-label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 6px; }
-
-  .filter-btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
-
-  .filter-btn {
-    border: 1px solid #dbe3ef;
-    background: #fff;
-    border-radius: 999px;
-    padding: 4px 9px;
-    font-size: 11px;
-    color: #475569;
-    cursor: pointer;
-  }
-
-  .filter-btn.active {
-    background: #eaf1ff;
-    border-color: #bfdbfe;
-    color: var(--blue-600);
-    font-weight: 600;
-  }
-
-  .search-combobox { position: relative; }
-
-  .artist-search-input {
-    width: 100%;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    font-size: 12px;
-    padding: 7px 9px;
-  }
-
-  .artist-options {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(100% + 4px);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);
-    max-height: 220px;
-    overflow: auto;
-    z-index: 10;
-    display: none;
-  }
-
-  .artist-options.show { display: block; }
-
-  .artist-option {
-    padding: 7px 8px;
-    font-size: 12px;
-    cursor: pointer;
-    border-bottom: 1px solid #f1f5f9;
-  }
-
-  .artist-option:last-child { border-bottom: none; }
-  .artist-option:hover { background: #eff6ff; }
-
-  .artist-current { margin-top: 6px; font-size: 11px; color: var(--muted-2); }
-
-  .toast {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%) translateY(12px);
-    bottom: 12px;
-    background: #0f172a;
-    color: #fff;
-    border-radius: 10px;
-    padding: 8px 12px;
-    font-size: 11px;
-    opacity: 0;
-    pointer-events: none;
-    transition: .2s ease;
-    z-index: 100;
-  }
-
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  @media (max-width: 1200px) {
-    .summary-subgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .analysis-row { grid-template-columns: 1fr; }
-    .charts-row { grid-template-columns: 1fr; }
-  }
-
-  @media (max-width: 960px) {
-    .app-shell { grid-template-columns: 1fr; }
-
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: min(240px, 80vw);
-      transform: translateX(-100%);
-      transition: transform .24s ease;
-      background: #fff;
-      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.15);
-      z-index: 75;
-    }
-
-    .sidebar.open { transform: translateX(0); }
-    .sidebar-toggle { display: inline-grid; place-items: center; }
-    .fab-filter { display: inline-flex; align-items: center; justify-content: center; }
-
-    .dashboard-hero { grid-template-columns: 1fr; }
-    .dashboard-hero { grid-template-columns: 1fr; }
-    .summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
-    .summary-grid .card,
-    .recent-notes-panel { height: auto; min-height: 120px; }
-  }
-
-  @media (max-width: 640px) {
-    .main { padding: 8px; }
-    .topbar { padding: 8px; }
-    .header-title { font-size: 23px; }
-    .summary-card-value { font-size: 28px; }
-    .summary-subgrid { grid-template-columns: 1fr; }
-    .list-table-wrap { display: none; }
-    .list-cards { display: grid; }
-    .chart-inner-wide { width: 900px; min-width: 900px; }
-    .recent-note-list { grid-template-columns: 1fr; }
-  }
-
+@media (max-width: 640px) {
+  .main { padding: 12px; }
+  .topbar { padding: 10px 12px; }
+  .kpi-grid { grid-template-columns: 1fr; }
+  .chart-inner-wide { width: 900px; min-width: 900px; }
+  .star5-card { width: 180px; }
+}
 </style>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-head">
-        <div class="sidebar-title">LIVE LOG</div>
-        <div class="sidebar-subtitle">SaaS Analytics Dashboard</div>
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎵</div>
+      <div>
+        <div class="logo-text">LIVE <span>LOG</span></div>
+        <div class="logo-sub">Music Analytics</div>
       </div>
-      <div class="sidebar-profile">
-        <div class="sidebar-avatar">🎵</div>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <button class="sidebar-link active" data-page="dashboard">
+        <span class="sidebar-link-icon">🏠</span>ダッシュボード
+      </button>
+    </nav>
+
+    <div class="sidebar-quote">
+      <div class="sidebar-character">🎧</div>
+      <div class="sidebar-char-caption">今日も素敵なライブを！</div>
+      <div class="sidebar-quote-text" style="margin-top:8px;">
+        音楽の記録は<br>未来の自分への<br>最高のプレゼント。
+      </div>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sidebar-foot-row">
+        <span>データ更新日</span>
+        <span class="sidebar-foot-val" id="sidebar-updated">—</span>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+  <!-- Content -->
+  <div class="content-area">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="メニュー">☰</button>
         <div>
-          <div class="sidebar-profile-name">Live Records</div>
-          <div class="sidebar-profile-sub">Analytics Workspace</div>
+          <div class="topbar-title">LIVE <span>LOG</span></div>
+          <div class="topbar-sub">Music activity home</div>
         </div>
       </div>
-      <nav class="sidebar-nav" id="sidebar-nav">
-        <button class="sidebar-link active" data-page="dashboard">ダッシュボード</button>
-      </nav>
-      <div class="sidebar-foot">
-        <div class="sidebar-foot-label">Filter Ready</div>
-        <div class="sidebar-foot-value">Year / 12M / All</div>
+      <div class="period-controls" id="period-filter">
+        <button class="period-btn active" data-value="thisYear">今年</button>
+        <button class="period-btn" data-value="all">全期間</button>
+        <button class="period-btn" data-value="last12">直近12ヶ月</button>
+        <select id="year-select" class="year-select"><option value="">年選択</option></select>
       </div>
-    </aside>
-    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+    </div>
 
-    <div class="content-area">
-      <div class="topbar">
-        <div class="topbar-left">
-          <button class="sidebar-toggle" id="sidebar-toggle" aria-label="メニュー">☰</button>
-          <div>
-            <div class="topbar-brand">LIVE LOG</div>
-            <div class="topbar-caption">Music activity home</div>
+    <!-- Main -->
+    <div class="main">
+      <!-- No data -->
+      <div class="no-data-screen" id="no-data-screen">
+        <div class="no-data-icon">🎵</div>
+        <div class="no-data-title">LIVE LOGへようこそ</div>
+        <div class="no-data-sub">ライブ記録を読み込んで表示します</div>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="app-pages" class="hidden">
+        <section id="page-dashboard">
+
+          <!-- Header -->
+          <div class="page-header">
+            <div class="page-title">LIVE <span>LOG</span></div>
+            <div class="page-meta">
+              <span class="page-meta-text" id="header-period">対象期間：読み込み中</span>
+              <span class="page-badge" id="header-total">0 件</span>
+            </div>
           </div>
-        </div>
-        <div class="period-controls" id="period-filter">
-          <button class="period-btn active" data-value="thisYear">今年</button>
-          <button class="period-btn" data-value="all">全期間</button>
-          <button class="period-btn" data-value="last12">直近12ヶ月</button>
-          <select id="year-select" class="year-select">
-            <option value="">年選択</option>
-          </select>
-        </div>
-      </div>
 
-      <div class="main">
-        <div class="no-data-screen" id="no-data-screen">
-          <div class="no-data-icon">🎵</div>
-          <div class="no-data-title">ライブログへようこそ</div>
-          <div class="no-data-sub">ライブ記録を読み込んで表示します</div>
-        </div>
+          <!-- Info bars -->
+          <div class="info-bar" id="condition-bar">
+            <strong>表示条件</strong>　<span id="condition-text">全体</span>
+          </div>
+          <div id="quality-inline" class="info-bar">データ品質を確認中…</div>
 
-        <div id="app-pages" class="hidden">
-          <section id="page-dashboard" class="page-section">
-            <div class="header">
-              <div class="header-left">
-                <div class="header-title">LIVE <span>LOG</span></div>
-                <div class="header-subtitle">
-                  <span id="header-period">対象期間：読み込み中</span>
-                  <span class="header-badge" id="header-total">0 件</span>
+          <!-- KPI Highlight -->
+          <div class="highlight-header">
+            <div class="section-title">
+              今月のハイライト
+              <span id="highlight-month-label" class="section-note">（—月）</span>
+            </div>
+            <span class="section-note">※ 常に当月データを表示</span>
+          </div>
+
+          <div class="kpi-grid" style="margin-bottom:20px;">
+            <div class="kpi-card c-blue">
+              <div class="kpi-top">
+                <div class="kpi-icon ib">🎤</div>
+                <div class="kpi-delta zero" id="kpi-live-delta">—</div>
+              </div>
+              <div class="kpi-value" id="sc-total">—<span class="unit">本</span></div>
+              <div class="kpi-label">今月のライブ本数</div>
+              <div class="kpi-sub" id="sc-total-sub">—</div>
+            </div>
+
+            <div class="kpi-card c-green">
+              <div class="kpi-top">
+                <div class="kpi-icon ig">📝</div>
+                <div class="kpi-delta zero" id="kpi-note-delta">—</div>
+              </div>
+              <div class="kpi-value" id="sc-avg">—<span class="unit">件</span></div>
+              <div class="kpi-label">今月のNote記事</div>
+              <div class="kpi-sub" id="sc-avg-sub">—</div>
+            </div>
+
+            <div class="kpi-card c-amber">
+              <div class="kpi-top">
+                <div class="kpi-icon ia">⭐</div>
+                <div class="kpi-delta zero" id="kpi-star5-delta">—</div>
+              </div>
+              <div class="kpi-value" id="sc-star5">—<span class="unit">回</span></div>
+              <div class="kpi-label">今月の星5ライブ</div>
+              <div class="kpi-sub" id="sc-star5-sub">—</div>
+            </div>
+
+            <div class="kpi-comment-card">
+              <div class="kpi-comment-head">✍️ 今月の活動コメント</div>
+              <div class="kpi-comment-body" id="sc-comment">—</div>
+              <div class="kpi-comment-foot" id="sc-comment-sub">ライブの余韻をNoteへ</div>
+            </div>
+          </div>
+
+          <!-- Summary + Notes -->
+          <div class="summary-row">
+            <!-- Recent notes -->
+            <div class="notes-card" id="recent-notes-section">
+              <div class="section-title">📝 最近書いたNote <span class="section-note" style="margin-left:4px;">（選択期間）</span></div>
+              <div id="recent-note-list" class="note-list"></div>
+            </div>
+
+            <!-- Period summary -->
+            <div class="period-summary-card">
+              <div class="section-title">選択期間のサマリー</div>
+              <div class="period-stat-grid">
+                <div class="period-stat">
+                  <div class="period-stat-icon">🎵</div>
+                  <div class="period-stat-value" id="mini-this-year">—</div>
+                  <div class="period-stat-label">ライブ数</div>
+                  <div class="period-stat-sub" id="mini-this-year-sub">—</div>
+                </div>
+                <div class="period-stat">
+                  <div class="period-stat-icon">📝</div>
+                  <div class="period-stat-value" id="mini-note-this-year">—</div>
+                  <div class="period-stat-label">Note記事数</div>
+                  <div class="period-stat-sub" id="mini-note-this-year-sub">—</div>
+                </div>
+                <div class="period-stat">
+                  <div class="period-stat-icon">⭐</div>
+                  <div class="period-stat-value" id="mini-star5-rate">—</div>
+                  <div class="period-stat-label">星5ライブ数</div>
+                  <div class="period-stat-sub" id="mini-star5-rate-sub">—</div>
+                </div>
+                <div class="period-stat">
+                  <div class="period-stat-icon">📊</div>
+                  <div class="period-stat-value" id="mini-monthly-avg">—</div>
+                  <div class="period-stat-label">平均評価</div>
+                  <div class="period-stat-sub" id="mini-monthly-avg-sub">—</div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="condition-bar" id="condition-bar">
-              <strong>表示条件</strong><span id="condition-text">全体</span>
-            </div>
-
-            <div id="quality-inline" class="quality-inline">データ品質を確認中…</div>
-
-            <div class="hero-panel">
-              <div class="section-title">今月のハイライト</div>
-              <div class="dashboard-hero">
-              <div class="card summary-card kpi-main">
-                <div class="summary-card-icon icon-blue">🎤</div>
-                <div class="summary-card-value" id="sc-total">—<span>回</span></div>
-                <div class="summary-card-label">今月のライブ本数</div>
-                <div class="summary-card-sub" id="sc-total-sub">—</div>
-              </div>
-              <div class="card summary-card kpi-main">
-                <div class="summary-card-icon icon-green">📝</div>
-                <div class="summary-card-value" id="sc-avg">—<span>件</span></div>
-                <div class="summary-card-label">今月のNote記事</div>
-                <div class="summary-card-sub" id="sc-avg-sub">—</div>
-              </div>
-              <div class="card summary-card kpi-main">
-                <div class="summary-card-icon icon-amber">✨</div>
-                <div class="summary-card-value" id="sc-star5">—<span>回</span></div>
-                <div class="summary-card-label">今月の星5ライブ</div>
-                <div class="summary-card-sub" id="sc-star5-sub">—</div>
-              </div>
-              <div class="card summary-card kpi-main">
-                <div class="summary-card-icon icon-blue">🎵</div>
-                <div class="summary-card-value" id="sc-comment">—</div>
-                <div class="summary-card-label">今月の活動コメント</div>
-                <div class="summary-card-sub" id="sc-comment-sub">—</div>
-              </div>
-              </div>
-            </div>
-
-            <div class="note-summary-row">
-            <div id="recent-notes-section" class="card" style="margin-bottom:16px;">
-              <div class="section-title" style="margin-bottom:10px;justify-content:space-between;">📝 最近書いたNote</div>
-              <div id="recent-note-list" class="recent-note-list"></div>
-            </div>
-
-            <div class="card compact-summary">
-            <div class="section-title">選択期間のサマリー</div>
-            <div class="summary-subgrid">
-              <div class="mini-card">
-                <div class="mini-label">ライブ数</div>
-                <div class="mini-value" id="mini-this-year">—</div>
-                <div class="mini-sub" id="mini-this-year-sub">—</div>
-              </div>
-              <div class="mini-card">
-                <div class="mini-label">Note記事数</div>
-                <div class="mini-value" id="mini-note-this-year">—</div>
-                <div class="mini-sub" id="mini-note-this-year-sub">—</div>
-              </div>
-              <div class="mini-card">
-                <div class="mini-label">星5ライブ数</div>
-                <div class="mini-value" id="mini-star5-rate">—</div>
-                <div class="mini-sub" id="mini-star5-rate-sub">—</div>
-              </div>
-              <div class="mini-card">
-                <div class="mini-label">平均評価</div>
-                <div class="mini-value" id="mini-monthly-avg">—</div>
-                <div class="mini-sub" id="mini-monthly-avg-sub">—</div>
-              </div>
-            </div>
-            </div>
-            </div>
-
-            <div class="charts-row">
-              <div class="chart-card">
-                <div class="section-title"><span id="bar-chart-title">月別ライブ回数</span><span class="section-note" id="bar-chart-note">※形式別内訳</span></div>
-                <div class="chart-scroll" id="bar-chart-scroll">
-                  <div id="bar-chart-inner" class="chart-inner-normal">
-                    <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
-                  </div>
-                </div>
-              </div>
-              <div class="chart-card">
-                <div class="section-title"><span id="line-chart-title">月別平均評価</span></div>
-                <div class="chart-scroll" id="line-chart-scroll">
-                  <div id="line-chart-inner" class="chart-inner-normal">
-                    <div class="chart-wrap"><canvas id="line-chart"></canvas></div>
-                  </div>
+          <!-- Charts -->
+          <div class="charts-row">
+            <div class="chart-card">
+              <div class="section-title"><span id="bar-chart-title">月別ライブ回数</span><span class="section-note" id="bar-chart-note" style="margin-left:4px;">※形式別内訳</span></div>
+              <div class="chart-scroll" id="bar-chart-scroll">
+                <div id="bar-chart-inner" class="chart-inner-normal">
+                  <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
                 </div>
               </div>
             </div>
-
-            <div class="analysis-row">
-              <div class="card">
-                <div class="section-title" id="left-panel-title">アーティスト別回数</div>
-                <div class="scroll-list" id="left-panel-list"></div>
-              </div>
-              <div class="card">
-                <div class="section-title">会場ランキング</div>
-                <div class="scroll-list" id="venue-ranking"></div>
+            <div class="chart-card">
+              <div class="section-title"><span id="line-chart-title">月別平均評価</span></div>
+              <div class="chart-scroll" id="line-chart-scroll">
+                <div id="line-chart-inner" class="chart-inner-normal">
+                  <div class="chart-wrap"><canvas id="line-chart"></canvas></div>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div>
-              <div class="section-title" style="margin-bottom:16px;">⭐⭐⭐⭐⭐ 星5ライブ</div>
-              <div id="star5-list" class="star5-grid"></div>
+          <!-- Rankings -->
+          <div class="analysis-row">
+            <div class="list-card">
+              <div class="section-title" id="left-panel-title">アーティスト別回数 TOP5</div>
+              <div id="left-panel-list"></div>
             </div>
+            <div class="list-card">
+              <div class="section-title">会場ランキング TOP5</div>
+              <div id="venue-ranking"></div>
+            </div>
+          </div>
 
-          </section>
-        </div>
+          <!-- Star5 -->
+          <div class="star5-section">
+            <div class="section-title">⭐ 星5ライブ <span class="section-note" id="star5-count-label" style="margin-left:4px;"></span></div>
+            <div id="star5-list" class="star5-scroll-wrap"></div>
+          </div>
+
+          <!-- Footer -->
+          <div class="page-footer">
+            LIVE LOGは、あなたの音楽活動の記録と、未来の物語をつなぎます。<span>♥</span>
+          </div>
+
+        </section>
       </div>
     </div>
   </div>
+</div>
 
-  <button class="fab-filter" id="fab-filter" aria-label="フィルター">
-    <span>絞込</span>
-  </button>
+<!-- FAB -->
+<button class="fab-filter" id="fab-filter" aria-label="フィルター">🔍 絞込</button>
 
-  <div class="filter-drawer-backdrop" id="drawer-backdrop"></div>
-  <div class="filter-drawer" id="filter-drawer" aria-hidden="true">
-    <div class="drawer-header">
-      <div class="drawer-title">フィルター</div>
-      <button class="drawer-close" id="drawer-close" aria-label="閉じる">×</button>
+<!-- Filter Drawer -->
+<div class="filter-drawer-backdrop" id="drawer-backdrop"></div>
+<div class="filter-drawer" id="filter-drawer" aria-hidden="true">
+  <div class="drawer-header">
+    <div class="drawer-title">フィルター</div>
+    <button class="drawer-close" id="drawer-close" aria-label="閉じる">×</button>
+  </div>
+  <div class="drawer-body">
+    <div class="filter-group">
+      <span class="filter-label">アーティスト</span>
+      <div class="search-combobox">
+        <input type="text" id="artist-search-input" class="artist-search-input" placeholder="アーティスト名で検索">
+        <div class="artist-options" id="artist-options"></div>
+      </div>
+      <div class="artist-current" id="artist-current-label">現在：全アーティスト</div>
     </div>
-    <div class="drawer-body">
-      <div class="filter-group">
-        <span class="filter-label">アーティスト</span>
-        <div class="search-combobox">
-          <input type="text" id="artist-search-input" class="artist-search-input" placeholder="アーティスト名で検索">
-          <div class="artist-options" id="artist-options"></div>
-        </div>
-        <div class="artist-current" id="artist-current-label">現在：全アーティスト</div>
+    <div class="filter-group">
+      <span class="filter-label">形式</span>
+      <div class="filter-btn-group" id="format-filter">
+        <button class="filter-btn active" data-value="all">全形式</button>
+        <button class="filter-btn" data-value="ワンマン">ワンマン</button>
+        <button class="filter-btn" data-value="対バン">対バン</button>
+        <button class="filter-btn" data-value="フェス">フェス</button>
+        <button class="filter-btn" data-value="サーキット">サーキット</button>
       </div>
-
-      <div class="filter-group">
-        <span class="filter-label">形式</span>
-        <div class="filter-btn-group" id="format-filter">
-          <button class="filter-btn active" data-value="all">全形式</button>
-          <button class="filter-btn" data-value="ワンマン">ワンマン</button>
-          <button class="filter-btn" data-value="対バン">対バン</button>
-          <button class="filter-btn" data-value="フェス">フェス</button>
-          <button class="filter-btn" data-value="サーキット">サーキット</button>
-        </div>
-      </div>
-
-      <div class="filter-group">
-        <span class="filter-label">評価</span>
-        <div class="filter-btn-group" id="rating-filter">
-          <button class="filter-btn active" data-value="all">全評価</button>
-          <button class="filter-btn" data-value="star5">★5のみ</button>
-          <button class="filter-btn" data-value="high">★4以上</button>
-          <button class="filter-btn" data-value="low">★3以下</button>
-        </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">評価</span>
+      <div class="filter-btn-group" id="rating-filter">
+        <button class="filter-btn active" data-value="all">全評価</button>
+        <button class="filter-btn" data-value="star5">★5のみ</button>
+        <button class="filter-btn" data-value="high">★4以上</button>
+        <button class="filter-btn" data-value="low">★3以下</button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-let allRecords = [];
-let allNotes = [];
-let allArtists = [];
+let allRecords = [], allNotes = [], allArtists = [];
 let notesByLiveId = new Map();
-let barChart = null;
-let lineChart = null;
-
-let currentArtist = 'all';
-let currentPeriod = 'thisYear'; // thisYear | all | last12 | year
+let barChart = null, lineChart = null;
+let currentArtist = 'all', currentPeriod = 'thisYear';
 let selectedYear = new Date().getFullYear();
-let currentFormat = 'all';
-let currentRating = 'all';
+let currentFormat = 'all', currentRating = 'all';
 
 function normalizeApiRecords(apiRecords) {
-  return apiRecords
-    .map((r) => {
-      if (!r.date) return null;
-      const date = new Date(r.date);
-      if (Number.isNaN(date.getTime())) return null;
-      const artists = Array.isArray(r.artists) ? r.artists.filter(Boolean) : [];
-      return {
-        id: r.id || '',
-        liveName: r.liveName || '',
-        artistRaw: artists.join(', '),
-        artists,
-        setlistUrl: r.setlistUrl || '',
-        venue: r.venue || '',
-        format: r.format || '',
-        date,
-        rating: Number(r.rating || 0),
-        dateStr: r.date || ''
-      };
-    })
-    .filter(Boolean);
+  return apiRecords.map(r => {
+    if (!r.date) return null;
+    const date = new Date(r.date);
+    if (isNaN(date.getTime())) return null;
+    const artists = Array.isArray(r.artists) ? r.artists.filter(Boolean) : [];
+    return { id: r.id||'', liveName: r.liveName||'', artistRaw: artists.join(', '), artists, setlistUrl: r.setlistUrl||'', venue: r.venue||'', format: r.format||'', date, rating: Number(r.rating||0), dateStr: r.date||'' };
+  }).filter(Boolean);
 }
 
 function normalizeNoteRecords(apiNotes) {
-  return (Array.isArray(apiNotes) ? apiNotes : [])
-    .map((n) => {
-      const publishedDate = n.notePublishedDate ? new Date(n.notePublishedDate) : null;
-      return {
-        id: n.id || '',
-        noteTitle: n.noteTitle || '',
-        noteUrl: n.noteUrl || '',
-        noteType: n.noteType || '',
-        notePublishedDate: n.notePublishedDate || '',
-        relatedLivePageIds: Array.isArray(n.relatedLivePageIds) ? n.relatedLivePageIds.filter(Boolean) : [],
-        thumbnailUrl: n.thumbnailUrl || n.eyecatch || n.imageUrl || '',
-        publishedDate: (publishedDate && !Number.isNaN(publishedDate.getTime())) ? publishedDate : null
-      };
-    })
-    .filter((n) => n.noteUrl)
-    .sort((a, b) => {
-      const ad = a.publishedDate ? a.publishedDate.getTime() : 0;
-      const bd = b.publishedDate ? b.publishedDate.getTime() : 0;
-      return bd - ad;
-    });
+  return (Array.isArray(apiNotes) ? apiNotes : []).map(n => {
+    const pd = n.notePublishedDate ? new Date(n.notePublishedDate) : null;
+    return { id: n.id||'', noteTitle: n.noteTitle||'', noteUrl: n.noteUrl||'', noteType: n.noteType||'', notePublishedDate: n.notePublishedDate||'', relatedLivePageIds: Array.isArray(n.relatedLivePageIds)?n.relatedLivePageIds.filter(Boolean):[], thumbnailUrl: n.thumbnailUrl||n.eyecatch||n.imageUrl||'', publishedDate: (pd && !isNaN(pd.getTime())) ? pd : null };
+  }).filter(n => n.noteUrl).sort((a,b) => (b.publishedDate?.getTime()||0)-(a.publishedDate?.getTime()||0));
 }
 
 function buildNotesByLiveIdMap(notes) {
   const map = new Map();
-  notes.forEach((n) => {
-    n.relatedLivePageIds.forEach((liveId) => {
-      if (!map.has(liveId)) map.set(liveId, []);
-      map.get(liveId).push(n);
-    });
-  });
+  notes.forEach(n => n.relatedLivePageIds.forEach(liveId => {
+    if (!map.has(liveId)) map.set(liveId, []);
+    map.get(liveId).push(n);
+  }));
   map.forEach((items, key) => {
-    items.sort((a, b) => {
-      const ad = a.publishedDate ? a.publishedDate.getTime() : 0;
-      const bd = b.publishedDate ? b.publishedDate.getTime() : 0;
-      return bd - ad;
-    });
+    items.sort((a,b) => (b.publishedDate?.getTime()||0)-(a.publishedDate?.getTime()||0));
     map.set(key, items);
   });
   return map;
@@ -1045,38 +1223,32 @@ function buildNotesByLiveIdMap(notes) {
 
 function getPeriodFilteredRecords() {
   const now = new Date();
-  return allRecords.filter((r) => {
-    if (currentPeriod === 'thisYear') return r.date.getFullYear() === now.getFullYear();
-    if (currentPeriod === 'year') return r.date.getFullYear() === selectedYear;
-    if (currentPeriod === 'last12') {
-      const cutoff = new Date(now.getFullYear(), now.getMonth() - 11, 1);
-      return r.date >= cutoff;
-    }
+  return allRecords.filter(r => {
+    if (currentPeriod==='thisYear') return r.date.getFullYear()===now.getFullYear();
+    if (currentPeriod==='year') return r.date.getFullYear()===selectedYear;
+    if (currentPeriod==='last12') { const c=new Date(now.getFullYear(),now.getMonth()-11,1); return r.date>=c; }
     return true;
   });
 }
 
 function getFilteredRecords() {
-  return getPeriodFilteredRecords().filter((r) => {
-    if (currentArtist !== 'all' && !r.artists.includes(currentArtist)) return false;
-    if (currentFormat !== 'all' && r.format !== currentFormat) return false;
-    if (currentRating === 'star5' && r.rating !== 5) return false;
-    if (currentRating === 'high' && r.rating < 4) return false;
-    if (currentRating === 'low' && r.rating > 3) return false;
+  return getPeriodFilteredRecords().filter(r => {
+    if (currentArtist!=='all' && !r.artists.includes(currentArtist)) return false;
+    if (currentFormat!=='all' && r.format!==currentFormat) return false;
+    if (currentRating==='star5' && r.rating!==5) return false;
+    if (currentRating==='high' && r.rating<4) return false;
+    if (currentRating==='low' && r.rating>3) return false;
     return true;
   });
 }
 
 function getFilteredNotes() {
   const now = new Date();
-  return allNotes.filter((n) => {
+  return allNotes.filter(n => {
     if (!n.publishedDate) return false;
-    if (currentPeriod === 'thisYear') return n.publishedDate.getFullYear() === now.getFullYear();
-    if (currentPeriod === 'year') return n.publishedDate.getFullYear() === selectedYear;
-    if (currentPeriod === 'last12') {
-      const cutoff = new Date(now.getFullYear(), now.getMonth() - 11, 1);
-      return n.publishedDate >= cutoff;
-    }
+    if (currentPeriod==='thisYear') return n.publishedDate.getFullYear()===now.getFullYear();
+    if (currentPeriod==='year') return n.publishedDate.getFullYear()===selectedYear;
+    if (currentPeriod==='last12') { const c=new Date(now.getFullYear(),now.getMonth()-11,1); return n.publishedDate>=c; }
     return true;
   });
 }
@@ -1084,116 +1256,82 @@ function getFilteredNotes() {
 function getMonthRange(records) {
   const now = new Date();
   const buckets = [];
-  if (currentPeriod === 'thisYear' || currentPeriod === 'year') {
-    const y = currentPeriod === 'year' ? selectedYear : now.getFullYear();
-    for (let m = 0; m < 12; m++) buckets.push({ y, m, key: `${y}-${String(m + 1).padStart(2, '0')}`, label: `${m + 1}月` });
+  if (currentPeriod==='thisYear'||currentPeriod==='year') {
+    const y = currentPeriod==='year' ? selectedYear : now.getFullYear();
+    for (let m=0;m<12;m++) buckets.push({y,m,key:`${y}-${String(m+1).padStart(2,'0')}`,label:`${m+1}月`});
     return buckets;
   }
-  if (currentPeriod === 'last12') {
-    for (let i = 11; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      buckets.push({ y: d.getFullYear(), m: d.getMonth(), key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`, label: `${d.getMonth() + 1}月` });
-    }
+  if (currentPeriod==='last12') {
+    for (let i=11;i>=0;i--) { const d=new Date(now.getFullYear(),now.getMonth()-i,1); buckets.push({y:d.getFullYear(),m:d.getMonth(),key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,label:`${d.getMonth()+1}月`}); }
     return buckets;
   }
-  const years = [...new Set(records.map(r => r.date.getFullYear()))].sort((a, b) => a - b);
-  return years.map((y) => ({ y, m: null, key: `${y}`, label: `${y}` }));
+  const years = [...new Set(records.map(r=>r.date.getFullYear()))].sort((a,b)=>a-b);
+  return years.map(y=>({y,m:null,key:`${y}`,label:`${y}`}));
 }
 
 function buildMonthlyStats(records, buckets) {
-  const formatKeys = ['ワンマン', '対バン', 'フェス', 'サーキット'];
-  const monthMap = new Map();
-  buckets.forEach(({ key }) => {
-    monthMap.set(key, {
-      count: 0, ratingTotal: 0, ratingCount: 0, star5Count: 0,
-      formats: Object.fromEntries(formatKeys.map(f => [f, 0]))
-    });
-  });
-
+  const fmtKeys = ['ワンマン','対バン','フェス','サーキット'];
+  const mm = new Map();
+  buckets.forEach(({key}) => mm.set(key, {count:0,ratingTotal:0,ratingCount:0,star5Count:0,formats:Object.fromEntries(fmtKeys.map(f=>[f,0]))}));
   records.forEach(r => {
-    const key = currentPeriod === 'all'
-      ? `${r.date.getFullYear()}`
-      : `${r.date.getFullYear()}-${String(r.date.getMonth() + 1).padStart(2, '0')}`;
-    if (!monthMap.has(key)) return;
-    const row = monthMap.get(key);
-    row.count += 1;
-    if (r.rating > 0) {
-      row.ratingTotal += r.rating;
-      row.ratingCount += 1;
-    }
-    if (r.rating === 5) row.star5Count += 1;
-    if (row.formats[r.format] !== undefined) row.formats[r.format] += 1;
+    const key = currentPeriod==='all' ? `${r.date.getFullYear()}` : `${r.date.getFullYear()}-${String(r.date.getMonth()+1).padStart(2,'0')}`;
+    if (!mm.has(key)) return;
+    const row = mm.get(key);
+    row.count++;
+    if (r.rating>0) { row.ratingTotal+=r.rating; row.ratingCount++; }
+    if (r.rating===5) row.star5Count++;
+    if (row.formats[r.format]!==undefined) row.formats[r.format]++;
   });
-
-  return buckets.map(({ key, label }) => {
-    const row = monthMap.get(key);
-    return {
-      label,
-      count: row.count,
-      avgRating: row.ratingCount ? +(row.ratingTotal / row.ratingCount).toFixed(2) : null,
-      star5Count: row.star5Count,
-      formats: row.formats
-    };
+  return buckets.map(({key,label}) => {
+    const row = mm.get(key);
+    return {label,count:row.count,avgRating:row.ratingCount ? +(row.ratingTotal/row.ratingCount).toFixed(2):null,star5Count:row.star5Count,formats:row.formats};
   });
 }
 
 function getPeriodSummaryText(records) {
-  const dates = records.map(r => r.date).sort((a, b) => a - b);
+  const dates = records.map(r=>r.date).sort((a,b)=>a-b);
   if (!dates.length) return '対象期間：データなし';
-  const s = dates[0];
-  const e = dates[dates.length - 1];
-  const fmt = d => `${d.getFullYear()}年${d.getMonth() + 1}月`;
-  return `対象期間：${fmt(s)}〜${fmt(e)}`;
+  const fmt = d => `${d.getFullYear()}年${d.getMonth()+1}月`;
+  return `対象期間：${fmt(dates[0])}〜${fmt(dates[dates.length-1])}`;
 }
 
 function getConditionText() {
-  const periodName = currentPeriod === 'year' ? `${selectedYear}年` :
-    currentPeriod === 'thisYear' ? '今年' :
-      currentPeriod === 'last12' ? '直近12か月' : '全期間';
-  const parts = [currentArtist === 'all' ? '全アーティスト' : currentArtist, periodName];
-  if (currentFormat !== 'all') parts.push(currentFormat);
-  if (currentRating === 'star5') parts.push('★5のみ');
-  if (currentRating === 'high') parts.push('★4以上');
-  if (currentRating === 'low') parts.push('★3以下');
+  const periodName = currentPeriod==='year'?`${selectedYear}年`:currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12か月':'全期間';
+  const parts = [currentArtist==='all'?'全アーティスト':currentArtist, periodName];
+  if (currentFormat!=='all') parts.push(currentFormat);
+  if (currentRating==='star5') parts.push('★5のみ');
+  if (currentRating==='high') parts.push('★4以上');
+  if (currentRating==='low') parts.push('★3以下');
   return parts.join(' / ');
 }
 
 function getQualityMetrics() {
   const total = allRecords.length;
-  const missingRating = allRecords.filter(r => !r.rating).length;
-  const missingFormat = allRecords.filter(r => !r.format).length;
-  const missingVenue = allRecords.filter(r => !r.venue).length;
-  const uniqueKeyCount = new Set(allRecords.map(r => [r.liveName, r.dateStr, r.venue, r.format, r.artistRaw].join('|'))).size;
-  const duplicateLike = Math.max(total - uniqueKeyCount, 0);
-  return { total, missingRating, missingFormat, missingVenue, duplicateLike };
+  const missingRating = allRecords.filter(r=>!r.rating).length;
+  const missingFormat = allRecords.filter(r=>!r.format).length;
+  const missingVenue = allRecords.filter(r=>!r.venue).length;
+  const uniqueKeyCount = new Set(allRecords.map(r=>[r.liveName,r.dateStr,r.venue,r.format,r.artistRaw].join('|'))).size;
+  return {total, missingRating, missingFormat, missingVenue, duplicateLike: Math.max(total-uniqueKeyCount,0)};
 }
 
 function renderQualityInline() {
   const q = getQualityMetrics();
   const issues = [];
-  if (q.missingRating > 0) issues.push(`評価なし ${q.missingRating}件`);
-  if (q.missingFormat > 0) issues.push(`形式なし ${q.missingFormat}件`);
-  if (q.missingVenue > 0) issues.push(`会場なし ${q.missingVenue}件`);
-  if (q.duplicateLike > 0) issues.push(`重複候補 ${q.duplicateLike}件`);
+  if (q.missingRating>0) issues.push(`評価なし ${q.missingRating}件`);
+  if (q.missingFormat>0) issues.push(`形式なし ${q.missingFormat}件`);
+  if (q.missingVenue>0) issues.push(`会場なし ${q.missingVenue}件`);
+  if (q.duplicateLike>0) issues.push(`重複候補 ${q.duplicateLike}件`);
   const el = document.getElementById('quality-inline');
-  if (!issues.length) {
-    el.className = 'quality-inline good';
-    el.textContent = `データ品質：問題なし（全${q.total}件）`;
-  } else {
-    el.className = 'quality-inline warn';
-    el.textContent = `データ品質：${issues.join(' / ')}`;
-  }
+  if (!issues.length) { el.className='info-bar good'; el.textContent=`データ品質：問題なし（全${q.total}件）`; }
+  else { el.className='info-bar warn'; el.textContent=`データ品質：${issues.join(' / ')}`; }
 }
 
-function getAllCurrentFilterBaseRecords() {
-  return getPeriodFilteredRecords().filter(r => {
-    if (currentArtist !== 'all' && !r.artists.includes(currentArtist)) return false;
-    if (currentFormat !== 'all' && r.format !== currentFormat) return false;
-    if (currentRating === 'star5' && r.rating !== 5) return false;
-    if (currentRating === 'high' && r.rating < 4) return false;
-    if (currentRating === 'low' && r.rating > 3) return false;
-    return true;
-  });
+function getDeltaLabel(current, prev) {
+  if (prev === null || prev === undefined) return { text: '—', cls: 'zero' };
+  const diff = current - prev;
+  if (diff > 0) return { text: `先月比 +${diff}`, cls: 'pos' };
+  if (diff < 0) return { text: `先月比 ${diff}`, cls: 'neg' };
+  return { text: '先月比 ±0', cls: 'zero' };
 }
 
 function renderHeader(records) {
@@ -1204,31 +1342,55 @@ function renderHeader(records) {
 
 function renderSummary(records) {
   const now = new Date();
-  const monthBase = allRecords;
-  const monthNotesBase = allNotes.filter(n => n.publishedDate);
-  const monthLives = monthBase.filter(r => r.date.getFullYear() === now.getFullYear() && r.date.getMonth() === now.getMonth());
-  const monthNotes = monthNotesBase.filter(n => n.publishedDate.getFullYear() === now.getFullYear() && n.publishedDate.getMonth() === now.getMonth());
-  const monthStar5 = monthLives.filter(r => r.rating === 5).length;
+  const monthLives = allRecords.filter(r => r.date.getFullYear()===now.getFullYear() && r.date.getMonth()===now.getMonth());
+  const prevMonthLives = allRecords.filter(r => {
+    const prev = new Date(now.getFullYear(), now.getMonth()-1, 1);
+    return r.date.getFullYear()===prev.getFullYear() && r.date.getMonth()===prev.getMonth();
+  });
+  const monthNotesAll = allNotes.filter(n => n.publishedDate && n.publishedDate.getFullYear()===now.getFullYear() && n.publishedDate.getMonth()===now.getMonth());
+  const prevMonthNotes = allNotes.filter(n => {
+    if (!n.publishedDate) return false;
+    const prev = new Date(now.getFullYear(), now.getMonth()-1, 1);
+    return n.publishedDate.getFullYear()===prev.getFullYear() && n.publishedDate.getMonth()===prev.getMonth();
+  });
+  const monthStar5 = monthLives.filter(r=>r.rating===5).length;
+  const prevStar5 = prevMonthLives.filter(r=>r.rating===5).length;
 
-  document.getElementById('sc-total').innerHTML = `${monthLives.length}<span>回</span>`;
-  document.getElementById('sc-avg').innerHTML = `${monthNotes.length}<span>件</span>`;
-  document.getElementById('sc-star5').innerHTML = `${monthStar5}<span>回</span>`;
-  document.getElementById('sc-total-sub').textContent = `${now.getMonth() + 1}月のライブ本数`;
-  document.getElementById('sc-avg-sub').textContent = `${now.getMonth() + 1}月の公開Note`;
-  document.getElementById('sc-star5-sub').textContent = `${now.getMonth() + 1}月の星5ライブ`;
-  const commentText = monthLives.length + monthNotes.length === 0
-    ? '今月の記録はこれから。1本参加して1本書こう。'
-    : `今月はライブ${monthLives.length}本・Note${monthNotes.length}件。${monthStar5 > 0 ? '最高の体験を言葉に残せています。' : '次の感動をNoteに残しましょう。'}`;
+  // Update month label
+  document.getElementById('highlight-month-label').textContent = `（${now.getMonth()+1}月）`;
+
+  // KPI values
+  document.getElementById('sc-total').innerHTML = `${monthLives.length}<span class="unit">本</span>`;
+  document.getElementById('sc-avg').innerHTML = `${monthNotesAll.length}<span class="unit">件</span>`;
+  document.getElementById('sc-star5').innerHTML = `${monthStar5}<span class="unit">回</span>`;
+  document.getElementById('sc-total-sub').textContent = `${now.getMonth()+1}月のライブ本数`;
+  document.getElementById('sc-avg-sub').textContent = `${now.getMonth()+1}月の公開Note`;
+  document.getElementById('sc-star5-sub').textContent = `${now.getMonth()+1}月の星5ライブ`;
+
+  // Delta badges
+  const liveDelta = getDeltaLabel(monthLives.length, prevMonthLives.length);
+  const noteDelta = getDeltaLabel(monthNotesAll.length, prevMonthNotes.length);
+  const star5Delta = getDeltaLabel(monthStar5, prevStar5);
+  const setDelta = (id, d) => { const el=document.getElementById(id); el.textContent=d.text; el.className=`kpi-delta ${d.cls}`; };
+  setDelta('kpi-live-delta', liveDelta);
+  setDelta('kpi-note-delta', noteDelta);
+  setDelta('kpi-star5-delta', star5Delta);
+
+  // Comment
+  const commentText = monthLives.length + monthNotesAll.length === 0
+    ? '今月の記録はこれから。\n1本参加して1本書こう。'
+    : `今月はライブ${monthLives.length}本・Note${monthNotesAll.length}件。${monthStar5>0 ? '最高の体験を言葉に残せています。':'次の感動をNoteに残しましょう。'}`;
   document.getElementById('sc-comment').textContent = commentText;
-  document.getElementById('sc-comment-sub').textContent = 'ライブの余韻をNoteへ';
+
+  // Period summary
   const periodNotes = getFilteredNotes();
-  const periodStar5 = records.filter(r => r.rating === 5).length;
-  const periodAvgRating = records.length ? (records.reduce((s, r) => s + (r.rating || 0), 0) / records.length) : 0;
-  const periodLabel = currentPeriod === 'thisYear' ? '今年' : currentPeriod === 'all' ? '全期間' : currentPeriod === 'last12' ? '直近12ヶ月' : `${selectedYear}年`;
+  const periodStar5 = records.filter(r=>r.rating===5).length;
+  const periodAvg = records.length ? (records.reduce((s,r)=>s+(r.rating||0),0)/records.length).toFixed(2) : '—';
+  const periodLabel = currentPeriod==='thisYear'?'今年':currentPeriod==='all'?'全期間':currentPeriod==='last12'?'直近12ヶ月':`${selectedYear}年`;
 
   document.getElementById('mini-this-year').textContent = `${records.length}回`;
   document.getElementById('mini-this-year-sub').textContent = `${periodLabel}のライブ数`;
-  document.getElementById('mini-monthly-avg').textContent = `${periodAvgRating.toFixed(2)}★`;
+  document.getElementById('mini-monthly-avg').textContent = `${periodAvg}★`;
   document.getElementById('mini-monthly-avg-sub').textContent = `${periodLabel}の平均評価`;
   document.getElementById('mini-star5-rate').textContent = `${periodStar5}回`;
   document.getElementById('mini-star5-rate-sub').textContent = `${periodLabel}の星5ライブ数`;
@@ -1236,146 +1398,121 @@ function renderSummary(records) {
   document.getElementById('mini-note-this-year-sub').textContent = `${periodLabel}のNote記事数`;
 }
 
-function adjustChartWidth() {
-  document.getElementById('bar-chart-inner').className = 'chart-inner-normal';
-  document.getElementById('line-chart-inner').className = 'chart-inner-normal';
-  document.getElementById('bar-chart-scroll').scrollLeft = 0;
-  document.getElementById('line-chart-scroll').scrollLeft = 0;
-}
-
 function renderCharts(records) {
-  if (typeof Chart === 'undefined') {
-    console.error('Chart.js is not available');
-    return;
-  }
+  if (typeof Chart==='undefined') return;
   const barCanvas = document.getElementById('bar-chart');
   const lineCanvas = document.getElementById('line-chart');
-  if (!barCanvas || !lineCanvas) return;
+  if (!barCanvas||!lineCanvas) return;
 
-  adjustChartWidth();
   const buckets = getMonthRange(records);
   const stats = buildMonthlyStats(records, buckets);
+  const labels = stats.map(s=>s.label);
+  const avgRatings = stats.map(s=>s.avgRating);
+  const maxTick = labels.length>18 ? 2 : 1;
 
-  const barTitle = currentPeriod === 'all' ? '年別ライブ回数' : '月別ライブ回数';
-  const lineTitle = currentPeriod === 'all' ? '年別平均評価' : '月別平均評価';
-  document.getElementById('bar-chart-title').textContent = barTitle;
-  document.getElementById('line-chart-title').textContent = lineTitle;
-  const labels = stats.map(s => s.label);
-  const avgRatings = stats.map(s => s.avgRating);
-  const maxTick = labels.length > 18 ? 2 : 1;
+  document.getElementById('bar-chart-title').textContent = currentPeriod==='all' ? '年別ライブ回数' : '月別ライブ回数';
+  document.getElementById('line-chart-title').textContent = currentPeriod==='all' ? '年別平均評価' : '月別平均評価';
 
   if (barChart) barChart.destroy();
-  const barCtx = barCanvas.getContext('2d');
-  barChart = new Chart(barCtx, {
+  barChart = new Chart(barCanvas.getContext('2d'), {
     type: 'bar',
     data: {
       labels,
       datasets: [
-        { label: 'ワンマン', data: stats.map(s => s.formats['ワンマン']), backgroundColor: 'rgba(37,99,235,0.78)', stack: 'live' },
-        { label: '対バン', data: stats.map(s => s.formats['対バン']), backgroundColor: 'rgba(124,58,237,0.78)', stack: 'live' },
-        { label: 'フェス', data: stats.map(s => s.formats['フェス']), backgroundColor: 'rgba(217,119,6,0.78)', stack: 'live' },
-        { label: 'サーキット', data: stats.map(s => s.formats['サーキット']), backgroundColor: 'rgba(5,150,105,0.78)', stack: 'live' }
+        { label:'ワンマン', data:stats.map(s=>s.formats['ワンマン']), backgroundColor:'rgba(59,130,246,0.8)', stack:'live' },
+        { label:'対バン', data:stats.map(s=>s.formats['対バン']), backgroundColor:'rgba(124,110,247,0.8)', stack:'live' },
+        { label:'フェス', data:stats.map(s=>s.formats['フェス']), backgroundColor:'rgba(251,191,36,0.8)', stack:'live' },
+        { label:'サーキット', data:stats.map(s=>s.formats['サーキット']), backgroundColor:'rgba(52,211,153,0.8)', stack:'live' }
       ]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } } },
+      responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ position:'bottom', labels:{ color:'#8b93b8', boxWidth:12, usePointStyle:true, font:{size:11} } } },
       scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8', maxRotation: 45, callback: (val, i) => i % maxTick === 0 ? labels[i] : '' } },
-        y: { stacked: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 }, color: '#94a3b8', stepSize: 1 }, beginAtZero: true }
+        x:{ stacked:true, grid:{display:false}, ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:(v,i)=>i%maxTick===0?labels[i]:''} },
+        y:{ stacked:true, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#545c7e',font:{size:10},stepSize:1}, beginAtZero:true }
       }
     }
   });
 
   if (lineChart) lineChart.destroy();
-  const lineCtx = lineCanvas.getContext('2d');
-  lineChart = new Chart(lineCtx, {
-    type: 'line',
-    data: { labels, datasets: [{ label: '平均評価', data: avgRatings, borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.08)', pointBackgroundColor: '#059669', pointRadius: 3, pointHoverRadius: 5, fill: true, tension: 0.3, spanGaps: true }] },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8', maxRotation: 45, callback: (val, i) => i % maxTick === 0 ? labels[i] : '' } },
-        y: { grid: { color: '#f1f5f9' }, min: 1, max: 5, ticks: { font: { size: 10 }, color: '#94a3b8', stepSize: 1 } }
+  lineChart = new Chart(lineCanvas.getContext('2d'), {
+    type:'line',
+    data:{ labels, datasets:[{ label:'平均評価', data:avgRatings, borderColor:'#7c6ef7', backgroundColor:'rgba(124,110,247,0.08)', pointBackgroundColor:'#a78bfa', pointRadius:3, pointHoverRadius:5, fill:true, tension:0.3, spanGaps:true }] },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ grid:{display:false}, ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:(v,i)=>i%maxTick===0?labels[i]:''} },
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, min:1, max:5, ticks:{color:'#545c7e',font:{size:10},stepSize:1} }
       }
     }
   });
 }
 
-function renderRankingList(containerId, items, colorClass = '') {
+function renderRankingList(containerId, items, isVenue=false) {
   const el = document.getElementById(containerId);
   if (!el) return;
-  if (!items.length) {
-    el.innerHTML = '<div class="empty-msg">データなし</div>';
-    return;
-  }
+  if (!items.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:12px 0;">データなし</div>'; return; }
   const maxVal = items[0].value;
-  el.innerHTML = items.slice(0, 12).map((item, i) => {
-    const numCls = i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
-    const barW = maxVal > 0 ? (item.value / maxVal * 100).toFixed(1) : 0;
-    const display = item.display !== undefined ? item.display : `${item.value}`;
-    const subDisplay = item.subDisplay ? `<span class="ranking-sub">${item.subDisplay}</span>` : '';
+  el.innerHTML = items.slice(0,5).map((item,i) => {
+    const numCls = i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const barW = maxVal>0 ? (item.value/maxVal*100).toFixed(1) : 0;
     return `<div class="ranking-item">
       <div class="ranking-num ${numCls}">${i+1}</div>
-      <div class="ranking-bar-wrap">        <div class="ranking-name" title="${escapeHtmlAttr(item.name)}">${escapeHtml(item.name)}</div>
-        <div class="ranking-bar-bg"><div class="ranking-bar-fill ${colorClass}" style="width:${barW}%"></div></div>
+      <div class="ranking-bar-wrap">
+        <div class="ranking-name" title="${escAttr(item.name)}">${esc(item.name)}</div>
+        <div class="ranking-bar-bg"><div class="ranking-bar-fill${isVenue?' venue':''}" style="width:${barW}%"></div></div>
       </div>
-      <div class="ranking-value">${display}${subDisplay}</div>
+      <div class="ranking-value">${item.value}回<span class="ranking-sub">${item.subDisplay||''}</span></div>
     </div>`;
   }).join('');
 }
 
 function renderLeftPanel(records) {
   const map = {};
-  records.forEach(r => r.artists.forEach(a => { map[a] = (map[a] || 0) + 1; }));
-  const total = Object.values(map).reduce((sum, val) => sum + val, 0);
-  const items = Object.entries(map).map(([name, value]) => ({
-    name, value, display: `${value}回`, subDisplay: total ? `${((value / total) * 100).toFixed(1)}%` : ''
-  })).sort((a, b) => b.value - a.value);
-  renderRankingList('left-panel-list', items, '');
+  records.forEach(r => r.artists.forEach(a => { map[a] = (map[a]||0)+1; }));
+  const total = Object.values(map).reduce((s,v)=>s+v,0);
+  const items = Object.entries(map).map(([name,value]) => ({name,value,subDisplay:total?`${((value/total)*100).toFixed(1)}%`:''})).sort((a,b)=>b.value-a.value);
+  renderRankingList('left-panel-list', items, false);
 }
 
-
-function renderVenueRanking(records, containerId = 'venue-ranking') {
+function renderVenueRanking(records) {
   const map = {};
-  records.forEach(r => { if (r.venue) map[r.venue] = (map[r.venue] || 0) + 1; });
-  const total = Object.values(map).reduce((sum, val) => sum + val, 0);
-  const items = Object.entries(map).map(([name, value]) => ({
-    name, value, display: `${value}回`, subDisplay: total ? `${((value / total) * 100).toFixed(1)}%` : ''
-  })).sort((a, b) => b.value - a.value);
-  renderRankingList(containerId, items, 'purple');
+  records.forEach(r => { if (r.venue) map[r.venue]=(map[r.venue]||0)+1; });
+  const total = Object.values(map).reduce((s,v)=>s+v,0);
+  const items = Object.entries(map).map(([name,value]) => ({name,value,subDisplay:total?`${((value/total)*100).toFixed(1)}%`:''})).sort((a,b)=>b.value-a.value);
+  renderRankingList('venue-ranking', items, true);
 }
 
-function renderStar5ListTo(records, containerId) {
-  const star5 = records.filter(r => r.rating === 5).sort((a, b) => b.date - a.date);
-  const el = document.getElementById(containerId);
+function renderStar5List(records) {
+  const star5 = records.filter(r=>r.rating===5).sort((a,b)=>b.date-a.date);
+  const el = document.getElementById('star5-list');
+  const label = document.getElementById('star5-count-label');
+  if (label) label.textContent = `（${getConditionText().split(' / ')[1]||''}　${star5.length}件）`;
   if (!el) return;
-  if (!star5.length) {
-    el.innerHTML = '<div class="empty-msg">星5のライブはありません</div>';
-    return;
-  }
+  if (!star5.length) { el.innerHTML = '<div class="star5-empty">この条件の星5ライブはありません</div>'; return; }
   el.innerHTML = star5.map(r => {
     const d = r.date;
-    const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+    const dateStr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
     const artistDisplay = r.artists.join('・');
-    const linkedNotes = notesByLiveId.get(r.id) || [];
-    const primaryNote = linkedNotes[0] || null;
-    const setlistLinkHtml = r.setlistUrl ? `<a class="star5-link" href="${escapeHtmlAttr(r.setlistUrl)}" target="_blank" rel="noopener noreferrer">セットリストを見る ↗</a>` : '';
-    const noteLinkHtml = primaryNote ? `<a class="star5-link" href="${escapeHtmlAttr(primaryNote.noteUrl)}" target="_blank" rel="noopener noreferrer">Note記事を見る ↗</a>` : '';
-    const noteTypeHtml = primaryNote && primaryNote.noteType ? `<span class="note-type-chip">${escapeHtml(primaryNote.noteType)}</span>` : '';
+    const linkedNotes = notesByLiveId.get(r.id)||[];
+    const primaryNote = linkedNotes[0]||null;
+    const thumbHtml = `<div class="star5-thumb-placeholder">🎵</div>`;
+    const setlistLink = r.setlistUrl ? `<a class="star5-link" href="${escAttr(r.setlistUrl)}" target="_blank" rel="noopener">セットリスト</a>` : '';
+    const noteLink = primaryNote ? `<a class="star5-link" href="${escAttr(primaryNote.noteUrl)}" target="_blank" rel="noopener">Note記事</a>` : '';
     return `<div class="star5-card">
-      <div class="star5-date">${dateStr}</div>
-      <div class="star5-live-name">${escapeHtml(r.liveName)}</div>
-      <div class="star5-artist">${escapeHtml(artistDisplay || '—')}</div>
-      <div class="star5-meta">
-        <span class="meta-chip">📍 ${escapeHtml(r.venue || '—')}</span>
-        <span class="meta-chip">評価: ${r.rating ? `★${r.rating}` : '—'}</span>
-        ${noteTypeHtml}
+      ${thumbHtml}
+      <div class="star5-body">
+        <div class="star5-date">${dateStr}</div>
+        <div class="star5-name">${esc(r.liveName||'—')}</div>
+        <div class="star5-artist">${esc(artistDisplay||'—')}</div>
+        <div class="star5-meta">
+          <div class="star5-meta-row">📍 ${esc(r.venue||'—')}</div>
+          <div class="star5-meta-row"><span class="star5-rating">★${r.rating}</span></div>
+        </div>
+        <div class="star5-actions">${setlistLink}${noteLink}</div>
       </div>
-      <div class="star5-actions">${setlistLinkHtml}${noteLinkHtml}</div>
     </div>`;
   }).join('');
 }
@@ -1384,48 +1521,34 @@ function renderRecentNotes() {
   const section = document.getElementById('recent-notes-section');
   const list = document.getElementById('recent-note-list');
   const notes = getFilteredNotes();
-  if (!notes.length) {
-    section.classList.add('hidden');
-    list.innerHTML = '';
-    return;
-  }
-  section.classList.remove('hidden');
-  list.innerHTML = notes.slice(0, 6).map((n) => {
-    const dateText = `${n.publishedDate.getFullYear()}年${n.publishedDate.getMonth() + 1}月${n.publishedDate.getDate()}日`;
-    const typeChip = n.noteType ? `<span class="note-type-chip">${escapeHtml(n.noteType)}</span>` : '';
-    const thumbHtml = n.thumbnailUrl ? `<img src="${escapeHtmlAttr(n.thumbnailUrl)}" alt="thumbnail" class="recent-note-thumb">` : '';
-    return `<div class="recent-note-card">
+  if (!notes.length) { list.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:8px 0;">この期間のNote記事はありません</div>'; return; }
+  list.innerHTML = notes.slice(0,4).map(n => {
+    const dateText = `${n.publishedDate.getFullYear()}/${String(n.publishedDate.getMonth()+1).padStart(2,'0')}/${String(n.publishedDate.getDate()).padStart(2,'0')}`;
+    const typeChip = n.noteType ? `<span class="note-chip">${esc(n.noteType)}</span>` : '';
+    const thumbHtml = n.thumbnailUrl
+      ? `<img src="${escAttr(n.thumbnailUrl)}" alt="" class="note-thumb" onerror="this.style.display='none'">`
+      : `<div class="note-thumb-placeholder">📝</div>`;
+    return `<a class="note-item" href="${escAttr(n.noteUrl)}" target="_blank" rel="noopener">
       ${thumbHtml}
-      <div class="recent-note-title">${escapeHtml(n.noteTitle || '無題')}</div>
-      <div class="recent-note-date">${dateText}</div>
-      <div class="recent-note-meta">
-        ${typeChip}
-        <a class="star5-link" href="${escapeHtmlAttr(n.noteUrl)}" target="_blank" rel="noopener noreferrer">Note記事を見る ↗</a>
+      <div class="note-body">
+        <div class="note-date">${dateText}</div>
+        <div class="note-title">${esc(n.noteTitle||'無題')}</div>
+        <div class="note-meta">${typeChip}<span class="note-link">Note記事を見る →</span></div>
       </div>
-    </div>`;
+    </a>`;
   }).join('');
-}
-
-
-function safeRenderStep(name, fn) {
-  try {
-    fn();
-  } catch (err) {
-    console.error(`[render error] ${name}`, err);
-    showToast(`表示処理でエラー: ${name}`);
-  }
 }
 
 function renderDashboard() {
   const records = getFilteredRecords();
-  safeRenderStep('header', () => renderHeader(records));
-  safeRenderStep('quality', () => renderQualityInline());
-  safeRenderStep('summary', () => renderSummary(records));
-  safeRenderStep('charts', () => renderCharts(records));
-  safeRenderStep('recentNotes', () => renderRecentNotes());
-  safeRenderStep('artistRanking', () => renderLeftPanel(records));
-  safeRenderStep('venueRanking', () => renderVenueRanking(records));
-  safeRenderStep('star5', () => renderStar5ListTo(records, 'star5-list'));
+  try { renderHeader(records); } catch(e) { console.error('header',e); }
+  try { renderQualityInline(); } catch(e) { console.error('quality',e); }
+  try { renderSummary(records); } catch(e) { console.error('summary',e); }
+  try { renderCharts(records); } catch(e) { console.error('charts',e); }
+  try { renderRecentNotes(); } catch(e) { console.error('notes',e); }
+  try { renderLeftPanel(records); } catch(e) { console.error('artist',e); }
+  try { renderVenueRanking(records); } catch(e) { console.error('venue',e); }
+  try { renderStar5List(records); } catch(e) { console.error('star5',e); }
 }
 
 function showDashboard() {
@@ -1435,152 +1558,117 @@ function showDashboard() {
 
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
 function openDrawer() {
   document.getElementById('filter-drawer').classList.add('open');
   document.getElementById('drawer-backdrop').classList.add('open');
-  document.getElementById('filter-drawer').setAttribute('aria-hidden', 'false');
-  renderArtistOptions(document.getElementById('artist-search-input').value || '');
+  renderArtistOptions(document.getElementById('artist-search-input').value||'');
 }
 
 function closeDrawer() {
   document.getElementById('filter-drawer').classList.remove('open');
   document.getElementById('drawer-backdrop').classList.remove('open');
-  document.getElementById('filter-drawer').setAttribute('aria-hidden', 'true');
   document.getElementById('artist-options').classList.remove('open');
 }
 
-function openSidebar() {
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('sidebar-backdrop').classList.add('open');
-}
-
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebar-backdrop').classList.remove('open');
-}
-
+function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-backdrop').classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-backdrop').classList.remove('open'); }
 
 function renderArtistOptions(keyword) {
   const container = document.getElementById('artist-options');
   const q = keyword.trim().toLowerCase();
-  const filtered = ['all', ...allArtists.filter(a => a.toLowerCase().includes(q))];
-  container.innerHTML = filtered.map((name) => {
-    const display = name === 'all' ? '全アーティスト' : name;
-    const active = (name === currentArtist) ? ' active' : '';
-    return `<div class="artist-option${active}" data-value="${escapeHtmlAttr(name)}">${escapeHtml(display)}</div>`;
+  const filtered = ['all', ...allArtists.filter(a=>a.toLowerCase().includes(q))];
+  container.innerHTML = filtered.map(name => {
+    const display = name==='all'?'全アーティスト':name;
+    return `<div class="artist-option${name===currentArtist?' active':''}" data-value="${escAttr(name)}">${esc(display)}</div>`;
   }).join('');
-  container.classList.add('open');
+  container.classList.add('show');
 }
 
 function selectArtist(name) {
   currentArtist = name;
-  document.getElementById('artist-search-input').value = name === 'all' ? '' : name;
-  updateArtistCurrentLabel();
-  document.getElementById('artist-options').classList.remove('open');
+  document.getElementById('artist-search-input').value = name==='all'?'':name;
+  document.getElementById('artist-current-label').textContent = `現在：${name==='all'?'全アーティスト':name}`;
+  document.getElementById('artist-options').classList.remove('show');
   renderDashboard();
-}
-
-function updateArtistCurrentLabel() {
-  document.getElementById('artist-current-label').textContent = `現在：${currentArtist === 'all' ? '全アーティスト' : currentArtist}`;
 }
 
 function initYearOptions() {
   const nowYear = new Date().getFullYear();
   const yearSet = new Set([nowYear]);
-  allRecords.forEach((r) => yearSet.add(r.date.getFullYear()));
-  allNotes.forEach((n) => {
-    if (n.publishedDate) yearSet.add(n.publishedDate.getFullYear());
-  });
-  const years = [...yearSet].sort((a, b) => b - a);
-  const select = document.getElementById('year-select');
-  select.innerHTML = '<option value="">年選択</option>' + years.map((y) => `<option value="${y}">${y}</option>`).join('');
+  allRecords.forEach(r => yearSet.add(r.date.getFullYear()));
+  allNotes.forEach(n => { if (n.publishedDate) yearSet.add(n.publishedDate.getFullYear()); });
+  const years = [...yearSet].sort((a,b)=>b-a);
+  document.getElementById('year-select').innerHTML = '<option value="">年選択</option>' + years.map(y=>`<option value="${y}">${y}</option>`).join('');
 }
 
 function updatePeriodControls() {
-  document.querySelectorAll('#period-filter .period-btn').forEach((b) => {
-    b.classList.toggle('active', b.dataset.value === currentPeriod);
-  });
-  const select = document.getElementById('year-select');
-  select.value = currentPeriod === 'year' ? String(selectedYear) : '';
+  document.querySelectorAll('#period-filter .period-btn').forEach(b => b.classList.toggle('active', b.dataset.value===currentPeriod));
+  document.getElementById('year-select').value = currentPeriod==='year' ? String(selectedYear) : '';
 }
 
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function escapeHtmlAttr(s) {
-  return escapeHtml(s).replace(/'/g, '&#39;');
-}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s) { return esc(s).replace(/'/g,'&#39;'); }
 
 async function loadFromApi() {
   try {
     const [liveRes, noteRes] = await Promise.all([fetch('/api/live-log'), fetch('/api/note-log')]);
     const [liveData, noteData] = await Promise.all([liveRes.json(), noteRes.json()]);
-    if (!liveRes.ok) throw new Error(liveData.error || 'ライブAPIの取得に失敗しました');
-    if (!noteRes.ok) throw new Error(noteData.error || 'NOTE APIの取得に失敗しました');
-    allRecords = normalizeApiRecords(liveData).sort((a, b) => a.date - b.date);
+    if (!liveRes.ok) throw new Error(liveData.error||'ライブAPIの取得に失敗しました');
+    if (!noteRes.ok) throw new Error(noteData.error||'NOTE APIの取得に失敗しました');
+    allRecords = normalizeApiRecords(liveData).sort((a,b)=>a.date-b.date);
     allNotes = normalizeNoteRecords(noteData);
     notesByLiveId = buildNotesByLiveIdMap(allNotes);
-    allArtists = [...new Set(allRecords.flatMap(r => r.artists))].sort((a, b) => a.localeCompare(b, 'ja'));
-    if (!allRecords.length) {
-      showToast('Notionデータは取得できましたが、表示対象がありません');
-      return;
-    }
+    allArtists = [...new Set(allRecords.flatMap(r=>r.artists))].sort((a,b)=>a.localeCompare(b,'ja'));
+    if (!allRecords.length) { showToast('データは取得できましたが、表示対象がありません'); return; }
+    const now = new Date();
+    document.getElementById('sidebar-updated').textContent = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
     initYearOptions();
     updatePeriodControls();
     renderArtistOptions('');
-    updateArtistCurrentLabel();
+    document.getElementById('artist-options').classList.remove('show');
     showDashboard();
     renderDashboard();
     showToast(`${allRecords.length} 件のNotionデータを読み込みました`);
-  } catch (err) {
+  } catch(err) {
     console.error(err);
     showToast(`読み込み失敗: ${err.message}`);
   }
 }
 
+// Events
 document.getElementById('fab-filter').addEventListener('click', openDrawer);
 document.getElementById('drawer-close').addEventListener('click', closeDrawer);
 document.getElementById('drawer-backdrop').addEventListener('click', closeDrawer);
 document.getElementById('sidebar-toggle').addEventListener('click', openSidebar);
 document.getElementById('sidebar-backdrop').addEventListener('click', closeSidebar);
 
+document.getElementById('artist-search-input').addEventListener('focus', e => renderArtistOptions(e.target.value||''));
+document.getElementById('artist-search-input').addEventListener('input', e => renderArtistOptions(e.target.value||''));
 
-document.getElementById('artist-search-input').addEventListener('focus', (e) => renderArtistOptions(e.target.value || ''));
-document.getElementById('artist-search-input').addEventListener('input', (e) => renderArtistOptions(e.target.value || ''));
-
-document.getElementById('artist-options').addEventListener('click', (e) => {
-  const option = e.target.closest('.artist-option');
-  if (!option) return;
-  selectArtist(option.dataset.value);
+document.getElementById('artist-options').addEventListener('click', e => {
+  const opt = e.target.closest('.artist-option');
+  if (opt) selectArtist(opt.dataset.value);
 });
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', e => {
   const wrap = document.querySelector('.search-combobox');
-  if (wrap && !wrap.contains(e.target)) {
-    document.getElementById('artist-options').classList.remove('open');
-  }
+  if (wrap && !wrap.contains(e.target)) document.getElementById('artist-options').classList.remove('show');
 });
 
-document.getElementById('period-filter').addEventListener('click', (e) => {
+document.getElementById('period-filter').addEventListener('click', e => {
   const btn = e.target.closest('.period-btn');
   if (!btn) return;
   currentPeriod = btn.dataset.value;
-  if (currentPeriod === 'thisYear') selectedYear = new Date().getFullYear();
+  if (currentPeriod==='thisYear') selectedYear = new Date().getFullYear();
   updatePeriodControls();
   renderDashboard();
 });
 
-document.getElementById('year-select').addEventListener('change', (e) => {
+document.getElementById('year-select').addEventListener('change', e => {
   if (!e.target.value) return;
   selectedYear = Number(e.target.value);
   currentPeriod = 'year';
@@ -1606,9 +1694,7 @@ document.getElementById('rating-filter').addEventListener('click', e => {
   renderDashboard();
 });
 
-(function init() {
-  loadFromApi();
-})();
+loadFromApi();
 </script>
 </body>
 </html>
