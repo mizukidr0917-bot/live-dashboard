@@ -764,117 +764,120 @@ function getDelta(cur,prev){
 function renderThisMonth(){
   const now=new Date();
   const mo=allRecords.filter(r=>r.date.getFullYear()===now.getFullYear()&&r.date.getMonth()===now.getMonth());
-  const pm=allRecords.filter(r=>{const p=new Date(now.getFullYear(),now.getMonth()-1,1);return r.date.getFullYear()===p.getFullYear()&&r.date.getMonth()===p.getMonth();});
+  const pmRec=allRecords.filter(r=>{const p=new Date(now.getFullYear(),now.getMonth()-1,1);return r.date.getFullYear()===p.getFullYear()&&r.date.getMonth()===p.getMonth();});
   const mn=allNotes.filter(n=>n.publishedDate&&n.publishedDate.getFullYear()===now.getFullYear()&&n.publishedDate.getMonth()===now.getMonth());
-  const pn=allNotes.filter(n=>{if(!n.publishedDate)return false;const p=new Date(now.getFullYear(),now.getMonth()-1,1);return n.publishedDate.getFullYear()===p.getFullYear()&&n.publishedDate.getMonth()===p.getMonth();});
-  const star5=mo.filter(r=>r.rating===5).length;
-  const pstar5=pm.filter(r=>r.rating===5).length;
-  const lc=mo.length,nc=mn.length;
+  const pnNotes=allNotes.filter(n=>{if(!n.publishedDate)return false;const p=new Date(now.getFullYear(),now.getMonth()-1,1);return n.publishedDate.getFullYear()===p.getFullYear()&&n.publishedDate.getMonth()===p.getMonth();});
+  const star5Count=mo.filter(r=>r.rating===5).length;
+  const pstar5Count=pmRec.filter(r=>r.rating===5).length;
+  const liveCount=mo.length;
+  const noteCount=mn.length;
 
-  document.getElementById('this-month-label').textContent=`${now.getMonth()+1}月`;
-  document.getElementById('sc-total').innerHTML=`${lc}<span class="unit">本</span>`;
-  document.getElementById('sc-avg').innerHTML=`${nc}<span class="unit">件</span>`;
-  document.getElementById('sc-star5').innerHTML=`${star5}<span class="unit">回</span>`;
-  const setD=(id,d)=>{const el=document.getElementById(id);el.textContent=d.text;el.className=`kpi-delta ${d.cls}`;};
-  setD('kpi-live-delta',getDelta(lc,pm.length));
-  setD('kpi-note-delta',getDelta(nc,pn.length));
-  setD('kpi-star5-delta',getDelta(star5,pstar5));
+  document.getElementById('this-month-label').textContent=(now.getMonth()+1)+'月';
+  document.getElementById('sc-total').innerHTML=liveCount+'<span class="unit">本</span>';
+  document.getElementById('sc-avg').innerHTML=noteCount+'<span class="unit">件</span>';
+  document.getElementById('sc-star5').innerHTML=star5Count+'<span class="unit">回</span>';
 
-  const rate=lc>0?Math.round((nc/lc)*100):0;
-  const rateEl=document.getElementById('sc-note-rate');
-  if(lc>0){rateEl.innerHTML=`${rate}<span style="font-size:16px;font-weight:500;color:var(--text-2);margin-left:2px">%</span>`;}
-  else{rateEl.innerHTML=`<span style="font-size:18px;color:var(--text-3)">—</span>`;}
-  document.getElementById('sc-note-rate-sub').textContent=lc>0?`${nc}件 / ${lc}本`:'ライブ記録なし';
-  document.getElementById('note-rate-bar').style.width=(lc>0?rate:0)+'%';
+  var setD=function(id,d){var el=document.getElementById(id);if(el){el.textContent=d.text;el.className='kpi-delta '+d.cls;}};
+  setD('kpi-live-delta',getDelta(liveCount,pmRec.length));
+  setD('kpi-note-delta',getDelta(noteCount,pnNotes.length));
+  setD('kpi-star5-delta',getDelta(star5Count,pstar5Count));
 
-  document.getElementById('kpi-live-hint').textContent=lc===0?'':lc<=2?'じっくり味わう月':lc<=5?'いいペース！':'濃いライブ月間';
-  document.getElementById('kpi-note-hint').textContent=nc===0&&lc>0?`あと${lc}本書ける`:nc>0&&nc<lc?`あと${lc-nc}本残っています`:'';
-  document.getElementById('kpi-star5-hint').textContent=star5>0?'最高の体験あり':'';
-  document.getElementById('kpi-rate-hint').textContent=lc===0?'':rate===100?'全件Note済み ✓':rate>=50?'半分以上Note化済み':`あと${lc-nc}本でコンプリート`;
+  var rate=liveCount>0?Math.round((noteCount/liveCount)*100):0;
+  var rateEl=document.getElementById('sc-note-rate');
+  if(rateEl){
+    if(liveCount>0){rateEl.innerHTML=rate+'<span style="font-size:16px;font-weight:500;color:var(--text-2);margin-left:2px">%</span>';}
+    else{rateEl.innerHTML='<span style="font-size:18px;color:var(--text-3)">—</span>';}
+  }
+  var noteRateSubEl=document.getElementById('sc-note-rate-sub');
+  if(noteRateSubEl)noteRateSubEl.textContent=liveCount>0?(noteCount+'件 / '+liveCount+'本'):'ライブ記録なし';
+  var noteRateBarEl=document.getElementById('note-rate-bar');
+  if(noteRateBarEl)noteRateBarEl.style.width=(liveCount>0?rate:0)+'%';
 
-  // Note progress panel (today's month)
-  document.getElementById('note-rate-label').textContent=`今月 ${nc}/${lc}本`;
-  document.getElementById('note-rate-bar-panel').style.width=(lc>0?rate:0)+'%';
-  const pending=Math.max(0,lc-nc);
-  document.getElementById('note-rate-stat').textContent=pending>0?`未Note ${pending}本`:lc>0?'完了 ✓':'—';
+  var liveHintEl=document.getElementById('kpi-live-hint');
+  if(liveHintEl)liveHintEl.textContent=liveCount===0?'':liveCount<=2?'じっくり味わう月':liveCount<=5?'いいペース！':'濃いライブ月間';
+  var noteHintEl=document.getElementById('kpi-note-hint');
+  if(noteHintEl)noteHintEl.textContent=(noteCount===0&&liveCount>0)?('あと'+liveCount+'本書ける'):(noteCount>0&&noteCount<liveCount?('あと'+(liveCount-noteCount)+'本残っています'):'');
+  var star5HintEl=document.getElementById('kpi-star5-hint');
+  if(star5HintEl)star5HintEl.textContent=star5Count>0?'最高の体験あり':'';
+  var rateHintEl=document.getElementById('kpi-rate-hint');
+  if(rateHintEl)rateHintEl.textContent=liveCount===0?'':rate===100?'全件Note済み ✓':rate>=50?'半分以上Note化済み':('あと'+(liveCount-noteCount)+'本でコンプリート');
+
+  // Note progress panel (note-rate-row in analysis zone)
+  var nrlEl=document.getElementById('note-rate-label');
+  if(nrlEl)nrlEl.textContent='今月 '+noteCount+'/'+liveCount+'本';
+  var nrpEl=document.getElementById('note-rate-bar-panel');
+  if(nrpEl)nrpEl.style.width=(liveCount>0?rate:0)+'%';
+  var pendingNoteCount=Math.max(0,liveCount-noteCount);
+  var nrsEl=document.getElementById('note-rate-stat');
+  if(nrsEl)nrsEl.textContent=pendingNoteCount>0?('未Note '+pendingNoteCount+'本'):liveCount>0?'完了 ✓':'—';
 
   // Note progress card — live report rate
-  const liveReportNotes=mn.filter(n=>n.noteType==='ライブレポ');
-  const lrTotal=liveReportNotes.length;
-  const lrBadgeEl=document.getElementById('note-progress-badge');
-  if(lrBadgeEl)lrBadgeEl.textContent=`${nc}件`;
-  const lrValEl=document.getElementById('note-live-rate-val');
-  const lrStatEl=document.getElementById('note-live-rate-status');
-  if(lrValEl)lrValEl.textContent=lc>0?`${lrTotal} / ${lc}`:`${lrTotal} / 0`;
+  var liveReportNotes=mn.filter(function(n){return n.noteType==='ライブレポ';});
+  var lrTotal=liveReportNotes.length;
+  var lrBadgeEl=document.getElementById('note-progress-badge');
+  if(lrBadgeEl)lrBadgeEl.textContent=noteCount+'件';
+  var lrValEl=document.getElementById('note-live-rate-val');
+  var lrStatEl=document.getElementById('note-live-rate-status');
+  if(lrValEl)lrValEl.textContent=liveCount>0?(lrTotal+' / '+liveCount):(lrTotal+' / 0');
   if(lrStatEl){
-    if(lc===0){lrStatEl.textContent='';lrStatEl.className='nlr-status zero';}
-    else if(lrTotal>=lc){lrStatEl.textContent='完了 ✓';lrStatEl.className='nlr-status';}
+    if(liveCount===0){lrStatEl.textContent='';lrStatEl.className='nlr-status zero';}
+    else if(lrTotal>=liveCount){lrStatEl.textContent='完了 ✓';lrStatEl.className='nlr-status';}
     else if(lrTotal===0){lrStatEl.textContent='未作成';lrStatEl.className='nlr-status zero';}
-    else{lrStatEl.textContent=`あと${lc-lrTotal}本`;lrStatEl.className='nlr-status incomplete';}
+    else{lrStatEl.textContent='あと'+(liveCount-lrTotal)+'本';lrStatEl.className='nlr-status incomplete';}
   }
 
-  // Pending note
-  const pendingRow=document.getElementById('note-pending-row');
-  const pendingText=document.getElementById('note-pending-text');
-  const pendingNoteCount = Math.max(0, lc - lrTotal);
-if (pendingRow && pendingText) {
-  if (pendingNoteCount > 0 && lc > 0) {
-    pendingRow.style.display = 'flex';
-    pendingText.textContent = `未Note化ライブ：${pendingNoteCount}件`;
-  } else {
-    pendingRow.style.display = 'none';
-  }
-}
+  // Pending note (未Note化)
+  var pendingLR=Math.max(0,liveCount-lrTotal);
+  var pendingRow=document.getElementById('note-pending-row');
+  var pendingTextEl=document.getElementById('note-pending-text');
+  if(pendingRow&&pendingTextEl){
+    if(pendingLR>0&&liveCount>0){pendingRow.style.display='flex';pendingTextEl.textContent='未Note化ライブ：'+pendingLR+'件';}
     else{pendingRow.style.display='none';}
   }
 
   // Other note types (non-live-report)
-  const otherTypesEl=document.getElementById('note-other-types');
+  var otherTypesEl=document.getElementById('note-other-types');
   if(otherTypesEl){
-    const otherCounts={};
-    mn.forEach(n=>{if(n.noteType&&n.noteType!=='ライブレポ')otherCounts[n.noteType]=(otherCounts[n.noteType]||0)+1;});
-    const otherKeys=Object.keys(otherCounts);
+    var otherCounts={};
+    mn.forEach(function(n){if(n.noteType&&n.noteType!=='ライブレポ')otherCounts[n.noteType]=(otherCounts[n.noteType]||0)+1;});
+    var otherKeys=Object.keys(otherCounts);
     if(otherKeys.length){
-      otherTypesEl.innerHTML=otherKeys.map(t=>{const cfg=getNoteTypeCfg(t);return`<div class="note-other-row">${cfg.icon} ${esc(t)} <span class="note-other-count">+${otherCounts[t]}</span></div>`;}).join('');
+      otherTypesEl.innerHTML=otherKeys.map(function(t){var cfg=getNoteTypeCfg(t);return'<div class="note-other-row">'+cfg.icon+' '+esc(t)+' <span class="note-other-count">+'+otherCounts[t]+'</span></div>';}).join('');
     } else {
       otherTypesEl.innerHTML='';
     }
   }
 
-  // Note month stats and type breakdown
-  const totalEl=document.getElementById('note-month-total');
-  const bdEl=document.getElementById('note-type-breakdown');
-  if(totalEl)totalEl.textContent=`今月 ${nc}件`;
+  // Note type breakdown chips
+  var bdEl=document.getElementById('note-type-breakdown');
   if(bdEl){
-    const typeCounts={};
-    mn.forEach(n=>{const t=n.noteType||'';if(t)typeCounts[t]=(typeCounts[t]||0)+1;});
-    bdEl.innerHTML=Object.entries(typeCounts).map(([t,cnt])=>{
-      const cfg=getNoteTypeCfg(t);
-      return`<span class="note-type-chip ${cfg.cls}">${cfg.icon} ${esc(t)} ${cnt}</span>`;
-    }).join('');
+    var typeCounts={};
+    mn.forEach(function(n){var t=n.noteType||'';if(t)typeCounts[t]=(typeCounts[t]||0)+1;});
+    bdEl.innerHTML=Object.entries(typeCounts).map(function(e){var t=e[0];var cnt=e[1];var cfg=getNoteTypeCfg(t);return'<span class="note-type-chip '+cfg.cls+'">'+cfg.icon+' '+esc(t)+' '+cnt+'</span>';}).join('');
   }
 
   // Next action banner
-  const banner=document.getElementById('action-banner');
-  const iconEl=document.getElementById('action-icon');
-  const textEl=document.getElementById('action-text');
-  const subEl=document.getElementById('action-sub');
-  if(banner&&textEl){
-    let icon='💡',text='',sub='';
-    if(lc===0){
-      icon='🎵';text='今月はまだライブ記録がありません';sub='楽曲レポやアルバム感想から始めてもOK';
-    } else if(nc===0){
-      icon='✍️';text=`${lc}本のライブがNoteになっていません`;sub='1本書くだけで記録が残ります';
-    } else if(nc<lc){
-      icon='📝';text=`あと${lc-nc}本Noteを書こう`;sub=star5>0?'星5ライブから書くのがおすすめ':'最近のライブの感想から始めてみよう';
-    } else if(star5>0&&nc>=lc){
-      icon='⭐';text='今月の星5ライブをNoteに深掘りしよう';sub='満点体験は記録する価値があります';
-    } else if(lc<=1){
-      icon='🎧';text='楽曲レポやアルバム感想でNote継続できます';sub='ライブが少ない月でも継続がカウントされます';
+  var banner=document.getElementById('action-banner');
+  var iconEl=document.getElementById('action-icon');
+  var actionTextEl=document.getElementById('action-text');
+  var subEl=document.getElementById('action-sub');
+  if(banner&&actionTextEl){
+    var aIcon='💡';var aText='';var aSub='';
+    if(liveCount===0){
+      aIcon='🎵';aText='今月はまだライブ記録がありません';aSub='楽曲レポやアルバム感想から始めてもOK';
+    } else if(noteCount===0){
+      aIcon='✍️';aText=liveCount+'本のライブがNoteになっていません';aSub='1本書くだけで記録が残ります';
+    } else if(noteCount<liveCount){
+      aIcon='📝';aText='あと'+(liveCount-noteCount)+'本Noteを書こう';aSub=star5Count>0?'星5ライブから書くのがおすすめ':'最近のライブの感想から始めてみよう';
+    } else if(star5Count>0&&noteCount>=liveCount){
+      aIcon='⭐';aText='今月の星5ライブをNoteに深掘りしよう';aSub='満点体験は記録する価値があります';
+    } else if(liveCount<=1){
+      aIcon='🎧';aText='楽曲レポやアルバム感想でNote継続できます';aSub='ライブが少ない月でも継続がカウントされます';
     }
-    if(text){banner.style.display='flex';iconEl.textContent=icon;textEl.textContent=text;subEl.textContent=sub;}
+    if(aText){banner.style.display='flex';if(iconEl)iconEl.textContent=aIcon;actionTextEl.textContent=aText;if(subEl)subEl.textContent=aSub;}
     else{banner.style.display='none';}
   }
+}
 
 function renderCharts(records){
   if(typeof Chart==='undefined')return;
