@@ -252,7 +252,7 @@
 
   .dashboard-hero {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px;
     margin-bottom: 18px;
     align-items: stretch;
@@ -417,7 +417,7 @@
 
   .analysis-row {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     margin-bottom: 22px;
   }
@@ -466,6 +466,7 @@
   }
 
   .recent-note-card { padding: 8px; }
+  .recent-note-thumb { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 6px; background: #f1f5f9; }
   .recent-note-date { font-size: 10px; color: var(--muted-2); }
   .recent-note-title { margin-top: 3px; font-size: 12px; color: #1f2937; font-weight: 600; line-height: 1.4; }
   .recent-note-meta { margin-top: 6px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
@@ -480,7 +481,6 @@
 
   .recent-notes-panel .recent-note-card:last-child { border-bottom: none; }
 
-  #artist-rating-ranking .ranking-sub { display: none; }
 
   .list-table-wrap {
     border: 1px solid var(--line);
@@ -740,11 +740,6 @@
       </div>
       <nav class="sidebar-nav" id="sidebar-nav">
         <button class="sidebar-link active" data-page="dashboard">ダッシュボード</button>
-        <button class="sidebar-link" data-page="lives">ライブ一覧</button>
-        <button class="sidebar-link" data-page="artists">アーティスト</button>
-        <button class="sidebar-link" data-page="venues">会場</button>
-        <button class="sidebar-link" data-page="star5">星5ライブ</button>
-        <button class="sidebar-link" data-page="notes">Note記事一覧</button>
       </nav>
       <div class="sidebar-foot">
         <div class="sidebar-foot-label">Filter Ready</div>
@@ -759,7 +754,7 @@
           <button class="sidebar-toggle" id="sidebar-toggle" aria-label="メニュー">☰</button>
           <div>
             <div class="topbar-brand">LIVE LOG</div>
-            <div class="topbar-caption">SaaS style live analytics dashboard</div>
+            <div class="topbar-caption">Music activity home</div>
           </div>
         </div>
         <div class="period-controls" id="period-filter">
@@ -817,6 +812,17 @@
                 <div class="summary-card-label">今月の星5ライブ</div>
                 <div class="summary-card-sub" id="sc-star5-sub">—</div>
               </div>
+              <div class="card summary-card kpi-main">
+                <div class="summary-card-icon icon-blue">🎵</div>
+                <div class="summary-card-value" id="sc-comment">—</div>
+                <div class="summary-card-label">今月の活動コメント</div>
+                <div class="summary-card-sub" id="sc-comment-sub">—</div>
+              </div>
+            </div>
+
+            <div id="recent-notes-section" class="card" style="margin-bottom:16px;">
+              <div class="section-title" style="margin-bottom:10px;justify-content:space-between;">📝 最近書いたNote</div>
+              <div id="recent-note-list" class="recent-note-list"></div>
             </div>
 
             <div class="section-title">選択期間のサマリー</div>
@@ -827,7 +833,7 @@
                 <div class="mini-sub" id="mini-this-year-sub">—</div>
               </div>
               <div class="mini-card">
-                <div class="mini-label">今年のNote記事数</div>
+                <div class="mini-label">Note記事数</div>
                 <div class="mini-value" id="mini-note-this-year">—</div>
                 <div class="mini-sub" id="mini-note-this-year-sub">—</div>
               </div>
@@ -841,11 +847,6 @@
                 <div class="mini-value" id="mini-monthly-avg">—</div>
                 <div class="mini-sub" id="mini-monthly-avg-sub">—</div>
               </div>
-            </div>
-
-            <div id="recent-notes-section" class="card" style="margin-bottom:16px;">
-              <div class="section-title" style="margin-bottom:10px;justify-content:space-between;">📝 最近書いたNote</div>
-              <div id="recent-note-list" class="recent-note-list"></div>
             </div>
 
             <div class="charts-row">
@@ -873,52 +874,16 @@
                 <div class="scroll-list" id="left-panel-list"></div>
               </div>
               <div class="card">
-                <div class="section-title">アーティスト別平均評価<span class="section-note">※ワンマンのみ・3回以上</span></div>                <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;">平均評価はワンマンのみ集計</div>
-                <div class="scroll-list" id="artist-rating-ranking"></div>
-              </div>
-              <div class="card">
                 <div class="section-title">会場ランキング</div>
                 <div class="scroll-list" id="venue-ranking"></div>
               </div>
             </div>
 
             <div>
-              <div class="section-title" style="margin-bottom:16px;">⭐⭐⭐⭐⭐ 星5ライブ一覧</div>
+              <div class="section-title" style="margin-bottom:16px;">⭐⭐⭐⭐⭐ 星5ライブ</div>
               <div id="star5-list" class="star5-grid"></div>
             </div>
 
-          </section>
-
-          <section id="page-lives" class="page-section hidden">
-            <div class="section-title">ライブ一覧</div>
-            <div class="list-table-wrap">
-              <table class="list-table">
-                <thead>
-                  <tr><th>日付</th><th>ライブ名</th><th>アーティスト</th><th>会場</th><th>形式</th><th>評価</th><th>リンク</th></tr>
-                </thead>
-                <tbody id="lives-table-body"></tbody>
-              </table>
-            </div>
-            <div id="lives-card-list" class="list-cards"></div>
-          </section>
-
-          <section id="page-artists" class="page-section hidden">
-            <div class="section-title">アーティスト</div>
-            <div class="card"><div id="artists-page-list"></div></div>
-          </section>
-
-          <section id="page-venues" class="page-section hidden">
-            <div class="section-title">会場</div>
-            <div class="card"><div id="venues-page-list"></div></div>          </section>
-
-          <section id="page-star5" class="page-section hidden">
-            <div class="section-title">星5ライブ</div>
-            <div id="star5-page-list" class="star5-grid"></div>
-          </section>
-
-          <section id="page-notes" class="page-section hidden">
-            <div class="section-title">Note記事一覧</div>
-            <div id="notes-page-list" class="recent-note-list"></div>
           </section>
         </div>
       </div>
@@ -983,7 +948,6 @@ let currentPeriod = 'thisYear'; // thisYear | all | last12 | year
 let selectedYear = new Date().getFullYear();
 let currentFormat = 'all';
 let currentRating = 'all';
-let currentPage = 'dashboard';
 
 function normalizeApiRecords(apiRecords) {
   return apiRecords
@@ -1019,6 +983,7 @@ function normalizeNoteRecords(apiNotes) {
         noteType: n.noteType || '',
         notePublishedDate: n.notePublishedDate || '',
         relatedLivePageIds: Array.isArray(n.relatedLivePageIds) ? n.relatedLivePageIds.filter(Boolean) : [],
+        thumbnailUrl: n.thumbnailUrl || n.eyecatch || n.imageUrl || '',
         publishedDate: (publishedDate && !Number.isNaN(publishedDate.getTime())) ? publishedDate : null
       };
     })
@@ -1102,50 +1067,62 @@ function getMonthRange(records) {
     }
     return months;
   }
-  if (!records.length) {
-    const y = now.getFullYear();
-    for (let m = 0; m < 12; m++) months.push({ y, m });
-    return months;
-  }
+  if (!records.length) return months;
   const sorted = [...records].sort((a, b) => a.date - b.date);
-  let cursor = new Date(sorted[0].date.getFullYear(), sorted[0].date.getMonth(), 1);
-  const end = new Date(sorted[sorted.length - 1].date.getFullYear(), sorted[sorted.length - 1].date.getMonth(), 1);
-  while (cursor <= end) {
-    months.push({ y: cursor.getFullYear(), m: cursor.getMonth() });
-    cursor.setMonth(cursor.getMonth() + 1);
+  let y = sorted[0].date.getFullYear();
+  let m = sorted[0].date.getMonth();
+  const endY = sorted[sorted.length - 1].date.getFullYear();
+  const endM = sorted[sorted.length - 1].date.getMonth();
+  while (y < endY || (y === endY && m <= endM)) {
+    months.push({ y, m });
+    m++;
+    if (m > 11) { m = 0; y++; }
   }
   return months;
 }
 
 function buildMonthlyStats(records, months) {
+  const formatKeys = ['ワンマン', '対バン', 'フェス', 'サーキット'];
+  const monthMap = new Map();
+  months.forEach(({ y, m }) => {
+    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
+    monthMap.set(key, {
+      count: 0, ratingTotal: 0, ratingCount: 0, star5Count: 0,
+      formats: Object.fromEntries(formatKeys.map(f => [f, 0]))
+    });
+  });
+  records.forEach(r => {
+    const key = `${r.date.getFullYear()}-${String(r.date.getMonth() + 1).padStart(2, '0')}`;
+    if (!monthMap.has(key)) return;
+    const row = monthMap.get(key);
+    row.count += 1;
+    if (r.rating > 0) {
+      row.ratingTotal += r.rating;
+      row.ratingCount += 1;
+    }
+    if (r.rating === 5) row.star5Count += 1;
+    if (row.formats[r.format] !== undefined) row.formats[r.format] += 1;
+  });
   return months.map(({ y, m }) => {
-    const monthRecords = records.filter(r => r.date.getFullYear() === y && r.date.getMonth() === m);
-    const total = monthRecords.length;
-    const avgRating = total ? monthRecords.reduce((sum, r) => sum + (r.rating || 0), 0) / total : null;
-    const formats = { 'ワンマン': 0, '対バン': 0, 'フェス': 0, 'サーキット': 0 };
-    monthRecords.forEach(r => { if (formats[r.format] !== undefined) formats[r.format]++; });
+    const key = `${y}-${String(m + 1).padStart(2, '0')}`;
+    const row = monthMap.get(key);
     return {
-      y, m, total, avgRating,
-      formats,
-      label: `${String(m + 1).padStart(2, '0')}`
+      label: `${y}/${String(m + 1).padStart(2, '0')}`,
+      count: row.count,
+      avgRating: row.ratingCount ? +(row.ratingTotal / row.ratingCount).toFixed(2) : null,
+      star5Count: row.star5Count,
+      formats: row.formats
     };
   });
 }
 
 function getPeriodSummaryText(records) {
-  const periodName = currentPeriod === 'year'
-    ? `${selectedYear}年`
-    : currentPeriod === 'thisYear'
-      ? `${new Date().getFullYear()}年`
-      : currentPeriod === 'last12'
-        ? '直近12か月'
-        : '全期間';
   const dates = records.map(r => r.date).sort((a, b) => a - b);
   if (!dates.length) return '対象期間：データなし';
   const s = dates[0];
   const e = dates[dates.length - 1];
   const fmt = d => `${d.getFullYear()}年${d.getMonth() + 1}月`;
-  return `対象期間：${fmt(s)}〜${fmt(e)}（${periodName}）`;
+  return `対象期間：${fmt(s)}〜${fmt(e)}`;
 }
 
 function getConditionText() {
@@ -1218,8 +1195,12 @@ function renderSummary(records) {
   document.getElementById('sc-total-sub').textContent = `${now.getMonth() + 1}月のライブ本数`;
   document.getElementById('sc-avg-sub').textContent = `${now.getMonth() + 1}月の公開Note`;
   document.getElementById('sc-star5-sub').textContent = `${now.getMonth() + 1}月の星5ライブ`;
-  const thisYear = now.getFullYear();
-  const thisYearNotesCount = allNotes.filter(n => n.publishedDate && n.publishedDate.getFullYear() === thisYear).length;
+  const commentText = monthLives.length + monthNotes.length === 0
+    ? '今月の記録はこれから。1本参加して1本書こう。'
+    : `今月はライブ${monthLives.length}本・Note${monthNotes.length}件。${monthStar5 > 0 ? '最高の体験を言葉に残せています。' : '次の感動をNoteに残しましょう。'}`;
+  document.getElementById('sc-comment').textContent = commentText;
+  document.getElementById('sc-comment-sub').textContent = 'ライブの余韻をNoteへ';
+  const periodNotes = getFilteredNotes();
   const periodStar5 = records.filter(r => r.rating === 5).length;
   const periodAvgRating = records.length ? (records.reduce((s, r) => s + (r.rating || 0), 0) / records.length) : 0;
   const periodLabel = currentPeriod === 'thisYear' ? '今年' : currentPeriod === 'all' ? '全期間' : currentPeriod === 'last12' ? '直近12ヶ月' : `${selectedYear}年`;
@@ -1230,8 +1211,8 @@ function renderSummary(records) {
   document.getElementById('mini-monthly-avg-sub').textContent = `${periodLabel}の平均評価`;
   document.getElementById('mini-star5-rate').textContent = `${periodStar5}回`;
   document.getElementById('mini-star5-rate-sub').textContent = `${periodLabel}の星5ライブ数`;
-  document.getElementById('mini-note-this-year').textContent = `${thisYearNotesCount}件`;
-  document.getElementById('mini-note-this-year-sub').textContent = `${thisYear}年のNote記事数`;
+  document.getElementById('mini-note-this-year').textContent = `${periodNotes.length}件`;
+  document.getElementById('mini-note-this-year-sub').textContent = `${periodLabel}のNote記事数`;
 }
 
 function adjustChartWidth(records) {
@@ -1324,20 +1305,6 @@ function renderLeftPanel(records) {
   renderRankingList('left-panel-list', items, '');
 }
 
-function renderArtistRatingRanking(records) {
-  const wanman = records.filter(r => r.format === 'ワンマン');
-  const map = {};
-  wanman.forEach(r => r.artists.forEach(a => {
-    if (!map[a]) map[a] = { total: 0, count: 0 };
-    map[a].total += r.rating;
-    map[a].count++;
-  }));
-  const items = Object.entries(map)
-    .filter(([, v]) => v.count >= 3)
-    .map(([name, v]) => ({ name, value: v.total / v.count, display: (v.total / v.count).toFixed(2), subDisplay: `${v.count}回` }))
-    .sort((a, b) => b.value - a.value);
-  renderRankingList('artist-rating-ranking', items, 'green');
-}
 
 function renderVenueRanking(records, containerId = 'venue-ranking') {
   const map = {};
@@ -1372,7 +1339,7 @@ function renderStar5ListTo(records, containerId) {
       <div class="star5-artist">${escapeHtml(artistDisplay || '—')}</div>
       <div class="star5-meta">
         <span class="meta-chip">📍 ${escapeHtml(r.venue || '—')}</span>
-        <span class="meta-chip">${escapeHtml(r.format || '—')}</span>
+        <span class="meta-chip">評価: ${r.rating ? `★${r.rating}` : '—'}</span>
         ${noteTypeHtml}
       </div>
       <div class="star5-actions">${setlistLinkHtml}${noteLinkHtml}</div>
@@ -1393,9 +1360,11 @@ function renderRecentNotes() {
   list.innerHTML = notes.slice(0, 6).map((n) => {
     const dateText = `${n.publishedDate.getFullYear()}年${n.publishedDate.getMonth() + 1}月${n.publishedDate.getDate()}日`;
     const typeChip = n.noteType ? `<span class="note-type-chip">${escapeHtml(n.noteType)}</span>` : '';
+    const thumbHtml = n.thumbnailUrl ? `<img src="${escapeHtmlAttr(n.thumbnailUrl)}" alt="thumbnail" class="recent-note-thumb">` : '';
     return `<div class="recent-note-card">
-      <div class="recent-note-date">${dateText}</div>
+      ${thumbHtml}
       <div class="recent-note-title">${escapeHtml(n.noteTitle || '無題')}</div>
+      <div class="recent-note-date">${dateText}</div>
       <div class="recent-note-meta">
         ${typeChip}
         <a class="star5-link" href="${escapeHtmlAttr(n.noteUrl)}" target="_blank" rel="noopener noreferrer">Note記事を見る ↗</a>
@@ -1404,73 +1373,6 @@ function renderRecentNotes() {
   }).join('');
 }
 
-function renderLivesPage(records) {
-  const sorted = [...records].sort((a, b) => b.date - a.date);
-  const tableBody = document.getElementById('lives-table-body');
-  const cardList = document.getElementById('lives-card-list');
-  if (!sorted.length) {
-    tableBody.innerHTML = '<tr><td colspan="7">データなし</td></tr>';
-    cardList.innerHTML = '<div class="empty-msg">データなし</div>';
-    return;
-  }
-  tableBody.innerHTML = sorted.map((r) => {
-    const linkedNotes = notesByLiveId.get(r.id) || [];
-    const note = linkedNotes[0];
-    const links = [
-      r.setlistUrl ? `<a class="star5-link" href="${escapeHtmlAttr(r.setlistUrl)}" target="_blank" rel="noopener noreferrer">セットリスト</a>` : '',
-      note ? `<a class="star5-link" href="${escapeHtmlAttr(note.noteUrl)}" target="_blank" rel="noopener noreferrer">Note</a>` : ''
-    ].filter(Boolean).join(' ');
-    return `<tr>
-      <td>${r.date.getFullYear()}/${String(r.date.getMonth()+1).padStart(2,'0')}/${String(r.date.getDate()).padStart(2,'0')}</td>
-      <td>${escapeHtml(r.liveName)}</td>
-      <td>${escapeHtml(r.artists.join('・'))}</td>
-      <td>${escapeHtml(r.venue || '—')}</td>
-      <td>${escapeHtml(r.format || '—')}</td>
-      <td>${'★'.repeat(r.rating) || '—'}</td>
-      <td>${links || '—'}</td>
-    </tr>`;
-  }).join('');
-
-  cardList.innerHTML = sorted.map((r) => {
-    const linkedNotes = notesByLiveId.get(r.id) || [];
-    const note = linkedNotes[0];
-    return `<div class="list-card">
-      <div class="recent-note-date">${r.date.getFullYear()}年${r.date.getMonth()+1}月${r.date.getDate()}日</div>
-      <div class="recent-note-title">${escapeHtml(r.liveName)}</div>
-      <div class="star5-artist">${escapeHtml(r.artists.join('・'))}</div>
-      <div class="star5-meta"><span class="meta-chip">📍 ${escapeHtml(r.venue || '—')}</span><span class="meta-chip">${escapeHtml(r.format || '—')}</span></div>
-      <div class="star5-actions">
-        ${r.setlistUrl ? `<a class="star5-link" href="${escapeHtmlAttr(r.setlistUrl)}" target="_blank" rel="noopener noreferrer">セットリストを見る ↗</a>` : ''}
-        ${note ? `<a class="star5-link" href="${escapeHtmlAttr(note.noteUrl)}" target="_blank" rel="noopener noreferrer">Note記事を見る ↗</a>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function renderArtistsPage(records) {
-  const map = {};
-  records.forEach(r => r.artists.forEach(a => { map[a] = (map[a] || 0) + 1; }));
-  const items = Object.entries(map).map(([name, value]) => ({ name, value, display: `${value}回` })).sort((a, b) => b.value - a.value);
-  renderRankingList('artists-page-list', items, '');
-}
-
-function renderNotesPage() {
-  const notes = getFilteredNotes();
-  const el = document.getElementById('notes-page-list');
-  if (!notes.length) {
-    el.innerHTML = '<div class="empty-msg">Note記事がありません</div>';
-    return;
-  }
-  el.innerHTML = notes.map((n) => {
-    const dateText = `${n.publishedDate.getFullYear()}年${n.publishedDate.getMonth()+1}月${n.publishedDate.getDate()}日`;
-    const typeChip = n.noteType ? `<span class="note-type-chip">${escapeHtml(n.noteType)}</span>` : '';
-    return `<div class="recent-note-card">
-      <div class="recent-note-date">${dateText}</div>
-      <div class="recent-note-title">${escapeHtml(n.noteTitle || '無題')}</div>
-      <div class="recent-note-meta">${typeChip}<a class="star5-link" href="${escapeHtmlAttr(n.noteUrl)}" target="_blank" rel="noopener noreferrer">Note記事を見る ↗</a></div>
-    </div>`;
-  }).join('');
-}
 
 function renderDashboard() {
   const records = getFilteredRecords();
@@ -1478,17 +1380,10 @@ function renderDashboard() {
   renderQualityInline();
   renderSummary(records);
   renderCharts(records);
+  renderRecentNotes();
   renderLeftPanel(records);
-  renderArtistRatingRanking(records);
   renderVenueRanking(records);
   renderStar5ListTo(records, 'star5-list');
-  renderRecentNotes();
-
-  renderLivesPage(records);
-  renderArtistsPage(records);
-  renderVenueRanking(records, 'venues-page-list');
-  renderStar5ListTo(records, 'star5-page-list');
-  renderNotesPage();
 }
 
 function showDashboard() {
@@ -1527,14 +1422,6 @@ function closeSidebar() {
   document.getElementById('sidebar-backdrop').classList.remove('open');
 }
 
-function setPage(page) {
-  currentPage = page;
-  document.querySelectorAll('.page-section').forEach((s) => s.classList.add('hidden'));
-  const target = document.getElementById(`page-${page}`);
-  if (target) target.classList.remove('hidden');
-  document.querySelectorAll('.sidebar-link').forEach((btn) => btn.classList.toggle('active', btn.dataset.page === page));
-  if (window.innerWidth <= 700) closeSidebar();
-}
 
 function renderArtistOptions(keyword) {
   const container = document.getElementById('artist-options');
@@ -1611,7 +1498,6 @@ async function loadFromApi() {
     renderArtistOptions('');
     updateArtistCurrentLabel();
     showDashboard();
-    setPage('dashboard');
     renderDashboard();
     showToast(`${allRecords.length} 件のNotionデータを読み込みました`);
   } catch (err) {
@@ -1626,11 +1512,6 @@ document.getElementById('drawer-backdrop').addEventListener('click', closeDrawer
 document.getElementById('sidebar-toggle').addEventListener('click', openSidebar);
 document.getElementById('sidebar-backdrop').addEventListener('click', closeSidebar);
 
-document.getElementById('sidebar-nav').addEventListener('click', (e) => {
-  const btn = e.target.closest('.sidebar-link');
-  if (!btn) return;
-  setPage(btn.dataset.page);
-});
 
 document.getElementById('artist-search-input').addEventListener('focus', (e) => renderArtistOptions(e.target.value || ''));
 document.getElementById('artist-search-input').addEventListener('input', (e) => renderArtistOptions(e.target.value || ''));
