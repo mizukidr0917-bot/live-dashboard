@@ -216,6 +216,58 @@ a:hover{text-decoration:underline}
 .star5-link:hover{background:rgba(124,110,247,.12);border-color:rgba(124,110,247,.4);text-decoration:none}
 .star5-empty{font-size:13px;color:var(--text-3);padding:20px;text-align:center;grid-column:1/-1}
 
+/* Motivation zone bottom row */
+.motive-bottom{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+
+/* Note progress card */
+.note-progress-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px}
+.note-progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.note-progress-title{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text)}
+.note-progress-badge{font-size:10px;font-weight:600;color:var(--accent-2);background:rgba(124,110,247,.12);border:1px solid rgba(124,110,247,.2);border-radius:99px;padding:2px 9px}
+
+/* Live report rate row */
+.note-live-rate{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg-3);border-radius:var(--r-sm);border:1px solid var(--border);margin-bottom:6px}
+.nlr-label{font-size:11px;color:var(--text-2);flex-shrink:0}
+.nlr-value{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text);flex-shrink:0}
+.nlr-status{font-size:11px;font-weight:600;color:var(--green);margin-left:auto;white-space:nowrap}
+.nlr-status.incomplete{color:var(--accent-2)}
+.nlr-status.zero{color:var(--text-3)}
+
+/* Pending note row */
+.note-pending-row{display:flex;align-items:center;gap:7px;padding:7px 10px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:var(--r-sm);margin-bottom:6px}
+.npend-icon{font-size:13px;flex-shrink:0}
+.npend-text{font-size:12px;font-weight:600;color:#fcd34d}
+
+/* Other note types list */
+.note-other-types{display:flex;flex-direction:column;gap:4px;margin-top:2px}
+.note-other-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2)}
+.note-other-count{font-weight:700;color:var(--text);font-family:var(--fd)}
+
+/* Action banner takes full height */
+.action-banner{
+  background:linear-gradient(130deg,rgba(124,110,247,.1),rgba(74,158,255,.06));
+  border:1px solid rgba(124,110,247,.22);border-radius:var(--r-lg);
+  padding:18px 16px;display:flex;flex-direction:column;gap:12px;
+  justify-content:center;align-self:stretch;min-height:120px;
+}
+.action-banner-icon{font-size:28px;line-height:1}
+.action-banner-text{font-size:14px;font-weight:700;color:var(--text);line-height:1.4;font-family:var(--fd)}
+.action-banner-sub{font-size:11px;color:var(--text-2);margin-top:4px}
+
+/* Filter tags in topbar */
+.filter-tags{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.filter-tag{background:rgba(124,110,247,.15);color:var(--accent-2);border:1px solid rgba(124,110,247,.25);border-radius:99px;padding:2px 9px;font-size:10px;font-weight:600;white-space:nowrap}
+.filter-tag.active-filter{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* Responsive for motive-bottom */
+@media(max-width:960px){.motive-bottom{grid-template-columns:1fr}}
+@media(max-width:640px){
+  .motive-bottom{grid-template-columns:1fr}
+  .action-banner{min-height:auto;padding:14px}
+  .action-banner-icon{font-size:22px}
+  .action-banner-text{font-size:13px}
+}
+
 /* Note type chips — colored by category */
 .note-type-chip{display:inline-flex;align-items:center;gap:3px;border-radius:99px;padding:1px 7px;font-size:10px;font-weight:600;white-space:nowrap}
 .nt-live   {background:rgba(74,158,255,.15);color:#60b4ff;border:1px solid rgba(74,158,255,.25)}
@@ -392,13 +444,15 @@ a:hover{text-decoration:underline}
         <div class="info-bar" id="condition-bar"><strong>表示条件</strong>　<span id="condition-text">全体</span></div>
         <div id="quality-inline" class="info-bar">データ品質を確認中…</div>
 
-        <!-- ① 今月 -->
-        <div class="zone">
+        <!-- ① モチベーションゾーン（常に当月） -->
+        <div class="zone motive-zone">
           <div class="zone-header">
-            <div class="zone-title">① 今月のアクティビティ <span id="this-month-label" style="color:var(--text-3);font-size:10px;margin-left:4px;font-weight:400;letter-spacing:0;text-transform:none"></span></div>
-            <span class="zone-note">常に当月</span>
+            <div class="zone-title">今月の活動 <span id="this-month-label" style="color:var(--text-3);font-size:10px;margin-left:4px;font-weight:400;letter-spacing:0;text-transform:none"></span></div>
+            <span class="zone-note">常に当月固定</span>
           </div>
-          <div class="kpi-grid">
+
+          <!-- KPI row -->
+          <div class="kpi-grid" style="margin-bottom:12px">
             <div class="kpi-card c-blue">
               <div class="kpi-head"><div class="kpi-icon ib">🎤</div><div class="kpi-delta zero" id="kpi-live-delta">—</div></div>
               <div class="kpi-value" id="sc-total">—<span class="unit">本</span></div>
@@ -424,17 +478,48 @@ a:hover{text-decoration:underline}
               <div class="kpi-rate-bar-bg"><div class="kpi-rate-bar-fill" id="note-rate-bar" style="width:0%"></div></div>
               <div class="kpi-rate-hint" id="kpi-rate-hint"></div>
             </div>
-          </div><!-- /kpi-grid -->
-          <!-- 次のアクション -->
-          <div id="action-banner" class="action-banner" style="display:none">
-            <div class="action-banner-icon" id="action-icon">💡</div>
-            <div><div class="action-banner-text" id="action-text">—</div><div class="action-banner-sub" id="action-sub"></div></div>
           </div>
-        </div><!-- /zone ① -->
+
+          <!-- Note進捗 + 次のアクション (side by side on PC) -->
+          <div class="motive-bottom">
+            <!-- Note進捗詳細 -->
+            <div class="note-progress-card">
+              <div class="note-progress-header">
+                <span class="note-progress-title">今月のNote進捗</span>
+                <span class="note-progress-badge" id="note-progress-badge">0件</span>
+              </div>
+              <!-- ライブレポ達成率 -->
+              <div class="note-live-rate" id="note-live-rate-row">
+                <span class="nlr-label">🎤 ライブレポ</span>
+                <span class="nlr-value" id="note-live-rate-val">— / —</span>
+                <span class="nlr-status" id="note-live-rate-status"></span>
+              </div>
+              <!-- 未Note化ライブ -->
+              <div class="note-pending-row" id="note-pending-row" style="display:none">
+                <span class="npend-icon">⚠️</span>
+                <span class="npend-text" id="note-pending-text">未Note化ライブ：—件</span>
+              </div>
+              <!-- その他種別 -->
+              <div class="note-other-types" id="note-other-types"></div>
+              <!-- 今月のNote内訳 -->
+              <div class="note-type-breakdown" id="note-type-breakdown" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+            </div>
+
+            <!-- 次のアクション -->
+            <div id="action-banner" class="action-banner" style="display:none">
+              <div class="action-banner-icon" id="action-icon">💡</div>
+              <div>
+                <div class="action-banner-text" id="action-text">—</div>
+                <div class="action-banner-sub" id="action-sub"></div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /motive-zone -->
+        <!-- ② 分析ゾーン（選択期間連動） -->
         <div class="zone">
           <div class="zone-header">
-            <div class="zone-title">② 分析・トレンド</div>
-            <span class="zone-note">選択期間</span>
+            <div class="zone-title">分析・トレンド</div>
+            <span class="zone-note" id="analysis-period-label">選択期間</span>
           </div>
           <div class="analysis-zone">
             <div class="charts-pair">
@@ -453,11 +538,6 @@ a:hover{text-decoration:underline}
               <div class="notes-panel-header">
                 <div class="panel-title">最近のNote</div>
                 <span class="notes-count-badge" id="notes-count-badge">0件</span>
-              </div>
-              <!-- 今月のNote進捗 -->
-              <div class="note-month-stats" id="note-month-stats">
-                <span class="note-month-total" id="note-month-total">今月 0件</span>
-                <div class="note-type-breakdown" id="note-type-breakdown"></div>
               </div>
               <div class="note-rate-row">
                 <span class="note-rate-text" id="note-rate-label">今月 —/—本</span>
@@ -718,6 +798,43 @@ function renderThisMonth(){
   const pending=Math.max(0,lc-nc);
   document.getElementById('note-rate-stat').textContent=pending>0?`未Note ${pending}本`:lc>0?'完了 ✓':'—';
 
+  // Note progress card — live report rate
+  const liveReportNotes=mn.filter(n=>n.noteType==='ライブレポ');
+  const lrTotal=liveReportNotes.length;
+  const lrBadgeEl=document.getElementById('note-progress-badge');
+  if(lrBadgeEl)lrBadgeEl.textContent=`${nc}件`;
+  const lrValEl=document.getElementById('note-live-rate-val');
+  const lrStatEl=document.getElementById('note-live-rate-status');
+  if(lrValEl)lrValEl.textContent=lc>0?`${lrTotal} / ${lc}`:`${lrTotal} / 0`;
+  if(lrStatEl){
+    if(lc===0){lrStatEl.textContent='';lrStatEl.className='nlr-status zero';}
+    else if(lrTotal>=lc){lrStatEl.textContent='完了 ✓';lrStatEl.className='nlr-status';}
+    else if(lrTotal===0){lrStatEl.textContent='未作成';lrStatEl.className='nlr-status zero';}
+    else{lrStatEl.textContent=`あと${lc-lrTotal}本`;lrStatEl.className='nlr-status incomplete';}
+  }
+
+  // Pending note
+  const pendingRow=document.getElementById('note-pending-row');
+  const pendingText=document.getElementById('note-pending-text');
+  const pending=Math.max(0,lc-lrTotal);
+  if(pendingRow&&pendingText){
+    if(pending>0&&lc>0){pendingRow.style.display='flex';pendingText.textContent=`未Note化ライブ：${pending}件`;}
+    else{pendingRow.style.display='none';}
+  }
+
+  // Other note types (non-live-report)
+  const otherTypesEl=document.getElementById('note-other-types');
+  if(otherTypesEl){
+    const otherCounts={};
+    mn.forEach(n=>{if(n.noteType&&n.noteType!=='ライブレポ')otherCounts[n.noteType]=(otherCounts[n.noteType]||0)+1;});
+    const otherKeys=Object.keys(otherCounts);
+    if(otherKeys.length){
+      otherTypesEl.innerHTML=otherKeys.map(t=>{const cfg=getNoteTypeCfg(t);return`<div class="note-other-row">${cfg.icon} ${esc(t)} <span class="note-other-count">+${otherCounts[t]}</span></div>`;}).join('');
+    } else {
+      otherTypesEl.innerHTML='';
+    }
+  }
+
   // Note month stats and type breakdown
   const totalEl=document.getElementById('note-month-total');
   const bdEl=document.getElementById('note-type-breakdown');
@@ -871,6 +988,8 @@ function renderHeader(records){
   const ct=getConditionText();
   document.getElementById('condition-text').textContent=ct;
   document.getElementById('filter-status-text').textContent=ct;
+  const pn=currentPeriod==='year'?`${selectedYear}年`:currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12ヶ月':'全期間';
+  const apl=document.getElementById('analysis-period-label');if(apl)apl.textContent=pn;
 }
 function renderDashboard(){
   const records=getFilteredRecords();
