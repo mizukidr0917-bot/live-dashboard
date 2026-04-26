@@ -876,7 +876,420 @@
               <div class="mini-card">
                 <div class="mini-label">今年のNote記事数</div>
                 <div class="mini-value" id="mini-note-this-year">—</div>
-                <div class="mini-sub" id="mini-note-this-year-sub">—</div>            </div>
+                <div class="mini-sub" id="mini-note-this-year-sub">—</div>  .ranking-name { font-size: 12px; margin-bottom: 3px; color: #1f2937; }
+  .ranking-bar-bg { height: 4px; border-radius: 4px; background: #e5e7eb; overflow: hidden; }
+  .ranking-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #60a5fa, #2563eb); }
+  .ranking-value { font-size: 11px; color: #334155; font-weight: 600; }
+
+  .star5-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 8px;
+  }
+
+  .star5-card { padding: 10px; }
+  .star5-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .star5-title { font-size: 12px; font-weight: 600; color: #111827; }
+  .star5-date { font-size: 10px; color: var(--muted-2); }
+  .star5-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .note-type-chip {
+    border: 1px solid #dbeafe;
+    background: #eff6ff;
+    color: var(--blue-600);
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .recent-note-card { padding: 8px; }
+  .recent-note-date { font-size: 10px; color: var(--muted-2); }
+  .recent-note-title { margin-top: 3px; font-size: 12px; color: #1f2937; font-weight: 600; line-height: 1.4; }
+  .recent-note-meta { margin-top: 6px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+
+  .recent-notes-panel .recent-note-card {
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 6px 2px;
+    background: transparent;
+  }
+
+  .recent-notes-panel .recent-note-card:last-child { border-bottom: none; }
+
+  #artist-rating-ranking .ranking-sub { display: none; }
+
+  .list-table-wrap {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    overflow: auto;
+    margin-bottom: 10px;
+  }
+
+  .list-table { width: 100%; border-collapse: collapse; min-width: 860px; }
+  .list-table th,
+  .list-table td {
+    font-size: 12px;
+    padding: 8px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .list-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+  }
+
+  .list-cards { display: none; gap: 8px; }
+  .list-card { padding: 9px; }
+  .list-card-title { font-size: 12px; font-weight: 700; }
+  .list-card-meta { margin-top: 5px; font-size: 11px; color: var(--muted); }
+
+  a { color: var(--blue-600); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 2px 7px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .chip-format { background: #f1f5f9; color: #334155; }
+  .chip-rating-high { background: #dcfce7; color: #166534; }
+  .chip-rating-mid { background: #fef3c7; color: #92400e; }
+  .chip-rating-low { background: #fee2e2; color: #991b1b; }
+
+  .fab-filter {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    border: none;
+    border-radius: 999px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 10px 14px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.28);
+    display: none;
+    z-index: 80;
+  }
+
+  .filter-drawer-backdrop,
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.35);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .2s ease;
+    z-index: 70;
+  }
+
+  .filter-drawer-backdrop.open,
+  .sidebar-backdrop.open { opacity: 1; visibility: visible; }
+
+  .filter-drawer {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    width: min(360px, 92vw);
+    background: #fff;
+    border-left: 1px solid var(--line);
+    transform: translateX(100%);
+    transition: transform .24s ease;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filter-drawer.open { transform: translateX(0); }
+
+  .drawer-header {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .drawer-title { font-size: 13px; font-weight: 700; }
+
+  .drawer-close {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    cursor: pointer;
+  }
+
+  .drawer-body { padding: 10px 12px; overflow: auto; }
+
+  .filter-group { margin-bottom: 12px; }
+  .filter-label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 6px; }
+
+  .filter-btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .filter-btn {
+    border: 1px solid #dbe3ef;
+    background: #fff;
+    border-radius: 999px;
+    padding: 4px 9px;
+    font-size: 11px;
+    color: #475569;
+    cursor: pointer;
+  }
+
+  .filter-btn.active {
+    background: #eaf1ff;
+    border-color: #bfdbfe;
+    color: var(--blue-600);
+    font-weight: 600;
+  }
+
+  .search-combobox { position: relative; }
+
+  .artist-search-input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 12px;
+    padding: 7px 9px;
+  }
+
+  .artist-options {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);
+    max-height: 220px;
+    overflow: auto;
+    z-index: 10;
+    display: none;
+  }
+
+  .artist-options.show { display: block; }
+
+  .artist-option {
+    padding: 7px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .artist-option:last-child { border-bottom: none; }
+  .artist-option:hover { background: #eff6ff; }
+
+  .artist-current { margin-top: 6px; font-size: 11px; color: var(--muted-2); }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    bottom: 12px;
+    background: #0f172a;
+    color: #fff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 11px;
+    opacity: 0;
+    pointer-events: none;
+    transition: .2s ease;
+    z-index: 100;
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 1200px) {
+    .summary-subgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .analysis-row { grid-template-columns: 1fr; }
+    .charts-row { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 960px) {
+    .app-shell { grid-template-columns: 1fr; }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: min(240px, 80vw);
+      transform: translateX(-100%);
+      transition: transform .24s ease;
+      background: #fff;
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.15);
+      z-index: 75;
+    }
+
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-toggle { display: inline-grid; place-items: center; }
+    .fab-filter { display: inline-flex; align-items: center; justify-content: center; }
+
+    .dashboard-hero { grid-template-columns: 1fr; }
+    .dashboard-hero { grid-template-columns: 1fr; }
+    .summary-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .summary-grid .card,
+    .recent-notes-panel { height: auto; min-height: 120px; }
+  }
+
+  @media (max-width: 640px) {
+    .main { padding: 8px; }
+    .topbar { padding: 8px; }
+    .header-title { font-size: 23px; }
+    .summary-card-value { font-size: 28px; }
+    .summary-subgrid { grid-template-columns: 1fr; }
+    .list-table-wrap { display: none; }
+    .list-cards { display: grid; }
+    .chart-inner-wide { width: 900px; min-width: 900px; }
+    .recent-note-list { grid-template-columns: 1fr; }
+  }
+
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-head">
+        <div class="sidebar-title">LIVE LOG</div>
+        <div class="sidebar-subtitle">SaaS Analytics Dashboard</div>
+      </div>
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">🎵</div>
+        <div>
+          <div class="sidebar-profile-name">Live Records</div>
+          <div class="sidebar-profile-sub">Analytics Workspace</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <button class="sidebar-link active" data-page="dashboard">ダッシュボード</button>
+        <button class="sidebar-link" data-page="lives">ライブ一覧</button>
+        <button class="sidebar-link" data-page="artists">アーティスト</button>
+        <button class="sidebar-link" data-page="venues">会場</button>
+        <button class="sidebar-link" data-page="star5">星5ライブ</button>
+        <button class="sidebar-link" data-page="notes">Note記事一覧</button>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="sidebar-foot-label">Filter Ready</div>
+        <div class="sidebar-foot-value">Year / 12M / All</div>
+      </div>
+    </aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="content-area">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebar-toggle" aria-label="メニュー">☰</button>
+          <div>
+            <div class="topbar-brand">LIVE LOG</div>
+            <div class="topbar-caption">SaaS style live analytics dashboard</div>
+          </div>
+        </div>
+        <div class="period-controls" id="period-filter">
+          <button class="period-btn active" data-value="thisYear">今年</button>
+          <button class="period-btn" data-value="all">全期間</button>
+          <button class="period-btn" data-value="last12">直近12ヶ月</button>
+          <select id="year-select" class="year-select">
+            <option value="">年選択</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="no-data-screen" id="no-data-screen">
+          <div class="no-data-icon">🎵</div>
+          <div class="no-data-title">ライブログへようこそ</div>
+          <div class="no-data-sub">ライブ記録を読み込んで表示します</div>
+        </div>
+
+        <div id="app-pages" class="hidden">
+          <section id="page-dashboard" class="page-section">
+            <div class="header">
+              <div class="header-left">
+                <div class="header-title">LIVE <span>LOG</span></div>
+                <div class="header-subtitle">
+                  <span id="header-period">対象期間：読み込み中</span>
+                  <span class="header-badge" id="header-total">0 件</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="condition-bar" id="condition-bar">
+              <strong>表示条件</strong><span id="condition-text">全体</span>
+            </div>
+
+            <div id="quality-inline" class="quality-inline">データ品質を確認中…</div>
+
+            <div class="section-title">今月のハイライト</div>
+            <div class="dashboard-hero">
+              <div class="card summary-card kpi-main">
+                <div class="summary-card-icon icon-blue">🎤</div>
+                <div class="summary-card-value" id="sc-total">—<span>回</span></div>
+                <div class="summary-card-label">今月のライブ本数</div>
+                <div class="summary-card-sub" id="sc-total-sub">—</div>
+              </div>
+              <div class="card summary-card kpi-main">
+                <div class="summary-card-icon icon-green">📝</div>
+                <div class="summary-card-value" id="sc-avg">—<span>件</span></div>
+                <div class="summary-card-label">今月のNote記事</div>
+                <div class="summary-card-sub" id="sc-avg-sub">—</div>
+              </div>
+              <div class="card summary-card kpi-main">
+                <div class="summary-card-icon icon-amber">✨</div>
+                <div class="summary-card-value" id="sc-star5">—<span>回</span></div>
+                <div class="summary-card-label">今月の星5ライブ</div>
+                <div class="summary-card-sub" id="sc-star5-sub">—</div>
+              </div>
+              <div class="card kpi-main">
+                <div class="summary-card-icon icon-blue">🎉</div>
+                <div class="summary-card-label" style="font-size:16px;color:#1d4ed8;font-weight:700;">今月の活動サマリー</div>
+                <div class="summary-card-sub" id="monthly-summary-text" style="font-size:13px;line-height:1.5;color:#334155;border-top:none;padding-top:0;">—</div>
+              </div>
+            </div>
+
+            <div class="section-title">選択期間のサマリー</div>
+            <div class="summary-subgrid">
+              <div class="mini-card">
+                <div class="mini-label">ライブ数</div>
+                <div class="mini-value" id="mini-this-year">—</div>
+                <div class="mini-sub" id="mini-this-year-sub">—</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">Note記事数</div>
+                <div class="mini-value" id="mini-note-this-year">—</div>
+                <div class="mini-sub" id="mini-note-this-year-sub">—</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">星5ライブ数</div>
+                <div class="mini-value" id="mini-star5-rate">—</div>
+                <div class="mini-sub" id="mini-star5-rate-sub">—</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-label">平均評価</div>
+                <div class="mini-value" id="mini-monthly-avg">—</div>
+                <div class="mini-sub" id="mini-monthly-avg-sub">—</div>
+              </div>
+            </div>
+
+            <div id="recent-notes-section" class="card" style="margin-bottom:16px;">
+              <div class="section-title" style="margin-bottom:10px;justify-content:space-between;">📝 最近書いたNote</div>
+              <div id="recent-note-list" class="recent-note-list"></div>
+            </div>
 
             <div class="charts-row">
               <div class="chart-card">
@@ -1122,8 +1535,7 @@ function getMonthRange(records) {
   const months = [];
   if (currentPeriod === 'thisYear' || currentPeriod === 'year') {
     const y = currentPeriod === 'year' ? selectedYear : now.getFullYear();
-    for (let m = 0; m < 12; m++) months.push({ y, m });
-    return months;
+    for (let m = 0; m < 12; m++) months.push({ y, m });    return months;
   }
   if (currentPeriod === 'last12') {
     for (let i = 11; i >= 0; i--) {
@@ -1248,10 +1660,10 @@ function renderHeader(records) {
 
 function renderSummary(records) {
   const now = new Date();
-  const baseRecords = getAllCurrentFilterBaseRecords();
-  const filteredNotes = getFilteredNotes();
-  const monthLives = baseRecords.filter(r => r.date.getFullYear() === now.getFullYear() && r.date.getMonth() === now.getMonth());
-  const monthNotes = filteredNotes.filter(n => n.publishedDate.getFullYear() === now.getFullYear() && n.publishedDate.getMonth() === now.getMonth());
+  const monthBase = allRecords;
+  const monthNotesBase = allNotes.filter(n => n.publishedDate);
+  const monthLives = monthBase.filter(r => r.date.getFullYear() === now.getFullYear() && r.date.getMonth() === now.getMonth());
+  const monthNotes = monthNotesBase.filter(n => n.publishedDate.getFullYear() === now.getFullYear() && n.publishedDate.getMonth() === now.getMonth());
   const monthStar5 = monthLives.filter(r => r.rating === 5).length;
 
   document.getElementById('sc-total').innerHTML = `${monthLives.length}<span>回</span>`;
@@ -1260,24 +1672,23 @@ function renderSummary(records) {
   document.getElementById('sc-total-sub').textContent = `${now.getMonth() + 1}月のライブ本数`;
   document.getElementById('sc-avg-sub').textContent = `${now.getMonth() + 1}月の公開Note`;
   document.getElementById('sc-star5-sub').textContent = `${now.getMonth() + 1}月の星5ライブ`;
+  document.getElementById('monthly-summary-text').textContent = monthLives.length + monthNotes.length > 0
+    ? `ライブ${monthLives.length}本・Note${monthNotes.length}件。${monthStar5 > 0 ? '星5ライブも生まれています！' : '次の星5ライブを目指しましょう！'}`
+    : '今月の記録がまだありません。最初の1本と1記事から始めましょう。';
 
-  const thisYear = now.getFullYear();
-  const thisYearRecords = allRecords.filter(r => r.date.getFullYear() === thisYear);
-  const months = getMonthRange(records);
-  const activeMonths = months.length || 1;
-  const monthlyAvg = records.length ? (records.length / activeMonths) : 0;
-  const star5 = records.filter(r => r.rating === 5).length;
-  const star5Rate = records.length ? ((star5 / records.length) * 100) : 0;
-  const thisYearNotes = allNotes.filter(n => n.publishedDate && n.publishedDate.getFullYear() === thisYear).length;
+  const periodNotes = getFilteredNotes();
+  const periodStar5 = records.filter(r => r.rating === 5).length;
+  const periodAvgRating = records.length ? (records.reduce((s, r) => s + (r.rating || 0), 0) / records.length) : 0;
+  const periodLabel = currentPeriod === 'thisYear' ? '今年' : currentPeriod === 'all' ? '全期間' : currentPeriod === 'last12' ? '直近12ヶ月' : `${selectedYear}年`;
 
-  document.getElementById('mini-this-year').textContent = `${thisYearRecords.length}回`;
-  document.getElementById('mini-this-year-sub').textContent = `${thisYear}年に記録したライブ数`;
-  document.getElementById('mini-monthly-avg').textContent = `${monthlyAvg.toFixed(1)}回`;
-  document.getElementById('mini-monthly-avg-sub').textContent = `${activeMonths}か月ベースの平均`;
-  document.getElementById('mini-star5-rate').textContent = `${star5Rate.toFixed(1)}%`;
-  document.getElementById('mini-star5-rate-sub').textContent = `星5 ${star5}回 / 全${records.length}回`;
-  document.getElementById('mini-note-this-year').textContent = `${thisYearNotes}件`;
-  document.getElementById('mini-note-this-year-sub').textContent = `${thisYear}年に公開したNote記事数`;
+  document.getElementById('mini-this-year').textContent = `${records.length}回`;
+  document.getElementById('mini-this-year-sub').textContent = `${periodLabel}のライブ数`;
+  document.getElementById('mini-monthly-avg').textContent = `${periodAvgRating.toFixed(2)}★`;
+  document.getElementById('mini-monthly-avg-sub').textContent = `${periodLabel}の平均評価`;
+  document.getElementById('mini-star5-rate').textContent = `${periodStar5}回`;
+  document.getElementById('mini-star5-rate-sub').textContent = `${periodLabel}の星5ライブ数`;
+  document.getElementById('mini-note-this-year').textContent = `${periodNotes.length}件`;
+  document.getElementById('mini-note-this-year-sub').textContent = `${periodLabel}のNote記事数`;
 }
 
 function adjustChartWidth(records) {
@@ -1315,7 +1726,8 @@ function renderCharts(records) {
       plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } } },
       scales: {
         x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8', maxRotation: 45, callback: (val, i) => i % maxTick === 0 ? labels[i] : '' } },
-        y: { stacked: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 }, color: '#94a3b8', stepSize: 1 }, beginAtZero: true }      }
+        y: { stacked: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 }, color: '#94a3b8', stepSize: 1 }, beginAtZero: true }
+      }
     }
   });
 
