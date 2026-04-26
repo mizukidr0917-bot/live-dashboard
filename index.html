@@ -312,6 +312,28 @@ a:hover{text-decoration:underline}
 .artist-current{margin-top:5px;font-size:11px;color:var(--text-3)}
 .year-select-input{width:100%;border:1px solid var(--border-s);border-radius:8px;font-size:12px;padding:7px 9px;background:var(--bg-card);color:var(--text);font-family:'DM Sans',sans-serif;margin-top:8px}
 
+/* Notes show-more button */
+.notes-show-more{width:100%;margin-top:6px;background:transparent;border:1px dashed var(--border-s);border-radius:10px;color:var(--text-2);font-size:11px;font-weight:600;padding:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.notes-show-more:hover{border-color:var(--accent);color:var(--accent-2);background:rgba(124,110,247,.05)}
+
+/* Light mode fixes */
+[data-theme="light"] .rank-bar-bg{background:rgba(0,0,0,.07)}
+[data-theme="light"] .nprog-bar-bg{background:rgba(0,0,0,.08)}
+[data-theme="light"] .kpi-card{box-shadow:0 2px 10px rgba(0,0,0,.07)}
+[data-theme="light"] .story-headline{background:linear-gradient(130deg,rgba(109,92,224,.08),rgba(37,99,235,.05));border-color:rgba(109,92,224,.18)}
+[data-theme="light"] .best-live-card{background:linear-gradient(145deg,rgba(254,249,231,.9),rgba(255,248,220,.9))}
+[data-theme="light"] .best-live-card::after{background:linear-gradient(90deg,var(--amber),rgba(217,119,6,.2),transparent)}
+[data-theme="light"] .action-card{border-color:rgba(109,92,224,.18)}
+[data-theme="light"] .nprog-completion{background:rgba(0,0,0,.04)}
+[data-theme="light"] .chart-card{background:rgba(0,0,0,.03)}
+[data-theme="light"] .analysis-toggle-btn{background:rgba(0,0,0,.03)}
+[data-theme="light"] .analysis-body{background:var(--bg-2);border-color:rgba(0,0,0,.1)}
+[data-theme="light"] .rank-card{background:rgba(0,0,0,.03)}
+[data-theme="light"] .pm-card{background:rgba(0,0,0,.03)}
+[data-theme="light"] .s5-card{box-shadow:0 2px 8px rgba(0,0,0,.07)}
+[data-theme="light"] .note-card{box-shadow:0 1px 6px rgba(0,0,0,.07)}
+[data-theme="light"] .nprog-row.show{background:rgba(217,119,6,.06)}
+
 /* Toast */
 .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(8px);bottom:14px;background:var(--bg-card);border:1px solid var(--border-s);color:var(--text);border-radius:12px;padding:8px 14px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.35);white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -910,109 +932,35 @@ function renderCharts(records){
   }
 }
 
-/* --- RANKINGS --- */
-function renderRankingList(id, items, isVenue) {
-  var el = document.getElementById(id);
-  if (!el) return;
-
-  if (!items || !items.length) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:10px 0">データなし</div>';
-    return;
-  }
-
-  var maxV = items[0].value || 1;
-
-  el.innerHTML = items.slice(0, 5).map(function(item, i) {
-    var rankClass = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
-    var width = Math.max(8, (item.value / maxV) * 100).toFixed(1);
-    var name = esc(item.name || '不明');
-    var sub = item.sub ? esc(item.sub) : '';
-
-    return (
-      '<div class="rank-item">' +
-        '<div class="rank-num ' + rankClass + '">' + (i + 1) + '</div>' +
-        '<div class="rank-main">' +
-          '<div class="rank-row">' +
-            '<div class="rank-name" title="' + name + '">' + name + '</div>' +
-            '<div class="rank-value">' + item.value + '回' + sub + '</div>' +
-          '</div>' +
-          '<div class="rank-bar-bg">' +
-            '<div class="rank-bar" style="width:' + width + '%"></div>' +
-          '</div>' +
-        '</div>' +
-      '</div>'
-    );
+/* ─── RANKINGS ─── */
+function renderRankingList(id,items,isVenue){
+  var el=document.getElementById(id);if(!el)return;
+  if(!items.length){el.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:10px 0">データなし</div>';return;}
+  var maxV=items[0].value;
+  el.innerHTML=items.slice(0,5).map(function(item,i){
+    var nc=i===0?'r1':i===1?'r2':i===2?'r3':'';
+    var bw=maxV>0?(item.value/maxV*100).toFixed(1):0;
+    return '<div class="rank-item"><div class="rank-num '+nc+'">'+(i+1)+'</div><div class="rank-bar-wrap"><div class="rank-name" title="'+escAttr(item.name)+'">'+esc(item.name)+'</div><div class="rank-bar-bg"><div class="rank-bar-fill'+(isVenue?' venue':'')+'" style="width:'+bw+'%"></div></div></div><div class="rank-val">'+item.value+'回<span class="rank-sub">'+(item.sub||'')+'</span></div></div>';
   }).join('');
 }
-
-function renderLeftPanel(records) {
-  var map = {};
-  records.forEach(function(r) {
-    if (r.artists && r.artists.length) {
-      r.artists.forEach(function(a) {
-        map[a] = (map[a] || 0) + 1;
-      });
-    }
-  });
-
-  var total = Object.values(map).reduce(function(s, v) {
-    return s + v;
-  }, 0);
-
-  var items = Object.entries(map)
-    .map(function(e) {
-      return {
-        name: e[0],
-        value: e[1],
-        sub: total ? ' ' + ((e[1] / total) * 100).toFixed(0) + '%' : ''
-      };
-    })
-    .sort(function(a, b) {
-      return b.value - a.value;
-    });
-
-  renderRankingList('artist-ranking', items, false);
-
-  var aEl = document.getElementById('artist-analysis-comment');
-  if (aEl && items.length) {
-    var canShowComment = currentPeriod === 'last12' || currentPeriod === 'all';
-    var top = items[0];
-    var pct = total > 0 ? Math.round((top.value / total) * 100) : 0;
-
-    if (canShowComment && pct >= 40) {
-      aEl.textContent = '🎧 ' + top.name + 'への集中が高め（' + pct + '%）';
-      aEl.style.display = 'block';
-    } else {
-      aEl.style.display = 'none';
-    }
+function renderLeftPanel(records){
+  var map={};records.forEach(function(r){r.artists.forEach(function(a){map[a]=(map[a]||0)+1;});});
+  var total=Object.values(map).reduce(function(s,v){return s+v;},0);
+  var items=Object.entries(map).map(function(e){return{name:e[0],value:e[1],sub:total?' '+((e[1]/total*100).toFixed(0))+'%':''};}).sort(function(a,b){return b.value-a.value;});
+  renderRankingList('left-panel-list',items,false);
+  var aEl=document.getElementById('artist-analysis-comment');
+  if(aEl&&items.length){
+    var canC=(currentPeriod==='last12'||currentPeriod==='all');
+    var top=items[0];var pct=total>0?Math.round(top.value/total*100):0;
+    if(canC&&pct>=40){aEl.textContent='📊 '+top.name+'への集中が高め（'+pct+'%）';aEl.style.display='block';}
+    else aEl.style.display='none';
   }
 }
-
-function renderVenueRanking(records) {
-  var map = {};
-  records.forEach(function(r) {
-    if (r.venue) {
-      map[r.venue] = (map[r.venue] || 0) + 1;
-    }
-  });
-
-  var total = Object.values(map).reduce(function(s, v) {
-    return s + v;
-  }, 0);
-
-  var items = Object.entries(map)
-    .map(function(e) {
-      return {
-        name: e[0],
-        value: e[1],
-        sub: total ? ' ' + ((e[1] / total) * 100).toFixed(0) + '%' : ''
-      };
-    })
-    .sort(function(a, b) {
-      return b.value - a.value;
-    });
-
-  renderRankingList('venue-ranking', items, true);
+function renderVenueRanking(records){
+  var map={};records.forEach(function(r){if(r.venue)map[r.venue]=(map[r.venue]||0)+1;});
+  var total=Object.values(map).reduce(function(s,v){return s+v;},0);
+  var items=Object.entries(map).map(function(e){return{name:e[0],value:e[1],sub:total?' '+((e[1]/total*100).toFixed(0))+'%':''};}).sort(function(a,b){return b.value-a.value;});
+  renderRankingList('venue-ranking',items,true);
 }
 
 /* ─── RECENT NOTES ─── */
@@ -1023,7 +971,30 @@ function renderRecentNotes(){
   if(badge)badge.textContent=notes.length+'件';
   if(!list)return;
   if(!notes.length){list.innerHTML='<div class="notes-empty">この期間のNote記事はありません</div>';return;}
-  list.innerHTML=notes.slice(0,6).map(function(n){
+  /* PC=5, SP=3 — detect via window width */
+  var limit=window.innerWidth<=640?3:5;
+  var visible=notes.slice(0,limit);
+  var hasMore=notes.length>limit;
+  list.innerHTML=visible.map(function(n){
+    var dt=n.publishedDate.getFullYear()+'/'+(n.publishedDate.getMonth()+1)+'/'+(n.publishedDate.getDate());
+    var cfg=getNTC(n.noteType);
+    var chip=n.noteType?'<span class="nt-chip '+cfg.cls+'">'+cfg.icon+' '+esc(n.noteType)+'</span>':'';
+    var thumbHtml=n.thumbnailUrl?'<img src="'+escAttr(n.thumbnailUrl)+'" alt="" class="note-card-thumb" onerror="this.style.display=\'none\'">'
+      :'<div class="note-card-ph" style="background:'+cfg.ph+'">'+cfg.icon+'</div>';
+    return '<a class="note-card" href="'+escAttr(n.noteUrl)+'" target="_blank" rel="noopener">'+thumbHtml+'<div class="note-card-body"><div class="note-card-title">'+esc(n.noteTitle||'無題')+'</div><div class="note-card-date">'+dt+'</div><div class="note-card-footer">'+chip+'<span class="note-card-link">見る →</span></div></div></a>';
+  }).join('');
+  if(hasMore){
+    list.innerHTML+='<button class="notes-show-more" onclick="showAllNotes(this)">もっと見る（あと'+(notes.length-limit)+'件）</button>';
+    list.dataset.allNotes=JSON.stringify(notes.map(function(n){return n.noteUrl;}));
+  }
+}
+function showAllNotes(btn){
+  /* Re-render without limit */
+  var list=btn.parentElement;
+  var badge=document.getElementById('notes-count-badge');
+  var notes=getFilteredNotes();
+  if(badge)badge.textContent=notes.length+'件';
+  list.innerHTML=notes.map(function(n){
     var dt=n.publishedDate.getFullYear()+'/'+(n.publishedDate.getMonth()+1)+'/'+(n.publishedDate.getDate());
     var cfg=getNTC(n.noteType);
     var chip=n.noteType?'<span class="nt-chip '+cfg.cls+'">'+cfg.icon+' '+esc(n.noteType)+'</span>':'';
