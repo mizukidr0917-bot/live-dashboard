@@ -947,6 +947,7 @@ body {
 }
 
 .star5-body { padding: 12px 13px 12px; }
+.star5-thumb-wrap { overflow: hidden; }
 
 .star5-date {
   font-size: 10px;
@@ -1227,12 +1228,41 @@ a:hover { text-decoration: underline; }
 
 /* ── Responsive ── */
 
+/* ── Note progress bar ── */
+.note-progress {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.note-progress-bar-wrap { flex: 1; min-width: 0; }
+.note-progress-label { white-space: nowrap; font-size: 10px; color: var(--text-3); }
+.note-progress-bar-bg { height: 4px; border-radius: 99px; background: rgba(255,255,255,0.08); margin-top: 3px; overflow: hidden; }
+.note-progress-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .4s ease; }
+.note-progress-stat { font-size: 11px; font-weight: 600; color: var(--accent-2); white-space: nowrap; }
+.note-pending-badge {
+  display: inline-block;
+  background: rgba(251,191,36,0.12);
+  color: var(--amber);
+  border: 1px solid rgba(251,191,36,0.2);
+  border-radius: 99px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
 /* Tablet/narrow desktop: stack layouts */
 @media (max-width: 1200px) {
   .analysis-row { grid-template-columns: 1fr; }
   .charts-row { grid-template-columns: 1fr; }
   .summary-row { grid-template-columns: 1fr; }
-  /* Star5 grid: 3 cols */
   .star5-scroll-wrap { grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); }
 }
 
@@ -1253,35 +1283,39 @@ a:hover { text-decoration: underline; }
   .sidebar-toggle { display: flex; }
   .fab-filter { display: inline-flex; }
 
-  /* Hero stats hide on tablet to save space */
   .page-header-right { display: none; }
 
-  /* KPI: 3 metric cards 2-col, comment card full-width */
+  /* B案: 2×2 grid — 3 metric cards + comment card fills right-bottom */
   .kpi-grid {
     grid-template-columns: repeat(2, minmax(0,1fr));
     grid-template-rows: auto auto;
+    gap: 10px;
   }
+  /* comment card sits in 4th cell, normal vertical layout */
   .kpi-comment-card {
-    grid-column: 1 / -1;
-    flex-direction: row;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
+    grid-column: span 1;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 14px 12px;
     min-height: unset;
   }
-  .kpi-comment-head { margin-bottom: 0; flex-shrink: 0; writing-mode: vertical-rl; transform: rotate(180deg); font-size: 9px; }
-  .kpi-comment-body { font-size: 13px; }
+  .kpi-comment-head {
+    writing-mode: horizontal-tb;
+    transform: none;
+    font-size: 9px;
+    margin-bottom: 8px;
+    flex-shrink: unset;
+  }
+  .kpi-comment-body { font-size: 12px; line-height: 1.5; }
+  .kpi-comment-foot { display: block; margin-top: 8px; font-size: 10px; }
   .kpi-comment-decoration { display: none; }
-  .kpi-card { padding: 14px; }
-  .kpi-value { font-size: 30px; }
+  .kpi-card { padding: 14px 12px; }
+  .kpi-value { font-size: 28px; }
+  .kpi-icon { width: 34px; height: 34px; font-size: 15px; }
+  .kpi-top { margin-bottom: 10px; }
 
-  /* Period summary 2-col */
   .period-stat-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-
-  /* Charts: single col */
   .charts-row { grid-template-columns: 1fr; }
-
-  /* Topbar */
   .period-btn { padding: 3px 9px; font-size: 10px; }
 
   /* Star5: horizontal scroll on tablet */
@@ -1298,66 +1332,68 @@ a:hover { text-decoration: underline; }
   .star5-empty { width: auto; }
 }
 
-/* Mobile: ≤640px */
+/* Mobile ≤640px */
 @media (max-width: 640px) {
-  .main { padding: 10px 12px 36px; }
+  /* Safe area for iPhone home bar / Safari toolbar */
+  body { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .main { padding: 10px 12px calc(80px + env(safe-area-inset-bottom, 16px)); }
   .topbar { padding: 10px 12px; gap: 8px; }
   .topbar-sub { display: none; }
   .year-select { display: none; }
   .topbar-title { font-size: 14px; }
 
-  /* Page header: compact */
-  .page-header { padding: 16px 18px 14px; }
-  .page-title { font-size: 22px; }
+  /* Page header compact */
+  .page-header { padding: 14px 16px 12px; }
+  .page-title { font-size: 20px; }
+  .page-tagline { font-size: 11px; }
   .page-meta { margin-top: 8px; }
   .page-header-right { display: none; }
 
-  /* KPI: 3 metrics 2-col, comment full width and compact */
+  /* B案: 2×2 grid stays; comment card 4th cell */
   .kpi-grid {
     grid-template-columns: repeat(2, minmax(0,1fr));
     gap: 8px;
   }
-  .kpi-card:nth-child(3) { grid-column: span 1; }
-  .kpi-value { font-size: 28px; }
-  .kpi-icon { width: 32px; height: 32px; font-size: 14px; }
-  .kpi-card { padding: 12px 12px; }
-  .kpi-top { margin-bottom: 10px; }
-
-  /* Comment card: horizontal compact */
   .kpi-comment-card {
-    padding: 12px 14px;
+    grid-column: span 1;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 12px 10px;
     min-height: unset;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
   }
   .kpi-comment-head {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
+    writing-mode: horizontal-tb;
+    transform: none;
     font-size: 9px;
-    margin-bottom: 0;
-    flex-shrink: 0;
+    margin-bottom: 6px;
+    flex-shrink: unset;
+    letter-spacing: .04em;
   }
-  .kpi-comment-body { font-size: 12px; line-height: 1.5; }
+  .kpi-comment-body { font-size: 11px; line-height: 1.5; }
   .kpi-comment-foot { display: none; }
   .kpi-comment-decoration { display: none; }
+  .kpi-value { font-size: 26px; }
+  .kpi-icon { width: 30px; height: 30px; font-size: 13px; }
+  .kpi-card { padding: 12px 10px; }
+  .kpi-top { margin-bottom: 8px; }
+  .kpi-delta { font-size: 10px; padding: 2px 6px; }
 
-  /* Notes: full-width vertical list, larger touch targets */
+  /* Notes */
   .note-list::before { left: 22px; }
   .note-item::before { left: 18px; }
-  .note-thumb-wrap { margin-left: 12px; }
-  .note-thumb, .note-thumb-placeholder { width: 52px; height: 52px; }
+  .note-thumb-wrap { margin-left: 10px; }
+  .note-thumb, .note-thumb-placeholder { width: 48px; height: 48px; }
   .note-title { font-size: 12px; }
 
-  /* Summary: 2-col stays */
+  /* Summary 2-col */
   .period-stat-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .summary-row { grid-template-columns: 1fr; }
 
-  /* Charts: reduced height, wide inner for scroll */
-  .chart-wrap { height: 165px; }
+  /* Charts */
+  .chart-wrap { height: 160px; }
   .chart-inner-wide { width: 820px; min-width: 820px; }
 
-  /* Star5: scroll */
+  /* Star5 scroll */
   .star5-scroll-wrap {
     display: flex;
     overflow-x: auto;
@@ -1366,21 +1402,25 @@ a:hover { text-decoration: underline; }
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
   }
-  .star5-card { flex-shrink: 0; width: 185px; scroll-snap-align: start; }
-  .star5-thumb-placeholder { height: 100px; font-size: 26px; }
+  .star5-card { flex-shrink: 0; width: 180px; scroll-snap-align: start; }
   .star5-empty { width: auto; }
 
-  /* Rankings: single col */
   .analysis-row { grid-template-columns: 1fr; }
-
-  /* Section titles */
   .section-title { font-size: 13px; }
+
+  /* FAB: smaller, higher to avoid overlap with content */
+  .fab-filter {
+    padding: 8px 13px;
+    font-size: 11px;
+    right: 14px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 @media (max-width: 400px) {
-  .kpi-value { font-size: 24px; }
-  .star5-card { width: 168px; }
-  .period-stat-value { font-size: 20px; }
+  .kpi-value { font-size: 22px; }
+  .star5-card { width: 164px; }
+  .period-stat-value { font-size: 19px; }
 }
 </style>
 </head>
@@ -1457,7 +1497,7 @@ a:hover { text-decoration: underline; }
             <div class="page-header-inner">
               <div class="page-header-left">
                 <div class="page-title">LIVE <span>LOG</span></div>
-                <div class="page-tagline">あなたの音楽活動の記録</div>
+                <div class="page-tagline">ライブの記録が、未来の自分へのプレイリストになる。</div>
                 <div class="page-meta">
                   <span class="page-meta-text" id="header-period">対象期間：読み込み中</span>
                   <span class="page-badge" id="header-total">0 件</span>
@@ -1542,12 +1582,19 @@ a:hover { text-decoration: underline; }
                 <div class="section-title">📝 最近書いたNote</div>
                 <span class="notes-count-badge" id="notes-count-badge">選択期間</span>
               </div>
+              <div id="note-progress-wrap" class="note-progress">
+                <div class="note-progress-bar-wrap">
+                  <div class="note-progress-label">今月のNote化率 <span id="note-progress-text">—</span></div>
+                  <div class="note-progress-bar-bg"><div class="note-progress-bar-fill" id="note-progress-bar" style="width:0%"></div></div>
+                </div>
+                <div class="note-progress-stat" id="note-pending-text">—</div>
+              </div>
               <div id="recent-note-list" class="note-list"></div>
             </div>
 
             <!-- Period summary -->
             <div class="period-summary-card">
-              <div class="section-title">選択期間のサマリー</div>
+              <div class="section-title">選択期間のまとめ</div>
               <div class="period-stat-grid">
                 <div class="period-stat">
                   <div class="period-stat-icon">🎵</div>
@@ -1572,6 +1619,18 @@ a:hover { text-decoration: underline; }
                   <div class="period-stat-value" id="mini-monthly-avg">—</div>
                   <div class="period-stat-label">平均評価</div>
                   <div class="period-stat-sub" id="mini-monthly-avg-sub">—</div>
+                </div>
+                <div class="period-stat">
+                  <div class="period-stat-icon">✍️</div>
+                  <div class="period-stat-value" id="mini-note-rate">—</div>
+                  <div class="period-stat-label">Note化率</div>
+                  <div class="period-stat-sub" id="mini-note-rate-sub">—</div>
+                </div>
+                <div class="period-stat">
+                  <div class="period-stat-icon">💫</div>
+                  <div class="period-stat-value" id="mini-star5-pct">—</div>
+                  <div class="period-stat-label">星5率</div>
+                  <div class="period-stat-sub" id="mini-star5-pct-sub">—</div>
                 </div>
               </div>
             </div>
@@ -1612,7 +1671,7 @@ a:hover { text-decoration: underline; }
           <!-- Star5 -->
           <div class="star5-section">
             <div class="star5-section-header">
-              <div class="section-title">⭐ 星5ライブ — 宝物棚 <span class="section-note" id="star5-count-label" style="margin-left:4px;"></span></div>
+              <div class="section-title">⭐ 星5ライブ一覧 <span class="section-note" id="star5-count-label" style="margin-left:4px;"></span></div>
             </div>
             <div id="star5-list" class="star5-scroll-wrap"></div>
           </div>
@@ -1843,55 +1902,90 @@ function renderSummary(records) {
   });
   const monthStar5 = monthLives.filter(r=>r.rating===5).length;
   const prevStar5 = prevMonthLives.filter(r=>r.rating===5).length;
+  const liveCount = monthLives.length;
+  const noteCount = monthNotesAll.length;
 
-  // Update month label
+  // Month label
   document.getElementById('highlight-month-label').textContent = `（${now.getMonth()+1}月）`;
 
   // KPI values
-  document.getElementById('sc-total').innerHTML = `${monthLives.length}<span class="unit">本</span>`;
-  document.getElementById('sc-avg').innerHTML = `${monthNotesAll.length}<span class="unit">件</span>`;
+  document.getElementById('sc-total').innerHTML = `${liveCount}<span class="unit">本</span>`;
+  document.getElementById('sc-avg').innerHTML = `${noteCount}<span class="unit">件</span>`;
   document.getElementById('sc-star5').innerHTML = `${monthStar5}<span class="unit">回</span>`;
   document.getElementById('sc-total-sub').textContent = `${now.getMonth()+1}月のライブ本数`;
   document.getElementById('sc-avg-sub').textContent = `${now.getMonth()+1}月の公開Note`;
   document.getElementById('sc-star5-sub').textContent = `${now.getMonth()+1}月の星5ライブ`;
 
   // Delta badges
-  const liveDelta = getDeltaLabel(monthLives.length, prevMonthLives.length);
-  const noteDelta = getDeltaLabel(monthNotesAll.length, prevMonthNotes.length);
+  const liveDelta = getDeltaLabel(liveCount, prevMonthLives.length);
+  const noteDelta = getDeltaLabel(noteCount, prevMonthNotes.length);
   const star5Delta = getDeltaLabel(monthStar5, prevStar5);
   const setDelta = (id, d) => { const el=document.getElementById(id); el.textContent=d.text; el.className=`kpi-delta ${d.cls}`; };
   setDelta('kpi-live-delta', liveDelta);
   setDelta('kpi-note-delta', noteDelta);
   setDelta('kpi-star5-delta', star5Delta);
 
-  // Comment
-  const commentText = monthLives.length + monthNotesAll.length === 0
-    ? '今月の記録はこれから。\n1本参加して1本書こう。'
-    : `今月はライブ${monthLives.length}本・Note${monthNotesAll.length}件。${monthStar5>0 ? '最高の体験を言葉に残せています。':'次の感動をNoteに残しましょう。'}`;
+  // Smart activity comment
+  let commentText = '';
+  if (liveCount === 0) {
+    commentText = '今月はまだライブ記録がありません。次の予定を楽しみに待ちましょう。';
+  } else if (liveCount <= 2) {
+    commentText = '今月はじっくり味わう月。印象に残った瞬間をNoteに残していきましょう。';
+  } else if (liveCount <= 5) {
+    commentText = '今月はライブもNoteも良いペース。体験を言葉にできています。';
+  } else {
+    commentText = 'かなり濃いライブ月間。記憶が薄れる前にNoteへ残していきましょう。';
+  }
+  if (monthStar5 > 0) commentText += '\n星5ライブあり。今月のベスト体験を振り返る価値があります。';
+  if (liveCount > 0 && noteCount < liveCount) commentText += '\nまだNoteにできるライブが残っています。';
   document.getElementById('sc-comment').textContent = commentText;
 
   // Hero stats in page header
   const heroLive = document.getElementById('hero-live-count');
   const heroNote = document.getElementById('hero-note-count');
   const heroStar = document.getElementById('hero-star5-count');
-  if (heroLive) heroLive.textContent = monthLives.length;
-  if (heroNote) heroNote.textContent = monthNotesAll.length;
+  if (heroLive) heroLive.textContent = liveCount;
+  if (heroNote) heroNote.textContent = noteCount;
   if (heroStar) heroStar.textContent = monthStar5;
+
+  // Note progress bar (today's month)
+  const progressBar = document.getElementById('note-progress-bar');
+  const progressText = document.getElementById('note-progress-text');
+  const pendingText = document.getElementById('note-pending-text');
+  if (progressBar && progressText && pendingText) {
+    const pct = liveCount > 0 ? Math.min(100, Math.round((noteCount / liveCount) * 100)) : 0;
+    progressBar.style.width = pct + '%';
+    progressText.textContent = `${noteCount}/${liveCount}本`;
+    const pending = Math.max(0, liveCount - noteCount);
+    if (pending > 0) {
+      pendingText.innerHTML = `未Note化 <span class="note-pending-badge">${pending}本</span>`;
+    } else if (liveCount > 0) {
+      pendingText.textContent = '全記事済み ✓';
+    } else {
+      pendingText.textContent = '—';
+    }
+  }
 
   // Period summary
   const periodNotes = getFilteredNotes();
   const periodStar5 = records.filter(r=>r.rating===5).length;
   const periodAvg = records.length ? (records.reduce((s,r)=>s+(r.rating||0),0)/records.length).toFixed(2) : '—';
   const periodLabel = currentPeriod==='thisYear'?'今年':currentPeriod==='all'?'全期間':currentPeriod==='last12'?'直近12ヶ月':`${selectedYear}年`;
+  const noteRate = records.length > 0 ? `${Math.round((periodNotes.length / records.length) * 100)}%` : '—';
+  const star5Pct = records.length > 0 ? `${Math.round((periodStar5 / records.length) * 100)}%` : '—';
 
   document.getElementById('mini-this-year').textContent = `${records.length}回`;
   document.getElementById('mini-this-year-sub').textContent = `${periodLabel}のライブ数`;
-  document.getElementById('mini-monthly-avg').textContent = `${periodAvg}★`;
+  document.getElementById('mini-monthly-avg').textContent = periodAvg === '—' ? '—' : `${periodAvg}★`;
   document.getElementById('mini-monthly-avg-sub').textContent = `${periodLabel}の平均評価`;
   document.getElementById('mini-star5-rate').textContent = `${periodStar5}回`;
   document.getElementById('mini-star5-rate-sub').textContent = `${periodLabel}の星5ライブ数`;
   document.getElementById('mini-note-this-year').textContent = `${periodNotes.length}件`;
   document.getElementById('mini-note-this-year-sub').textContent = `${periodLabel}のNote記事数`;
+  document.getElementById('mini-note-rate').textContent = noteRate;
+  document.getElementById('mini-note-rate-sub').textContent = `Note記事数 / ライブ数`;
+  document.getElementById('mini-star5-pct').textContent = star5Pct;
+  document.getElementById('mini-star5-pct-sub').textContent = `${periodLabel}の星5率`;
 }
 
 function renderCharts(records) {
@@ -1994,11 +2088,12 @@ function renderStar5List(records) {
     const artistDisplay = r.artists.join('・');
     const linkedNotes = notesByLiveId.get(r.id)||[];
     const primaryNote = linkedNotes[0]||null;
-    const thumbHtml = `<div class="star5-thumb-placeholder">🎵</div>`;
+    // Only show thumb area if there's a real image URL
+    const thumbHtml = r.imageUrl ? `<img src="${escAttr(r.imageUrl)}" alt="" class="star5-thumb" onerror="this.parentElement.style.display='none'">` : '';
     const setlistLink = r.setlistUrl ? `<a class="star5-link" href="${escAttr(r.setlistUrl)}" target="_blank" rel="noopener">セットリスト</a>` : '';
     const noteLink = primaryNote ? `<a class="star5-link" href="${escAttr(primaryNote.noteUrl)}" target="_blank" rel="noopener">Note記事</a>` : '';
     return `<div class="star5-card">
-      ${thumbHtml}
+      ${thumbHtml ? `<div class="star5-thumb-wrap">${thumbHtml}</div>` : ''}
       <div class="star5-body">
         <div class="star5-date">${dateStr}</div>
         <div class="star5-name">${esc(r.liveName||'—')}</div>
