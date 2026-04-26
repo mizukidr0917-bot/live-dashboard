@@ -216,6 +216,40 @@ a:hover{text-decoration:underline}
 .star5-link:hover{background:rgba(124,110,247,.12);border-color:rgba(124,110,247,.4);text-decoration:none}
 .star5-empty{font-size:13px;color:var(--text-3);padding:20px;text-align:center;grid-column:1/-1}
 
+/* Note type chips — colored by category */
+.note-type-chip{display:inline-flex;align-items:center;gap:3px;border-radius:99px;padding:1px 7px;font-size:10px;font-weight:600;white-space:nowrap}
+.nt-live   {background:rgba(74,158,255,.15);color:#60b4ff;border:1px solid rgba(74,158,255,.25)}
+.nt-song   {background:rgba(167,139,250,.15);color:var(--accent-2);border:1px solid rgba(167,139,250,.25)}
+.nt-album  {background:rgba(52,211,153,.15);color:#6ee7b7;border:1px solid rgba(52,211,153,.25)}
+.nt-summary{background:rgba(251,191,36,.15);color:#fcd34d;border:1px solid rgba(251,191,36,.25)}
+.nt-misc   {background:rgba(139,147,184,.12);color:var(--text-2);border:1px solid var(--border-s)}
+
+/* Note month progress panel */
+.note-month-stats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;padding:8px 10px;background:var(--bg-3);border:1px solid var(--border);border-radius:var(--r-sm)}
+.note-month-total{font-size:11px;font-weight:700;color:var(--text);margin-right:4px}
+.note-type-breakdown{display:flex;flex-wrap:wrap;gap:4px}
+
+/* Next action banner */
+.action-banner{
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(130deg,rgba(124,110,247,.1),rgba(74,158,255,.06));
+  border:1px solid rgba(124,110,247,.22);border-radius:var(--r);
+  padding:10px 14px;margin-top:14px;
+}
+.action-banner-icon{font-size:18px;flex-shrink:0}
+.action-banner-text{font-size:12px;color:var(--text);font-weight:600;line-height:1.45}
+.action-banner-sub{font-size:11px;color:var(--text-2);margin-top:2px}
+
+/* Period summary (replaces fixed ③ totals) */
+.period-summary-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.ps-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.ps-icon{font-size:12px;margin-bottom:4px}
+.ps-value{font-family:var(--fd);font-size:22px;font-weight:700;line-height:1}
+.ps-label{font-size:10px;color:var(--text-3);margin-top:2px}
+
+@media(max-width:1280px){.period-summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){.period-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ps-value{font-size:19px}}
+
 /* Footer */
 .page-footer{text-align:center;padding:22px 0 10px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border);margin-top:8px}
 .page-footer span{color:var(--accent-2)}
@@ -390,10 +424,13 @@ a:hover{text-decoration:underline}
               <div class="kpi-rate-bar-bg"><div class="kpi-rate-bar-fill" id="note-rate-bar" style="width:0%"></div></div>
               <div class="kpi-rate-hint" id="kpi-rate-hint"></div>
             </div>
+          </div><!-- /kpi-grid -->
+          <!-- 次のアクション -->
+          <div id="action-banner" class="action-banner" style="display:none">
+            <div class="action-banner-icon" id="action-icon">💡</div>
+            <div><div class="action-banner-text" id="action-text">—</div><div class="action-banner-sub" id="action-sub"></div></div>
           </div>
-        </div>
-
-        <!-- ② 分析 -->
+        </div><!-- /zone ① -->
         <div class="zone">
           <div class="zone-header">
             <div class="zone-title">② 分析・トレンド</div>
@@ -417,6 +454,11 @@ a:hover{text-decoration:underline}
                 <div class="panel-title">最近のNote</div>
                 <span class="notes-count-badge" id="notes-count-badge">0件</span>
               </div>
+              <!-- 今月のNote進捗 -->
+              <div class="note-month-stats" id="note-month-stats">
+                <span class="note-month-total" id="note-month-total">今月 0件</span>
+                <div class="note-type-breakdown" id="note-type-breakdown"></div>
+              </div>
               <div class="note-rate-row">
                 <span class="note-rate-text" id="note-rate-label">今月 —/—本</span>
                 <div class="note-rate-bar-wrap"><div class="note-rate-bar-bg"><div class="note-rate-bar-fill" id="note-rate-bar-panel" style="width:0%"></div></div></div>
@@ -438,37 +480,19 @@ a:hover{text-decoration:underline}
           </div>
         </div>
 
-        <!-- ③ 全期間 -->
+        <!-- ③ 期間内サマリー（選択期間連動） -->
         <div class="zone">
           <div class="zone-header">
-            <div class="zone-title">③ 実績・積み上げ</div>
-            <span class="zone-note" id="all-period-label">全期間</span>
+            <div class="zone-title">③ 期間内サマリー</div>
+            <span class="zone-note" id="period-summary-label">選択期間</span>
           </div>
-          <div class="total-stats">
-            <div class="total-stat">
-              <div class="total-stat-icon">🎵</div>
-              <div class="total-stat-value" id="total-live-count">—</div>
-              <div class="total-stat-label">総ライブ数</div>
-              <div class="total-stat-sub" id="total-live-sub"></div>
-            </div>
-            <div class="total-stat">
-              <div class="total-stat-icon">📝</div>
-              <div class="total-stat-value" id="total-note-count">—</div>
-              <div class="total-stat-label">総Note記事数</div>
-              <div class="total-stat-sub" id="total-note-sub"></div>
-            </div>
-            <div class="total-stat">
-              <div class="total-stat-icon">⭐</div>
-              <div class="total-stat-value" id="total-star5-count">—</div>
-              <div class="total-stat-label">星5ライブ数</div>
-              <div class="total-stat-sub" id="total-star5-sub"></div>
-            </div>
-            <div class="total-stat">
-              <div class="total-stat-icon">📊</div>
-              <div class="total-stat-value" id="total-avg-rating">—</div>
-              <div class="total-stat-label">平均評価</div>
-              <div class="total-stat-sub" id="total-avg-sub"></div>
-            </div>
+          <div class="period-summary-grid">
+            <div class="ps-card"><div class="ps-icon">🎵</div><div class="ps-value" id="ps-live">—</div><div class="ps-label">ライブ数</div></div>
+            <div class="ps-card"><div class="ps-icon">📝</div><div class="ps-value" id="ps-note">—</div><div class="ps-label">Note記事数</div></div>
+            <div class="ps-card"><div class="ps-icon">⭐</div><div class="ps-value" id="ps-star5">—</div><div class="ps-label">星5ライブ</div></div>
+            <div class="ps-card"><div class="ps-icon">📊</div><div class="ps-value" id="ps-avg">—</div><div class="ps-label">平均評価</div></div>
+            <div class="ps-card"><div class="ps-icon">✍️</div><div class="ps-value" id="ps-noterate">—</div><div class="ps-label">Note化率</div></div>
+            <div class="ps-card"><div class="ps-icon">💫</div><div class="ps-value" id="ps-star5pct">—</div><div class="ps-label">星5率</div></div>
           </div>
           <div class="star5-section-header">
             <div class="star5-title">⭐ 星5ライブ一覧 <span id="star5-count-label" style="font-size:10px;color:var(--text-3);font-weight:400;margin-left:4px"></span></div>
@@ -639,6 +663,16 @@ function renderQualityInline(){
   else{el.className='info-bar warn';el.textContent=`データ品質：${issues.join(' / ')}`;}
 }
 
+// Note type config
+const NOTE_TYPES={
+  'ライブレポ': {icon:'🎤',cls:'nt-live'},
+  '楽曲レポ':   {icon:'🎧',cls:'nt-song'},
+  'アルバム感想':{icon:'💿',cls:'nt-album'},
+  'まとめ':     {icon:'🧾',cls:'nt-summary'},
+  '雑記':       {icon:'✏️',cls:'nt-misc'},
+};
+function getNoteTypeCfg(type){return NOTE_TYPES[type]||{icon:'📝',cls:'nt-misc'};}
+
 function getDelta(cur,prev){
   if(prev==null)return{text:'—',cls:'zero'};
   const d=cur-prev;
@@ -678,10 +712,46 @@ function renderThisMonth(){
   document.getElementById('kpi-star5-hint').textContent=star5>0?'最高の体験あり':'';
   document.getElementById('kpi-rate-hint').textContent=lc===0?'':rate===100?'全件Note済み ✓':rate>=50?'半分以上Note化済み':`あと${lc-nc}本でコンプリート`;
 
+  // Note progress panel (today's month)
   document.getElementById('note-rate-label').textContent=`今月 ${nc}/${lc}本`;
   document.getElementById('note-rate-bar-panel').style.width=(lc>0?rate:0)+'%';
   const pending=Math.max(0,lc-nc);
   document.getElementById('note-rate-stat').textContent=pending>0?`未Note ${pending}本`:lc>0?'完了 ✓':'—';
+
+  // Note month stats and type breakdown
+  const totalEl=document.getElementById('note-month-total');
+  const bdEl=document.getElementById('note-type-breakdown');
+  if(totalEl)totalEl.textContent=`今月 ${nc}件`;
+  if(bdEl){
+    const typeCounts={};
+    mn.forEach(n=>{const t=n.noteType||'';if(t)typeCounts[t]=(typeCounts[t]||0)+1;});
+    bdEl.innerHTML=Object.entries(typeCounts).map(([t,cnt])=>{
+      const cfg=getNoteTypeCfg(t);
+      return`<span class="note-type-chip ${cfg.cls}">${cfg.icon} ${esc(t)} ${cnt}</span>`;
+    }).join('');
+  }
+
+  // Next action banner
+  const banner=document.getElementById('action-banner');
+  const iconEl=document.getElementById('action-icon');
+  const textEl=document.getElementById('action-text');
+  const subEl=document.getElementById('action-sub');
+  if(banner&&textEl){
+    let icon='💡',text='',sub='';
+    if(lc===0){
+      icon='🎵';text='今月はまだライブ記録がありません';sub='楽曲レポやアルバム感想から始めてもOK';
+    } else if(nc===0){
+      icon='✍️';text=`${lc}本のライブがNoteになっていません`;sub='1本書くだけで記録が残ります';
+    } else if(nc<lc){
+      icon='📝';text=`あと${lc-nc}本Noteを書こう`;sub=star5>0?'星5ライブから書くのがおすすめ':'最近のライブの感想から始めてみよう';
+    } else if(star5>0&&nc>=lc){
+      icon='⭐';text='今月の星5ライブをNoteに深掘りしよう';sub='満点体験は記録する価値があります';
+    } else if(lc<=1){
+      icon='🎧';text='楽曲レポやアルバム感想でNote継続できます';sub='ライブが少ない月でも継続がカウントされます';
+    }
+    if(text){banner.style.display='flex';iconEl.textContent=icon;textEl.textContent=text;subEl.textContent=sub;}
+    else{banner.style.display='none';}
+  }
 }
 
 function renderCharts(records){
@@ -705,13 +775,16 @@ function renderCharts(records){
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8b93b8',boxWidth:10,usePointStyle:true,font:{size:10}}}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:(v,i)=>i%maxTick===0?labels[i]:''}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#545c7e',font:{size:10},stepSize:1},beginAtZero:true}}}});
   if(lineChart)lineChart.destroy();
   lineChart=new Chart(lc.getContext('2d'),{type:'line',data:{labels,datasets:[{label:'平均評価',data:avgRatings,borderColor:'#7c6ef7',backgroundColor:'rgba(124,110,247,.07)',pointBackgroundColor:'#a78bfa',pointRadius:3,pointHoverRadius:5,fill:true,tension:0.3,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:(v,i)=>i%maxTick===0?labels[i]:''}},y:{grid:{color:'rgba(255,255,255,.05)'},min:1,max:5,ticks:{color:'#545c7e',font:{size:10},stepSize:1}}}}});
-  // Format analysis comment
+  // Format analysis comment — only for last12 or all period
   const totals={ワンマン:0,対バン:0,フェス:0,サーキット:0};
   stats.forEach(s=>Object.keys(totals).forEach(k=>totals[k]+=s.formats[k]));
   const total=Object.values(totals).reduce((a,b)=>a+b,0);
   const aEl=document.getElementById('bar-chart-analysis');
-  if(total>0){const top=Object.entries(totals).sort((a,b)=>b[1]-a[1])[0];const pct=Math.round(top[1]/total*100);if(pct>=45){aEl.textContent=`📊 ${top[0]}の比率が高め（${pct}%）`;aEl.style.display='block';}else aEl.style.display='none';}
-  else aEl.style.display='none';
+  if(aEl){
+    const canComment=(currentPeriod==='last12'||currentPeriod==='all');
+    if(canComment&&total>0){const top=Object.entries(totals).sort((a,b)=>b[1]-a[1])[0];const pct=Math.round(top[1]/total*100);if(pct>=45){aEl.textContent=`📊 ${top[0]}の比率が高め（${pct}%）`;aEl.style.display='block';}else aEl.style.display='none';}
+    else aEl.style.display='none';
+  }
 }
 
 function renderRankingList(id,items,isVenue=false){
@@ -730,7 +803,12 @@ function renderLeftPanel(records){
   const items=Object.entries(map).map(([name,value])=>({name,value,sub:total?` ${((value/total)*100).toFixed(0)}%`:''})).sort((a,b)=>b.value-a.value);
   renderRankingList('left-panel-list',items,false);
   const aEl=document.getElementById('artist-analysis-comment');
-  if(aEl&&items.length){const top=items[0];const pct=total>0?Math.round(top.value/total*100):0;if(pct>=40){aEl.textContent=`📊 ${top.name}への集中が高め（${pct}%）`;aEl.style.display='block';}else aEl.style.display='none';}
+  if(aEl&&items.length){
+    const canComment=(currentPeriod==='last12'||currentPeriod==='all');
+    const top=items[0];const pct=total>0?Math.round(top.value/total*100):0;
+    if(canComment&&pct>=40){aEl.textContent=`📊 ${top.name}への集中が高め（${pct}%）`;aEl.style.display='block';}
+    else aEl.style.display='none';
+  }
 }
 function renderVenueRanking(records){
   const map={};records.forEach(r=>{if(r.venue)map[r.venue]=(map[r.venue]||0)+1;});
@@ -745,25 +823,31 @@ function renderRecentNotes(){
   if(!notes.length){list.innerHTML='<div class="notes-empty">この期間のNote記事はありません</div>';return;}
   list.innerHTML=notes.slice(0,5).map(n=>{
     const dt=`${n.publishedDate.getFullYear()}/${String(n.publishedDate.getMonth()+1).padStart(2,'0')}/${String(n.publishedDate.getDate()).padStart(2,'0')}`;
-    const chip=n.noteType?`<span class="note-chip">${esc(n.noteType)}</span>`:'';
-    const thumb=n.thumbnailUrl?`<img src="${escAttr(n.thumbnailUrl)}" alt="" class="note-thumb" onerror="this.style.display='none'">`:`<div class="note-thumb-ph">📝</div>`;
+    const cfg=getNoteTypeCfg(n.noteType);
+    const chip=n.noteType?`<span class="note-type-chip ${cfg.cls}">${cfg.icon} ${esc(n.noteType)}</span>`:'';
+    const thumb=n.thumbnailUrl?`<img src="${escAttr(n.thumbnailUrl)}" alt="" class="note-thumb" onerror="this.style.display='none'">`:`<div class="note-thumb-ph">${cfg.icon||'📝'}</div>`;
     return`<a class="note-item" href="${escAttr(n.noteUrl)}" target="_blank" rel="noopener"><div class="note-thumb-wrap">${thumb}</div><div class="note-body"><div class="note-date">${dt}</div><div class="note-title">${esc(n.noteTitle||'無題')}</div><div class="note-meta">${chip}<span class="note-link-text">見る →</span></div></div></a>`;
   }).join('');
 }
-function renderTotals(){
-  const total=allRecords.length;
-  const totalStar5=allRecords.filter(r=>r.rating===5).length;
-  const rated=allRecords.filter(r=>r.rating>0);
+function renderPeriodSummary(records){
+  const periodNotes=getFilteredNotes();
+  const star5=records.filter(r=>r.rating===5).length;
+  const rated=records.filter(r=>r.rating>0);
   const avg=rated.length?(rated.reduce((s,r)=>s+r.rating,0)/rated.length).toFixed(2):'—';
-  document.getElementById('total-live-count').textContent=`${total}回`;
-  document.getElementById('total-note-count').textContent=`${allNotes.length}件`;
-  document.getElementById('total-star5-count').textContent=`${totalStar5}回`;
-  document.getElementById('total-avg-rating').textContent=avg==='—'?'—':`${avg}★`;
-  const yrs=[...new Set(allRecords.map(r=>r.date.getFullYear()))];
-  const span=yrs.length>1?`${Math.min(...yrs)}〜${Math.max(...yrs)}年`:`${yrs[0]||''}年`;
-  ['total-live-sub','total-note-sub','total-star5-sub','total-avg-sub'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=span;});
-  const apl=document.getElementById('all-period-label');if(apl)apl.textContent=span;
+  const noteRate=records.length>0?`${Math.round((periodNotes.length/records.length)*100)}%`:'—';
+  const star5Pct=records.length>0?`${Math.round((star5/records.length)*100)}%`:'—';
+  const pn=currentPeriod==='year'?`${selectedYear}年`:currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12ヶ月':'全期間';
+  const lbl=document.getElementById('period-summary-label');if(lbl)lbl.textContent=pn;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('ps-live',`${records.length}回`);
+  set('ps-note',`${periodNotes.length}件`);
+  set('ps-star5',`${star5}回`);
+  set('ps-avg',avg==='—'?'—':`${avg}★`);
+  set('ps-noterate',noteRate);
+  set('ps-star5pct',star5Pct);
 }
+// Keep renderTotals as no-op to avoid errors if called elsewhere
+function renderTotals(){}
 function renderStar5List(records){
   const star5=records.filter(r=>r.rating===5).sort((a,b)=>b.date-a.date);
   const el=document.getElementById('star5-list');
@@ -798,6 +882,7 @@ function renderDashboard(){
   try{renderLeftPanel(records);}catch(e){console.error('artist',e);}
   try{renderVenueRanking(records);}catch(e){console.error('venue',e);}
   try{renderTotals();}catch(e){console.error('totals',e);}
+  try{renderPeriodSummary(records);}catch(e){console.error('periodSummary',e);}
   try{renderStar5List(records);}catch(e){console.error('star5',e);}
 }
 function showDashboard(){document.getElementById('no-data-screen').classList.add('hidden');document.getElementById('app-pages').classList.remove('hidden');}
