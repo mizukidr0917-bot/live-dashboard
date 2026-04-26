@@ -910,35 +910,109 @@ function renderCharts(records){
   }
 }
 
-/* ─── RANKINGS ─── */
-function renderRankingList(id,items,isVenue){
-  var el=document.getElementById(id);if(!el)return;
-  if(!items.length){el.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:10px 0">データなし</div>';return;}
-  var maxV=items[0].value;
-  el.innerHTML=items.slice(0,5).map(function(item,i){
-    var nc=i===0?'r1':i===1?'r2':i===2?'r3':'';
-    var bw=maxV>0?(item.value/maxV*100).toFixed(1):0;
-    return '<div class="rank-item"><div class="rank-num '+nc+'">'+(i+1)+'</div><div class="rank-bar-wrap"><div class="rank-name" title="'+escAttr(item.name)+'">'+esc(item.name)+'</div><div class="rank-bar-bg"><div class="rank-bar-fill'+(isVenue?' venue':'')+'" style="width:'+bw+'%"></div></div></div><div class="rank-val">'+item.value+'回<span class="rank-sub">'+(item.sub||'')+'</span></div></div>';
+/* --- RANKINGS --- */
+function renderRankingList(id, items, isVenue) {
+  var el = document.getElementById(id);
+  if (!el) return;
+
+  if (!items || !items.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:10px 0">データなし</div>';
+    return;
+  }
+
+  var maxV = items[0].value || 1;
+
+  el.innerHTML = items.slice(0, 5).map(function(item, i) {
+    var rankClass = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
+    var width = Math.max(8, (item.value / maxV) * 100).toFixed(1);
+    var name = esc(item.name || '不明');
+    var sub = item.sub ? esc(item.sub) : '';
+
+    return (
+      '<div class="rank-item">' +
+        '<div class="rank-num ' + rankClass + '">' + (i + 1) + '</div>' +
+        '<div class="rank-main">' +
+          '<div class="rank-row">' +
+            '<div class="rank-name" title="' + name + '">' + name + '</div>' +
+            '<div class="rank-value">' + item.value + '回' + sub + '</div>' +
+          '</div>' +
+          '<div class="rank-bar-bg">' +
+            '<div class="rank-bar" style="width:' + width + '%"></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
   }).join('');
 }
-function renderLeftPanel(records){
-  var map={};records.forEach(function(r){r.artists.forEach(function(a){map[a]=(map[a]||0)+1;});});
-  var total=Object.values(map).reduce(function(s,v){return s+v;},0);
-  var items=Object.entries(map).map(function(e){return{name:e[0],value:e[1],sub:total?' '+(((e[1]/total)*100).toFixed(0))+'%':'';};}).sort(function(a,b){return b.value-a.value;});
-  renderRankingList('left-panel-list',items,false);
-  var aEl=document.getElementById('artist-analysis-comment');
-  if(aEl&&items.length){
-    var canC=(currentPeriod==='last12'||currentPeriod==='all');
-    var top=items[0];var pct=total>0?Math.round(top.value/total*100):0;
-    if(canC&&pct>=40){aEl.textContent='📊 '+top.name+'への集中が高め（'+pct+'%）';aEl.style.display='block';}
-    else aEl.style.display='none';
+
+function renderLeftPanel(records) {
+  var map = {};
+  records.forEach(function(r) {
+    if (r.artists && r.artists.length) {
+      r.artists.forEach(function(a) {
+        map[a] = (map[a] || 0) + 1;
+      });
+    }
+  });
+
+  var total = Object.values(map).reduce(function(s, v) {
+    return s + v;
+  }, 0);
+
+  var items = Object.entries(map)
+    .map(function(e) {
+      return {
+        name: e[0],
+        value: e[1],
+        sub: total ? ' ' + ((e[1] / total) * 100).toFixed(0) + '%' : ''
+      };
+    })
+    .sort(function(a, b) {
+      return b.value - a.value;
+    });
+
+  renderRankingList('artist-ranking', items, false);
+
+  var aEl = document.getElementById('artist-analysis-comment');
+  if (aEl && items.length) {
+    var canShowComment = currentPeriod === 'last12' || currentPeriod === 'all';
+    var top = items[0];
+    var pct = total > 0 ? Math.round((top.value / total) * 100) : 0;
+
+    if (canShowComment && pct >= 40) {
+      aEl.textContent = '🎧 ' + top.name + 'への集中が高め（' + pct + '%）';
+      aEl.style.display = 'block';
+    } else {
+      aEl.style.display = 'none';
+    }
   }
 }
-function renderVenueRanking(records){
-  var map={};records.forEach(function(r){if(r.venue)map[r.venue]=(map[r.venue]||0)+1;});
-  var total=Object.values(map).reduce(function(s,v){return s+v;},0);
-  var items=Object.entries(map).map(function(e){return{name:e[0],value:e[1],sub:total?' '+(((e[1]/total)*100).toFixed(0))+'%':'';};}).sort(function(a,b){return b.value-a.value;});
-  renderRankingList('venue-ranking',items,true);
+
+function renderVenueRanking(records) {
+  var map = {};
+  records.forEach(function(r) {
+    if (r.venue) {
+      map[r.venue] = (map[r.venue] || 0) + 1;
+    }
+  });
+
+  var total = Object.values(map).reduce(function(s, v) {
+    return s + v;
+  }, 0);
+
+  var items = Object.entries(map)
+    .map(function(e) {
+      return {
+        name: e[0],
+        value: e[1],
+        sub: total ? ' ' + ((e[1] / total) * 100).toFixed(0) + '%' : ''
+      };
+    })
+    .sort(function(a, b) {
+      return b.value - a.value;
+    });
+
+  renderRankingList('venue-ranking', items, true);
 }
 
 /* ─── RECENT NOTES ─── */
