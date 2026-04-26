@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,397 +8,356 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#07091a; --bg-2:#0c1025; --bg-3:#111530; --bg-card:#151a2f;
-  --border:rgba(255,255,255,.07); --border-s:rgba(255,255,255,.14);
-  --text:#eef0ff; --text-2:#8691bc; --text-3:#454e72;
-  --accent:#7c6ef7; --accent-2:#a78bfa;
-  --blue:#4a9eff; --blue-soft:rgba(74,158,255,.12);
-  --green:#34d399; --green-soft:rgba(52,211,153,.12);
-  --amber:#fbbf24; --amber-soft:rgba(251,191,36,.12);
+/* ═══════════════════════════════════════
+   TOKENS — dark / light
+═══════════════════════════════════════ */
+:root,[data-theme="dark"]{
+  --bg:#07091a;--bg-2:#0c1025;--bg-3:#111530;--bg-card:#151a2f;
+  --bg-card-hover:#1c2240;
+  --border:rgba(255,255,255,.07);--border-s:rgba(255,255,255,.14);
+  --text:#eef0ff;--text-2:#8691bc;--text-3:#454e72;
+  --accent:#7c6ef7;--accent-2:#a78bfa;
+  --blue:#4a9eff;--blue-soft:rgba(74,158,255,.13);
+  --green:#34d399;--green-soft:rgba(52,211,153,.13);
+  --amber:#fbbf24;--amber-soft:rgba(251,191,36,.13);
   --pink:#f472b6;
-  --r-sm:8px; --r:12px; --r-lg:16px; --r-xl:22px;
-  --sw:220px;
-  --fd:'Space Grotesk','Noto Sans JP',sans-serif;
-  --fb:'DM Sans','Noto Sans JP',sans-serif;
+  --shadow-card:0 2px 16px rgba(0,0,0,.35);
+  --topbar-bg:rgba(7,9,26,.92);
+  /* note type */
+  --nt-live-bg:rgba(124,110,247,.18);--nt-live-c:#c4b5fd;--nt-live-b:rgba(124,110,247,.3);
+  --nt-song-bg:rgba(74,158,255,.15);--nt-song-c:#93c5fd;--nt-song-b:rgba(74,158,255,.28);
+  --nt-album-bg:rgba(52,211,153,.14);--nt-album-c:#6ee7b7;--nt-album-b:rgba(52,211,153,.26);
+  --nt-sum-bg:rgba(251,191,36,.14);--nt-sum-c:#fcd34d;--nt-sum-b:rgba(251,191,36,.26);
+  --nt-misc-bg:rgba(139,147,184,.12);--nt-misc-c:#8893be;--nt-misc-b:rgba(139,147,184,.22);
 }
+[data-theme="light"]{
+  --bg:#f4f6ff;--bg-2:#ffffff;--bg-3:#eef0f8;--bg-card:#ffffff;
+  --bg-card-hover:#f8f9ff;
+  --border:rgba(0,0,0,.08);--border-s:rgba(0,0,0,.15);
+  --text:#1a1d35;--text-2:#5a6080;--text-3:#9299b8;
+  --accent:#6d5ce0;--accent-2:#8b75f0;
+  --blue:#2563eb;--blue-soft:rgba(37,99,235,.1);
+  --green:#059669;--green-soft:rgba(5,150,105,.1);
+  --amber:#d97706;--amber-soft:rgba(217,119,6,.1);
+  --pink:#db2777;
+  --shadow-card:0 2px 12px rgba(0,0,0,.08);
+  --topbar-bg:rgba(255,255,255,.94);
+  --nt-live-bg:rgba(109,92,224,.1);--nt-live-c:#6d5ce0;--nt-live-b:rgba(109,92,224,.2);
+  --nt-song-bg:rgba(37,99,235,.08);--nt-song-c:#2563eb;--nt-song-b:rgba(37,99,235,.18);
+  --nt-album-bg:rgba(5,150,105,.08);--nt-album-c:#059669;--nt-album-b:rgba(5,150,105,.18);
+  --nt-sum-bg:rgba(217,119,6,.08);--nt-sum-c:#d97706;--nt-sum-b:rgba(217,119,6,.18);
+  --nt-misc-bg:rgba(90,96,128,.07);--nt-misc-c:#5a6080;--nt-misc-b:rgba(90,96,128,.15);
+}
+
+/* ═══════════════════════════════════════  BASE  */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;min-height:100vh}
-body{font-family:var(--fb);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
+body{font-family:'DM Sans','Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;transition:background .25s,color .25s}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:99px}
 .hidden{display:none!important}
 a{color:var(--accent-2);text-decoration:none}
 a:hover{text-decoration:underline}
 
-/* Layout */
-.app-shell{display:grid;grid-template-columns:var(--sw) minmax(0,1fr);min-height:100vh}
+/* ═══════════════════════════════════════  LAYOUT  */
+.app-shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
 
-/* Sidebar */
-.sidebar{position:sticky;top:0;height:100vh;background:var(--bg-2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px 18px;z-index:30;overflow:hidden}
-.sidebar::before{content:'';position:absolute;top:-80px;left:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(124,110,247,.15) 0%,transparent 70%);pointer-events:none}
+/* ═══════════════════════════════════════  SIDEBAR  */
+.sidebar{position:sticky;top:0;height:100vh;background:var(--bg-2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px 18px;z-index:30;overflow:hidden;transition:background .25s}
+.sidebar::before{content:'';position:absolute;top:-80px;left:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(124,110,247,.12) 0%,transparent 70%);pointer-events:none}
 .logo{display:flex;align-items:center;gap:10px;margin-bottom:24px}
-.logo-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#5b6ef0);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;box-shadow:0 3px 12px rgba(124,110,247,.35)}
-.logo-name{font-family:var(--fd);font-size:15px;font-weight:700;letter-spacing:.04em}
+.logo-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#5b6ef0);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;box-shadow:0 3px 14px rgba(124,110,247,.4)}
+.logo-name{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:15px;font-weight:700;letter-spacing:.04em}
 .logo-name span{color:var(--accent-2)}
 .logo-sub{font-size:9px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-top:1px}
 .sidebar-nav{display:flex;flex-direction:column;gap:2px;flex:1}
-.sidebar-link{border:none;background:transparent;color:var(--text-2);border-radius:var(--r-sm);text-align:left;padding:7px 10px;font-size:12px;font-weight:500;font-family:var(--fb);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px}
-.sidebar-link:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.sidebar-link{border:none;background:transparent;color:var(--text-2);border-radius:8px;text-align:left;padding:7px 10px;font-size:12px;font-weight:500;font-family:'DM Sans','Noto Sans JP',sans-serif;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px}
+.sidebar-link:hover{color:var(--text);background:rgba(124,110,247,.07)}
 .sidebar-link.active{color:var(--accent-2);background:rgba(124,110,247,.14);font-weight:600}
-.sidebar-quote{background:rgba(124,110,247,.07);border:1px solid rgba(124,110,247,.18);border-radius:var(--r);padding:10px 12px;margin-top:14px}
-.sidebar-quote-char{text-align:center;font-size:24px;line-height:1}
+.sidebar-quote{background:rgba(124,110,247,.06);border:1px solid rgba(124,110,247,.16);border-radius:12px;padding:10px 12px;margin-top:14px}
+.sidebar-quote-char{text-align:center;font-size:22px;line-height:1}
 .sidebar-quote-cap{text-align:center;font-size:9px;color:var(--accent-2);font-weight:600;margin-top:3px}
 .sidebar-quote-text{font-size:10px;line-height:1.6;color:var(--text-2);font-style:italic;margin-top:7px}
 .sidebar-foot{margin-top:14px;padding-top:10px;border-top:1px solid var(--border);font-size:10px;color:var(--text-3)}
-.sidebar-foot-row{display:flex;justify-content:space-between}
+.sidebar-foot-row{display:flex;justify-content:space-between;align-items:center}
 .sidebar-foot-val{color:var(--text-2);font-weight:500}
-.sidebar-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;visibility:hidden;transition:opacity .2s;z-index:70}
+.sidebar-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .2s;z-index:70}
 .sidebar-backdrop.open{opacity:1;visibility:visible}
 
-/* Topbar */
-.topbar{position:sticky;top:0;z-index:20;background:rgba(7,9,26,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 20px}
+/* ═══════════════════════════════════════  TOPBAR  */
+.topbar{position:sticky;top:0;z-index:20;background:var(--topbar-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 20px;transition:background .25s}
 .topbar-left{display:flex;align-items:center;gap:10px}
-.sidebar-toggle{display:none;border:1px solid var(--border-s);background:var(--bg-card);color:var(--text-2);width:30px;height:30px;border-radius:var(--r-sm);cursor:pointer;font-size:13px;align-items:center;justify-content:center}
-.topbar-brand{font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.04em}
+.sidebar-toggle{display:none;border:1px solid var(--border-s);background:var(--bg-card);color:var(--text-2);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:13px;align-items:center;justify-content:center}
+.topbar-brand{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em}
 .topbar-brand span{color:var(--accent-2)}
 .topbar-sub{font-size:9px;color:var(--text-3)}
-.filter-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2);background:var(--bg-card);border:1px solid var(--border-s);border-radius:99px;padding:4px 12px;cursor:pointer;transition:border-color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.filter-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2);background:var(--bg-card);border:1px solid var(--border-s);border-radius:99px;padding:4px 12px;cursor:pointer;transition:border-color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
 .filter-status:hover{border-color:var(--accent)}
 .filter-status-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
-.topbar-filter-btn{border:1px solid var(--border-s);background:var(--bg-card);color:var(--text-2);border-radius:var(--r-sm);padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--fb);transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.topbar-filter-btn{border:1px solid var(--border-s);background:var(--bg-card);color:var(--text-2);border-radius:8px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap}
 .topbar-filter-btn:hover{border-color:var(--accent);color:var(--accent-2)}
 
-/* Main */
+/* Theme toggle */
+.theme-toggle{border:1px solid var(--border-s);background:var(--bg-card);color:var(--text-2);border-radius:99px;padding:4px 10px;font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.theme-toggle:hover{border-color:var(--accent);color:var(--accent-2)}
+
+/* ═══════════════════════════════════════  MAIN  */
 .content-area{min-width:0;display:flex;flex-direction:column}
-.main{flex:1;max-width:1460px;width:100%;margin:0 auto;padding:20px 20px 40px}
+.main{flex:1;max-width:1460px;width:100%;margin:0 auto;padding:22px 22px 48px}
 
 /* No data */
-.no-data-screen{border:1px dashed var(--border-s);border-radius:var(--r-xl);text-align:center;padding:60px 20px;background:var(--bg-card)}
+.no-data-screen{border:1px dashed var(--border-s);border-radius:22px;text-align:center;padding:60px 20px;background:var(--bg-card)}
 .no-data-icon{font-size:36px;margin-bottom:12px}
-.no-data-title{font-size:18px;font-weight:700;font-family:var(--fd)}
+.no-data-title{font-size:18px;font-weight:700;font-family:'Space Grotesk',sans-serif}
 .no-data-sub{font-size:12px;color:var(--text-2);margin-top:6px}
 
 /* Info bars */
-.info-bar{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 12px;margin-bottom:8px;font-size:11px;color:var(--text-2)}
-.info-bar.warn{border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.07);color:#fcd34d}
-.info-bar.good{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.07);color:var(--green)}
+.info-bar{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin-bottom:8px;font-size:11px;color:var(--text-2)}
+.info-bar.warn{border-color:rgba(251,191,36,.3);background:var(--amber-soft);color:var(--amber)}
+.info-bar.good{border-color:rgba(52,211,153,.3);background:var(--green-soft);color:var(--green)}
 
-/* Zone */
-.zone{margin-bottom:32px}
-.zone-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.zone-title{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);display:flex;align-items:center;gap:8px}
-.zone-title::before{content:'';width:3px;height:12px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--accent-2),var(--accent))}
-.zone-note{font-size:10px;color:var(--text-3)}
+/* Section label */
+.sec-label{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);display:flex;align-items:center;gap:7px;margin-bottom:14px}
+.sec-label::before{content:'';width:3px;height:11px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--accent-2),var(--accent))}
+.sec-label .sub{font-size:10px;color:var(--text-3);font-weight:400;letter-spacing:0;text-transform:none;margin-left:4px}
 
-/* ① KPI grid */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 18px 16px;position:relative;overflow:hidden;transition:transform .16s,border-color .16s,box-shadow .16s}
-.kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--r-lg) var(--r-lg) 0 0}
+/* ═══════════════════════════════════════
+   ① TODAY ZONE
+═══════════════════════════════════════ */
+
+/* Story headline */
+.story-headline{
+  background:linear-gradient(130deg,rgba(124,110,247,.1),rgba(74,158,255,.06));
+  border:1px solid rgba(124,110,247,.2);border-radius:14px;
+  padding:14px 20px;margin-bottom:16px;
+  display:flex;align-items:center;gap:12px;
+}
+.story-emoji{font-size:22px;flex-shrink:0;line-height:1}
+.story-text{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:16px;font-weight:700;color:var(--text);line-height:1.4}
+.story-sub{font-size:11px;color:var(--text-2);margin-top:3px}
+
+/* KPI 3-col */
+.kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:20px 18px 16px;position:relative;overflow:hidden;transition:transform .16s,border-color .16s,box-shadow .16s;box-shadow:var(--shadow-card)}
+.kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:16px 16px 0 0}
 .kpi-card.c-blue::after{background:linear-gradient(90deg,var(--blue),transparent)}
 .kpi-card.c-green::after{background:linear-gradient(90deg,var(--green),transparent)}
 .kpi-card.c-amber::after{background:linear-gradient(90deg,var(--amber),transparent)}
-.kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.28);border-color:var(--border-s)}
-.kpi-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.kpi-icon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.kpi-icon.ib{background:var(--blue-soft)} .kpi-icon.ig{background:var(--green-soft)} .kpi-icon.ia{background:var(--amber-soft)}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.25);border-color:var(--border-s)}
+.kpi-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kpi-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.kpi-icon.ib{background:var(--blue-soft)}.kpi-icon.ig{background:var(--green-soft)}.kpi-icon.ia{background:var(--amber-soft)}
 .kpi-delta{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px}
-.kpi-delta.pos{background:rgba(52,211,153,.15);color:var(--green)}
+.kpi-delta.pos{background:rgba(52,211,153,.14);color:var(--green)}
 .kpi-delta.zero{background:rgba(139,147,184,.1);color:var(--text-3)}
 .kpi-delta.neg{background:rgba(244,114,182,.12);color:var(--pink)}
-.kpi-value{font-family:var(--fd);font-size:44px;font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:4px}
-.kpi-value .unit{font-size:14px;font-weight:500;color:var(--text-2);margin-left:2px}
+.kpi-value{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:44px;font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:4px}
+.kpi-value .unit{font-size:14px;font-weight:500;color:var(--text-2);margin-left:3px}
 .kpi-label{font-size:11px;color:var(--text-2)}
-.kpi-hint{font-size:11px;color:var(--accent-2);font-weight:600;margin-top:5px;min-height:16px}
+.kpi-hint{font-size:11px;color:var(--accent-2);font-weight:600;margin-top:5px;min-height:15px}
 
-/* Note化率 card */
-.kpi-rate-card{background:linear-gradient(145deg,#1a1540,#14173a,#101328);border:1px solid rgba(167,139,250,.25);border-radius:var(--r-lg);padding:20px 18px 16px;position:relative;overflow:hidden;transition:transform .16s,border-color .16s}
-.kpi-rate-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#7c6ef7,#a78bfa,transparent);border-radius:var(--r-lg) var(--r-lg) 0 0}
-.kpi-rate-card::before{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;background:radial-gradient(circle,rgba(167,139,250,.18) 0%,transparent 65%);pointer-events:none}
-.kpi-rate-card:hover{transform:translateY(-2px);border-color:rgba(167,139,250,.45)}
-.kpi-rate-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.kpi-rate-label{font-size:10px;font-weight:700;color:var(--accent-2);letter-spacing:.08em;text-transform:uppercase}
-.kpi-rate-value{font-family:var(--fd);font-size:44px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--text);margin-bottom:4px}
-.kpi-rate-sub{font-size:11px;color:var(--text-2)}
-.kpi-rate-bar-bg{height:3px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:10px;overflow:hidden}
-.kpi-rate-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s}
-.kpi-rate-hint{font-size:11px;color:var(--accent-2);font-weight:600;margin-top:6px;position:relative;z-index:1;min-height:16px}
-
-/* ② Analysis zone */
-.analysis-zone{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px;margin-bottom:12px}
-.charts-pair{display:flex;flex-direction:column;gap:12px}
-.chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px}
-.chart-card-title{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.chart-card-title::before{content:'';width:3px;height:12px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--accent-2),var(--accent))}
-.chart-note{font-size:10px;color:var(--text-3);margin-bottom:12px}
-.chart-scroll{overflow-x:auto;overflow-y:hidden;padding-bottom:2px}
-.chart-scroll::-webkit-scrollbar{height:4px}
-.chart-scroll::-webkit-scrollbar-thumb{background:rgba(124,110,247,.3);border-radius:99px}
-.chart-wrap{position:relative;height:180px}
-.chart-inner-normal{width:100%;min-width:0}
-.chart-inner-wide{width:100%;min-width:0}
-.chart-analysis{font-size:11px;color:var(--accent-2);background:rgba(124,110,247,.08);border:1px solid rgba(124,110,247,.15);border-radius:var(--r-sm);padding:5px 10px;margin-top:10px}
-
-.notes-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;display:flex;flex-direction:column}
-.notes-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.panel-title{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
-.panel-title::before{content:'';width:3px;height:12px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--accent-2),var(--accent))}
-.notes-count-badge{font-size:10px;font-weight:600;color:var(--accent-2);background:rgba(124,110,247,.12);border:1px solid rgba(124,110,247,.2);border-radius:99px;padding:2px 9px}
-.note-rate-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:6px 9px;background:var(--bg-3);border-radius:var(--r-sm);border:1px solid var(--border)}
-.note-rate-text{font-size:10px;color:var(--text-2);white-space:nowrap}
-.note-rate-bar-wrap{flex:1;min-width:0}
-.note-rate-bar-bg{height:3px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
-.note-rate-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s}
-.note-rate-stat{font-size:11px;font-weight:700;color:var(--accent-2);white-space:nowrap}
-.note-list{display:flex;flex-direction:column;position:relative;flex:1}
-.note-list::before{content:'';position:absolute;left:24px;top:6px;bottom:6px;width:1px;background:linear-gradient(180deg,rgba(124,110,247,.4),rgba(124,110,247,.06));pointer-events:none}
-.note-item{display:flex;gap:10px;padding:9px 8px;border-radius:var(--r);background:transparent;border:1px solid transparent;transition:background .15s,border-color .15s;text-decoration:none;color:inherit;position:relative;margin-bottom:2px}
-.note-item:last-child{margin-bottom:0}
-.note-item:hover{background:rgba(124,110,247,.06);border-color:rgba(124,110,247,.14)}
-.note-item::before{content:'';position:absolute;left:20px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--bg-card);border:2px solid rgba(124,110,247,.4);z-index:1;pointer-events:none}
-.note-item:first-child::before{border-color:var(--accent-2);background:var(--accent)}
-.note-thumb-wrap{flex-shrink:0;margin-left:16px}
-.note-thumb{width:48px;height:48px;border-radius:var(--r-sm);object-fit:cover;background:var(--bg-3);border:1px solid var(--border);display:block}
-.note-thumb-ph{width:48px;height:48px;border-radius:var(--r-sm);background:linear-gradient(135deg,rgba(124,110,247,.16),rgba(74,158,255,.09));display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid rgba(124,110,247,.13)}
-.note-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;justify-content:center}
-.note-date{font-size:10px;color:var(--text-3)}
-.note-title{font-size:12px;font-weight:600;color:var(--text);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.note-meta{display:flex;align-items:center;gap:5px;margin-top:2px;flex-wrap:wrap}
-.note-chip{background:rgba(124,110,247,.13);color:var(--accent-2);border:1px solid rgba(124,110,247,.2);border-radius:99px;padding:1px 7px;font-size:10px;font-weight:600}
-.note-link-text{font-size:10px;color:var(--accent-2);opacity:.75}
-.notes-empty{font-size:12px;color:var(--text-3);padding:16px 0;text-align:center}
-
-/* Rankings */
-.analysis-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.list-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px}
-.list-card-title{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.list-card-title::before{content:'';width:3px;height:12px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--accent-2),var(--accent))}
-.ranking-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
-.ranking-item:last-child{border-bottom:none}
-.ranking-num{width:18px;text-align:center;font-size:11px;font-weight:700;color:var(--text-3);font-family:var(--fd);flex-shrink:0}
-.ranking-num.top1{color:#fbbf24} .ranking-num.top2{color:#9ca3af} .ranking-num.top3{color:#c8a068}
-.ranking-bar-wrap{flex:1;min-width:0}
-.ranking-name{font-size:12px;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ranking-bar-bg{height:3px;border-radius:99px;background:var(--bg-3);overflow:hidden}
-.ranking-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
-.ranking-bar-fill.venue{background:linear-gradient(90deg,var(--blue),#93c5fd)}
-.ranking-value{font-size:11px;color:var(--text-2);font-weight:600;white-space:nowrap;min-width:40px;text-align:right}
-.ranking-sub{font-size:10px;color:var(--text-3);margin-left:2px}
-.analysis-comment{font-size:11px;color:var(--accent-2);margin-top:10px;background:rgba(124,110,247,.07);border:1px solid rgba(124,110,247,.14);border-radius:var(--r-sm);padding:5px 10px}
-
-/* ③ Totals */
-.total-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
-.total-stat{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
-.total-stat-icon{font-size:13px;margin-bottom:5px}
-.total-stat-value{font-family:var(--fd);font-size:24px;font-weight:700;line-height:1}
-.total-stat-label{font-size:10px;color:var(--text-3);margin-top:3px}
-.total-stat-sub{font-size:10px;color:var(--text-2);margin-top:2px}
-
-/* Star5 */
-.star5-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.star5-title{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
-.star5-title::before{content:'';width:3px;height:12px;border-radius:99px;flex-shrink:0;background:linear-gradient(180deg,var(--amber),rgba(251,191,36,.4))}
-.star5-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
-.star5-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:transform .18s,border-color .2s,box-shadow .2s;position:relative}
-.star5-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 10%,rgba(251,191,36,.3) 50%,transparent 90%)}
-.star5-card:hover{transform:translateY(-4px);border-color:rgba(167,139,250,.32);box-shadow:0 14px 36px rgba(0,0,0,.4)}
-.star5-thumb-wrap{overflow:hidden}
-.star5-thumb{width:100%;height:110px;object-fit:cover;display:block}
-.star5-body{padding:11px 12px 10px}
-.star5-date{font-size:10px;color:var(--text-3);margin-bottom:4px}
-.star5-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.38;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:3px;font-family:var(--fd)}
-.star5-artist{font-size:11px;color:var(--text-2);margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.star5-meta{display:flex;flex-direction:column;gap:2px;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid var(--border)}
-.star5-meta-row{font-size:10px;color:var(--text-3);display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.star5-rating{color:var(--amber);font-weight:700;font-size:12px}
-.star5-actions{display:flex;gap:5px;flex-wrap:wrap}
-.star5-link{font-size:10px;font-weight:600;color:var(--accent-2);text-decoration:none;padding:3px 8px;border:1px solid rgba(124,110,247,.2);border-radius:99px;transition:background .15s,border-color .15s}
-.star5-link:hover{background:rgba(124,110,247,.12);border-color:rgba(124,110,247,.4);text-decoration:none}
-.star5-empty{font-size:13px;color:var(--text-3);padding:20px;text-align:center;grid-column:1/-1}
-
-/* Motivation zone bottom row */
-.motive-bottom{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
-
-/* Month story bar */
-.month-story-bar{
-  display:flex;align-items:center;gap:8px;
-  background:rgba(124,110,247,.08);border:1px solid rgba(124,110,247,.18);
-  border-radius:var(--r-sm);padding:7px 12px;margin-bottom:12px;
-}
+/* Today bottom: best-live + action + note-progress */
+.today-bottom{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:0}
 
 /* Best live card */
-.best-live-card{
-  background:linear-gradient(145deg,#1a1f38,#151a30);
-  border:1px solid rgba(251,191,36,.22);border-radius:var(--r-lg);
-  padding:16px 18px;position:relative;overflow:hidden;
-}
-.best-live-card::after{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--amber),transparent);
-  border-radius:var(--r-lg) var(--r-lg) 0 0;
-}
-.best-live-label{font-size:10px;font-weight:700;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
-.best-live-name{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.best-live-meta{font-size:11px;color:var(--text-2);margin-bottom:8px}
-.best-live-link{font-size:10px;font-weight:600;color:var(--accent-2);text-decoration:none;padding:3px 9px;border:1px solid rgba(124,110,247,.22);border-radius:99px;display:inline-block}
-.best-live-link:hover{background:rgba(124,110,247,.12);text-decoration:none}
-.best-live-empty{font-size:12px;color:var(--text-3);font-style:italic}
+.best-live-card{background:linear-gradient(145deg,rgba(30,25,70,.9),rgba(20,23,58,.9));border:1px solid rgba(251,191,36,.28);border-radius:16px;padding:18px;position:relative;overflow:hidden;box-shadow:var(--shadow-card);transition:transform .16s,border-color .16s}
+.best-live-card::before{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;background:radial-gradient(circle,rgba(251,191,36,.14) 0%,transparent 65%);pointer-events:none}
+.best-live-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--amber),rgba(251,191,36,.3),transparent);border-radius:16px 16px 0 0}
+.best-live-card:hover{transform:translateY(-2px);border-color:rgba(251,191,36,.45)}
+.bl-tag{font-size:9px;font-weight:700;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.bl-name{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bl-comment{font-size:11px;color:var(--amber);font-style:italic;margin-bottom:8px;line-height:1.5}
+.bl-meta{font-size:10px;color:var(--text-2);margin-bottom:10px}
+.bl-note-link{font-size:10px;font-weight:600;color:var(--accent-2);padding:3px 9px;border:1px solid rgba(124,110,247,.22);border-radius:99px;display:inline-block;transition:background .15s}
+.bl-note-link:hover{background:rgba(124,110,247,.12);text-decoration:none}
+.bl-empty{font-size:12px;color:var(--text-3);font-style:italic;line-height:1.6}
 
-@media(max-width:960px){.motive-bottom{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){
-  .motive-bottom{grid-template-columns:1fr}
-  .action-banner{min-height:auto;padding:14px}
-  .action-banner-icon{font-size:22px}
-  .action-banner-text{font-size:13px}
-}
+/* Action card */
+.action-card{background:var(--bg-card);border:1px solid rgba(124,110,247,.2);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow-card);transition:transform .16s}
+.action-card:hover{transform:translateY(-2px)}
+.ac-tag{font-size:9px;font-weight:700;color:var(--accent-2);letter-spacing:.1em;text-transform:uppercase}
+.ac-icon{font-size:26px;line-height:1}
+.ac-text{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;color:var(--text);line-height:1.45}
+.ac-sub{font-size:11px;color:var(--text-2)}
 
 /* Note progress card */
-.note-progress-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px}
-.note-progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.note-progress-title{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--text)}
-.note-progress-badge{font-size:10px;font-weight:600;color:var(--accent-2);background:rgba(124,110,247,.12);border:1px solid rgba(124,110,247,.2);border-radius:99px;padding:2px 9px}
+.nprog-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow-card)}
+.nprog-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.nprog-title{font-size:12px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif}
+.nprog-badge{font-size:10px;font-weight:600;color:var(--accent-2);background:rgba(124,110,247,.12);border:1px solid rgba(124,110,247,.2);border-radius:99px;padding:2px 9px}
+.nprog-completion{padding:10px;background:var(--bg-3);border-radius:10px;border:1px solid var(--border);margin-bottom:8px}
+.nprog-comp-text{font-size:13px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif}
+.nprog-comp-sub{font-size:10px;color:var(--text-2);margin-top:2px}
+.nprog-bar-bg{height:4px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-top:6px}
+.nprog-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s}
+.nprog-types{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.nprog-row{display:flex;align-items:center;gap:6px;padding:5px 8px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.18);border-radius:8px;margin-bottom:6px;display:none}
+.nprog-row.show{display:flex}
+.nprog-row-icon{font-size:12px}
+.nprog-row-text{font-size:11px;color:var(--amber);font-weight:600}
 
-/* Live report rate row */
-.note-live-rate{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg-3);border-radius:var(--r-sm);border:1px solid var(--border);margin-bottom:6px}
-.nlr-label{font-size:11px;color:var(--text-2);flex-shrink:0}
-.nlr-value{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text);flex-shrink:0}
-.nlr-status{font-size:11px;font-weight:600;color:var(--green);margin-left:auto;white-space:nowrap}
-.nlr-status.incomplete{color:var(--accent-2)}
-.nlr-status.zero{color:var(--text-3)}
+/* ═══════════════════════════════════════
+   NOTE CARDS — "作品一覧UI"
+═══════════════════════════════════════ */
+.notes-grid{display:flex;flex-direction:column;gap:8px}
+.note-card{display:flex;gap:12px;padding:12px 14px;border-radius:14px;background:var(--bg-card);border:1px solid var(--border);text-decoration:none;color:inherit;transition:transform .15s,border-color .15s,box-shadow .15s;box-shadow:var(--shadow-card);position:relative;overflow:hidden}
+.note-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:99px 0 0 99px;background:transparent;transition:background .15s}
+.note-card:hover{transform:translateY(-2px);border-color:rgba(124,110,247,.25);box-shadow:0 6px 20px rgba(0,0,0,.2);text-decoration:none}
+.note-card:hover::before{background:var(--accent)}
+.note-card-thumb{width:52px;height:52px;border-radius:9px;object-fit:cover;background:var(--bg-3);border:1px solid var(--border);flex-shrink:0;display:block}
+.note-card-ph{width:52px;height:52px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid var(--border)}
+.note-card-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;justify-content:center}
+.note-card-title{font-size:13px;font-weight:700;color:var(--text);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-family:'Space Grotesk','Noto Sans JP',sans-serif}
+.note-card-date{font-size:10px;color:var(--text-3)}
+.note-card-footer{display:flex;align-items:center;gap:6px;margin-top:3px}
+.nt-chip{display:inline-flex;align-items:center;gap:3px;border-radius:99px;padding:2px 8px;font-size:10px;font-weight:700;white-space:nowrap;border:1px solid transparent}
+.nt-live{background:var(--nt-live-bg);color:var(--nt-live-c);border-color:var(--nt-live-b)}
+.nt-song{background:var(--nt-song-bg);color:var(--nt-song-c);border-color:var(--nt-song-b)}
+.nt-album{background:var(--nt-album-bg);color:var(--nt-album-c);border-color:var(--nt-album-b)}
+.nt-summary{background:var(--nt-sum-bg);color:var(--nt-sum-c);border-color:var(--nt-sum-b)}
+.nt-misc{background:var(--nt-misc-bg);color:var(--nt-misc-c);border-color:var(--nt-misc-b)}
+.note-card-link{font-size:10px;color:var(--accent-2);opacity:.7}
+.notes-empty{font-size:12px;color:var(--text-3);padding:16px 0;text-align:center}
 
-/* Pending note row */
-.note-pending-row{display:flex;align-items:center;gap:7px;padding:7px 10px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:var(--r-sm);margin-bottom:6px}
-.npend-icon{font-size:13px;flex-shrink:0}
-.npend-text{font-size:12px;font-weight:600;color:#fcd34d}
+/* ═══════════════════════════════════════
+   ② ANALYSIS ZONE (collapsible, muted)
+═══════════════════════════════════════ */
+.analysis-zone-wrap{margin-bottom:28px}
+.analysis-toggle-btn{width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:10px 16px;cursor:pointer;color:var(--text-2);font-size:12px;font-weight:600;font-family:'Space Grotesk',sans-serif;transition:all .15s;margin-bottom:0}
+.analysis-toggle-btn:hover{border-color:var(--border-s);color:var(--text)}
+.analysis-toggle-btn .atb-left{display:flex;align-items:center;gap:8px}
+.analysis-toggle-btn .atb-arrow{font-size:10px;transition:transform .2s}
+.analysis-toggle-btn.open{border-radius:12px 12px 0 0;border-bottom-color:transparent}
+.analysis-toggle-btn.open .atb-arrow{transform:rotate(180deg)}
+.analysis-body{background:var(--bg-card);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;padding:18px;display:none;opacity:.9}
+.analysis-body.open{display:block}
+.analysis-inner{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
+.chart-card{background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:16px}
+[data-theme="light"] .chart-card{background:var(--bg-3)}
+.chart-card-title{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:4px}
+.chart-note-text{font-size:10px;color:var(--text-3);margin-bottom:10px}
+.chart-scroll{overflow-x:auto;overflow-y:hidden}
+.chart-wrap{position:relative;height:170px}
+.chart-inner-normal{width:100%;min-width:0}
+.chart-comment{font-size:11px;color:var(--accent-2);background:rgba(124,110,247,.07);border:1px solid rgba(124,110,247,.14);border-radius:8px;padding:5px 10px;margin-top:8px}
 
-/* Other note types list */
-.note-other-types{display:flex;flex-direction:column;gap:4px;margin-top:2px}
-.note-other-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2)}
-.note-other-count{font-weight:700;color:var(--text);font-family:var(--fd)}
+/* Period summary mini grid */
+.period-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pm-card{background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:11px 12px}
+.pm-val{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:20px;font-weight:700;line-height:1}
+.pm-label{font-size:10px;color:var(--text-3);margin-top:3px}
 
-/* Action banner takes full height */
-.action-banner{
-  background:linear-gradient(130deg,rgba(124,110,247,.1),rgba(74,158,255,.06));
-  border:1px solid rgba(124,110,247,.22);border-radius:var(--r-lg);
-  padding:18px 16px;display:flex;flex-direction:column;gap:12px;
-  justify-content:center;align-self:stretch;min-height:120px;
-}
-.action-banner-icon{font-size:28px;line-height:1}
-.action-banner-text{font-size:14px;font-weight:700;color:var(--text);line-height:1.4;font-family:var(--fd)}
-.action-banner-sub{font-size:11px;color:var(--text-2);margin-top:4px}
+/* Rankings */
+.analysis-ranks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.rank-card{background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:14px}
+.rank-title{font-size:12px;font-weight:600;color:var(--text-2);font-family:'Space Grotesk',sans-serif;margin-bottom:10px}
+.rank-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.rank-item:last-child{border-bottom:none}
+.rank-num{width:16px;text-align:center;font-size:11px;font-weight:700;color:var(--text-3);flex-shrink:0}
+.rank-num.r1{color:var(--amber)}.rank-num.r2{color:#9ca3af}.rank-num.r3{color:#c8a068}
+.rank-bar-wrap{flex:1;min-width:0}
+.rank-name{font-size:11px;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-bar-bg{height:3px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden}
+.rank-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.rank-bar-fill.venue{background:linear-gradient(90deg,var(--blue),#93c5fd)}
+.rank-val{font-size:11px;color:var(--text-2);font-weight:600;white-space:nowrap;min-width:38px;text-align:right}
+.rank-sub{font-size:10px;color:var(--text-3);margin-left:2px}
+.rank-comment{font-size:11px;color:var(--accent-2);margin-top:8px;padding:4px 9px;background:rgba(124,110,247,.07);border-radius:7px}
 
-/* Filter tags in topbar */
-.filter-tags{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.filter-tag{background:rgba(124,110,247,.15);color:var(--accent-2);border:1px solid rgba(124,110,247,.25);border-radius:99px;padding:2px 9px;font-size:10px;font-weight:600;white-space:nowrap}
-.filter-tag.active-filter{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* ═══════════════════════════════════════
+   STAR5 GRID
+═══════════════════════════════════════ */
+.star5-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:12px;margin-top:0}
+.s5-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform .18s,border-color .2s,box-shadow .2s;position:relative;box-shadow:var(--shadow-card)}
+.s5-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 10%,rgba(251,191,36,.28) 50%,transparent 90%)}
+.s5-card:hover{transform:translateY(-4px);border-color:rgba(167,139,250,.3);box-shadow:0 14px 36px rgba(0,0,0,.3)}
+.s5-thumb-wrap{overflow:hidden}
+.s5-thumb{width:100%;height:100px;object-fit:cover;display:block}
+.s5-body{padding:11px 12px 10px}
+.s5-date{font-size:10px;color:var(--text-3);margin-bottom:4px}
+.s5-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.38;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:3px;font-family:'Space Grotesk','Noto Sans JP',sans-serif}
+.s5-artist{font-size:11px;color:var(--text-2);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s5-meta{font-size:10px;color:var(--text-3);margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.s5-rating{color:var(--amber);font-weight:700;font-size:12px}
+.s5-actions{display:flex;gap:5px;flex-wrap:wrap}
+.s5-link{font-size:10px;font-weight:600;color:var(--accent-2);padding:3px 8px;border:1px solid rgba(124,110,247,.2);border-radius:99px;transition:background .15s}
+.s5-link:hover{background:rgba(124,110,247,.12);text-decoration:none}
+.s5-empty{font-size:12px;color:var(--text-3);padding:20px;text-align:center;grid-column:1/-1}
 
-/* Note type chips — colored by category */
-.note-type-chip{display:inline-flex;align-items:center;gap:3px;border-radius:99px;padding:1px 7px;font-size:10px;font-weight:600;white-space:nowrap}
-.nt-live   {background:rgba(74,158,255,.15);color:#60b4ff;border:1px solid rgba(74,158,255,.25)}
-.nt-song   {background:rgba(167,139,250,.15);color:var(--accent-2);border:1px solid rgba(167,139,250,.25)}
-.nt-album  {background:rgba(52,211,153,.15);color:#6ee7b7;border:1px solid rgba(52,211,153,.25)}
-.nt-summary{background:rgba(251,191,36,.15);color:#fcd34d;border:1px solid rgba(251,191,36,.25)}
-.nt-misc   {background:rgba(139,147,184,.12);color:var(--text-2);border:1px solid var(--border-s)}
-
-/* Note month progress panel */
-.note-month-stats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;padding:8px 10px;background:var(--bg-3);border:1px solid var(--border);border-radius:var(--r-sm)}
-.note-month-total{font-size:11px;font-weight:700;color:var(--text);margin-right:4px}
-.note-type-breakdown{display:flex;flex-wrap:wrap;gap:4px}
-
-/* Period summary (replaces fixed ③ totals) */
-.period-summary-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:14px}
-.ps-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
-.ps-icon{font-size:12px;margin-bottom:4px}
-.ps-value{font-family:var(--fd);font-size:22px;font-weight:700;line-height:1}
-.ps-label{font-size:10px;color:var(--text-3);margin-top:2px}
-
-@media(max-width:1280px){.period-summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:640px){.period-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ps-value{font-size:19px}}
-
-/* Footer */
-.page-footer{text-align:center;padding:22px 0 10px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border);margin-top:8px}
-.page-footer span{color:var(--accent-2)}
-
-/* FAB */
-.fab-filter{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));border:none;border-radius:99px;background:linear-gradient(135deg,var(--accent),#5b6ef0);color:#fff;font-size:11px;font-weight:700;padding:8px 13px;cursor:pointer;box-shadow:0 5px 18px rgba(124,110,247,.4);display:none;z-index:80;font-family:var(--fb);align-items:center;gap:5px}
-
-/* Filter Drawer */
-.filter-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;visibility:hidden;transition:opacity .2s;z-index:70}
+/* ═══════════════════════════════════════  FILTER DRAWER  */
+.fab-filter{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));border:none;border-radius:99px;background:linear-gradient(135deg,var(--accent),#5b6ef0);color:#fff;font-size:11px;font-weight:700;padding:8px 13px;cursor:pointer;box-shadow:0 5px 18px rgba(124,110,247,.4);display:none;z-index:80;font-family:'DM Sans',sans-serif;align-items:center;gap:5px}
+.filter-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .2s;z-index:70}
 .filter-drawer-backdrop.open{opacity:1;visibility:visible}
 .filter-drawer{position:fixed;right:0;top:0;height:100vh;width:min(360px,92vw);background:var(--bg-2);border-left:1px solid var(--border-s);transform:translateX(100%);transition:transform .24s;z-index:80;display:flex;flex-direction:column}
 .filter-drawer.open{transform:translateX(0)}
 .drawer-header{padding:13px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.drawer-title{font-size:13px;font-weight:700;font-family:var(--fd)}
-.drawer-close{border:1px solid var(--border-s);border-radius:var(--r-sm);width:27px;height:27px;background:var(--bg-card);color:var(--text-2);cursor:pointer;font-size:14px}
+.drawer-title{font-size:13px;font-weight:700;font-family:'Space Grotesk',sans-serif}
+.drawer-close{border:1px solid var(--border-s);border-radius:8px;width:27px;height:27px;background:var(--bg-card);color:var(--text-2);cursor:pointer;font-size:14px}
 .drawer-body{padding:14px 15px;overflow:auto;flex:1}
 .filter-group{margin-bottom:14px}
 .filter-label{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:7px}
 .filter-btn-group{display:flex;flex-wrap:wrap;gap:5px}
-.filter-btn{border:1px solid var(--border-s);background:transparent;border-radius:99px;padding:4px 10px;font-size:11px;color:var(--text-2);cursor:pointer;transition:all .15s;font-family:var(--fb)}
+.filter-btn{border:1px solid var(--border-s);background:transparent;border-radius:99px;padding:4px 10px;font-size:11px;color:var(--text-2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
 .filter-btn:hover{border-color:var(--accent);color:var(--accent-2)}
 .filter-btn.active{background:rgba(124,110,247,.18);border-color:rgba(124,110,247,.4);color:var(--accent-2);font-weight:600}
 .search-combobox{position:relative}
-.artist-search-input{width:100%;border:1px solid var(--border-s);border-radius:var(--r-sm);font-size:12px;padding:7px 9px;background:var(--bg-card);color:var(--text);font-family:var(--fb);outline:none}
+.artist-search-input{width:100%;border:1px solid var(--border-s);border-radius:8px;font-size:12px;padding:7px 9px;background:var(--bg-card);color:var(--text);font-family:'DM Sans',sans-serif;outline:none}
 .artist-search-input:focus{border-color:rgba(124,110,247,.5)}
-.artist-options{position:absolute;left:0;right:0;top:calc(100% + 4px);border:1px solid var(--border-s);border-radius:var(--r);background:var(--bg-2);box-shadow:0 10px 28px rgba(0,0,0,.4);max-height:200px;overflow:auto;z-index:10;display:none}
+.artist-options{position:absolute;left:0;right:0;top:calc(100% + 4px);border:1px solid var(--border-s);border-radius:12px;background:var(--bg-2);box-shadow:0 10px 28px rgba(0,0,0,.35);max-height:200px;overflow:auto;z-index:10;display:none}
 .artist-options.show{display:block}
 .artist-option{padding:7px 9px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);color:var(--text-2)}
 .artist-option:last-child{border-bottom:none}
 .artist-option:hover,.artist-option.active{background:rgba(124,110,247,.1);color:var(--accent-2)}
 .artist-current{margin-top:5px;font-size:11px;color:var(--text-3)}
-.year-select-input{width:100%;border:1px solid var(--border-s);border-radius:var(--r-sm);font-size:12px;padding:7px 9px;background:var(--bg-card);color:var(--text);font-family:var(--fb);margin-top:8px}
-.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(8px);bottom:14px;background:var(--bg-card);border:1px solid var(--border-s);color:var(--text);border-radius:var(--r);padding:8px 13px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap}
+.year-select-input{width:100%;border:1px solid var(--border-s);border-radius:8px;font-size:12px;padding:7px 9px;background:var(--bg-card);color:var(--text);font-family:'DM Sans',sans-serif;margin-top:8px}
+
+/* Toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(8px);bottom:14px;background:var(--bg-card);border:1px solid var(--border-s);color:var(--text);border-radius:12px;padding:8px 14px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.35);white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* Responsive */
-@media (max-width:1280px){
-  .analysis-zone{grid-template-columns:1fr}
-  .analysis-cards{grid-template-columns:1fr}
-  .total-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* Footer */
+.page-footer{text-align:center;padding:20px 0 10px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border);margin-top:10px}
+.page-footer span{color:var(--accent-2)}
+
+/* ═══════════════════════════════════════  RESPONSIVE  */
+@media(max-width:1280px){
+  .analysis-inner{grid-template-columns:1fr}
+  .analysis-ranks{grid-template-columns:1fr}
+  .today-bottom{grid-template-columns:1fr 1fr}
+  .period-mini{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
-@media (max-width:960px){
+@media(max-width:960px){
   .app-shell{grid-template-columns:1fr}
   .sidebar{position:fixed;top:0;left:0;width:min(240px,80vw);transform:translateX(-100%);transition:transform .24s;box-shadow:8px 0 32px rgba(0,0,0,.5);z-index:75;height:100vh}
   .sidebar.open{transform:translateX(0)}
   .sidebar-toggle{display:flex}
   .fab-filter{display:inline-flex}
   .topbar-filter-btn{display:none}
-  .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-  .kpi-value,.kpi-rate-value{font-size:34px}
-  .total-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .star5-grid{grid-template-columns:repeat(auto-fill,minmax(175px,1fr))}
+  .kpi-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpi-value{font-size:34px}
+  .today-bottom{grid-template-columns:1fr 1fr}
 }
-@media (max-width:640px){
+@media(max-width:640px){
   body{padding-bottom:env(safe-area-inset-bottom,0px)}
   .main{padding:10px 12px calc(68px + env(safe-area-inset-bottom,12px))}
   .topbar{padding:9px 12px;gap:8px}
-  .topbar-sub{display:none}
-  .filter-status{max-width:160px;font-size:10px;padding:3px 9px}
-  .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .topbar-sub,.topbar-filter-btn{display:none}
+  .filter-status{max-width:150px;font-size:10px}
+  .kpi-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .kpi-card{padding:14px 12px}
-  .kpi-value,.kpi-rate-value{font-size:28px}
+  .kpi-value{font-size:28px}
   .kpi-icon{width:30px;height:30px;font-size:13px}
-  .kpi-head{margin-bottom:8px}
-  .kpi-rate-card{padding:14px 12px}
-  .chart-wrap{height:155px}
-  .note-list::before{left:20px}
-  .note-item::before{left:16px}
-  .note-thumb-wrap{margin-left:8px}
-  .note-thumb,.note-thumb-ph{width:44px;height:44px}
-  .note-title{font-size:11px}
-  .analysis-cards{grid-template-columns:1fr}
-  .total-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .today-bottom{grid-template-columns:1fr}
+  .analysis-ranks{grid-template-columns:1fr}
   .star5-grid{display:flex;overflow-x:auto;gap:10px;padding-bottom:8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-  .star5-card{flex-shrink:0;width:175px;scroll-snap-align:start}
-  .star5-empty{width:auto}
-  .zone{margin-bottom:24px}
+  .s5-card{flex-shrink:0;width:175px;scroll-snap-align:start}
+  .s5-empty{width:auto}
+  .story-text{font-size:14px}
+  .period-mini{grid-template-columns:repeat(2,minmax(0,1fr))}
   .fab-filter{padding:7px 12px;font-size:10px}
 }
-@media (max-width:400px){
-  .kpi-value,.kpi-rate-value{font-size:24px}
-  .total-stat-value{font-size:20px}
-  .star5-card{width:158px}
-}
+@media(max-width:400px){.kpi-value{font-size:24px}.s5-card{width:160px}}
 </style>
 </head>
 <body>
@@ -437,11 +396,14 @@ a:hover{text-decoration:underline}
         <div class="topbar-sub">Music activity home</div>
       </div>
     </div>
-    <div class="filter-status" id="filter-status-pill">
-      <span class="filter-status-dot"></span>
-      <span id="filter-status-text">全アーティスト / 今年</span>
+    <div class="topbar-right">
+      <div class="filter-status" id="filter-status-pill">
+        <span class="filter-status-dot"></span>
+        <span id="filter-status-text">全アーティスト / 今年</span>
+      </div>
+      <button class="theme-toggle" id="theme-toggle">☀️ ライト</button>
+      <button class="topbar-filter-btn" id="topbar-filter-btn">⚙ 絞り込み</button>
     </div>
-    <button class="topbar-filter-btn" id="topbar-filter-btn">⚙ 絞り込み</button>
   </div>
 
   <div class="main">
@@ -457,21 +419,25 @@ a:hover{text-decoration:underline}
         <div class="info-bar" id="condition-bar"><strong>表示条件</strong>　<span id="condition-text">全体</span></div>
         <div id="quality-inline" class="info-bar">データ品質を確認中…</div>
 
-        <!-- ① モチベーションゾーン（常に当月） -->
-        <div class="zone motive-zone">
-          <div class="zone-header">
-            <div class="zone-title">今月の活動 <span id="this-month-label" style="color:var(--text-3);font-size:10px;margin-left:4px;font-weight:400;letter-spacing:0;text-transform:none"></span></div>
-            <span class="zone-note">常に当月固定</span>
+        <!-- ══ ① TODAY ══ -->
+        <div style="margin-bottom:28px">
+          <div class="sec-label" style="margin-bottom:10px">
+            今月の活動
+            <span id="this-month-label" class="sub"></span>
+            <span class="sub" style="margin-left:auto">常に当月</span>
           </div>
 
-          <!-- ③ ストーリー1行 -->
-          <div id="month-story-bar" class="month-story-bar" style="display:none">
-            <span id="month-story-icon" style="font-size:14px"></span>
-            <span id="month-story-text" style="font-size:12px;font-weight:600;color:var(--text)"></span>
+          <!-- Story headline -->
+          <div id="story-headline" class="story-headline" style="display:none">
+            <span id="story-emoji" class="story-emoji"></span>
+            <div>
+              <div id="story-text" class="story-text"></div>
+              <div id="story-sub" class="story-sub"></div>
+            </div>
           </div>
 
-          <!-- KPI row -->
-          <div class="kpi-grid" style="margin-bottom:12px">
+          <!-- KPI 3 -->
+          <div class="kpi-row">
             <div class="kpi-card c-blue">
               <div class="kpi-head"><div class="kpi-icon ib">🎤</div><div class="kpi-delta zero" id="kpi-live-delta">—</div></div>
               <div class="kpi-value" id="sc-total">—<span class="unit">本</span></div>
@@ -490,121 +456,110 @@ a:hover{text-decoration:underline}
               <div class="kpi-label">星5ライブ</div>
               <div class="kpi-hint" id="kpi-star5-hint"></div>
             </div>
-            <div class="kpi-rate-card">
-              <div class="kpi-rate-head"><span class="kpi-rate-label">Note化率</span></div>
-              <div class="kpi-rate-value" id="sc-note-rate">—<span style="font-size:16px;font-weight:500;color:var(--text-2);margin-left:2px">%</span></div>
-              <div class="kpi-rate-sub" id="sc-note-rate-sub">—</div>
-              <div class="kpi-rate-bar-bg"><div class="kpi-rate-bar-fill" id="note-rate-bar" style="width:0%"></div></div>
-              <div class="kpi-rate-hint" id="kpi-rate-hint"></div>
-            </div>
           </div>
 
-          <!-- Note進捗 + 次のアクション (side by side on PC) -->
-          <div class="motive-bottom">
-            <!-- Note進捗詳細 -->
-            <div class="note-progress-card">
-              <div class="note-progress-header">
-                <span class="note-progress-title">今月のNote進捗</span>
-                <span class="note-progress-badge" id="note-progress-badge">0件</span>
-              </div>
-              <!-- ライブレポ達成率 -->
-              <div class="note-live-rate" id="note-live-rate-row">
-                <span class="nlr-label">🎤 ライブレポ</span>
-                <span class="nlr-value" id="note-live-rate-val">— / —</span>
-                <span class="nlr-status" id="note-live-rate-status"></span>
-              </div>
-              <!-- 未Note化ライブ -->
-              <div class="note-pending-row" id="note-pending-row" style="display:none">
-                <span class="npend-icon">⚠️</span>
-                <span class="npend-text" id="note-pending-text">未Note化ライブ：—件</span>
-              </div>
-              <!-- その他種別 -->
-              <div class="note-other-types" id="note-other-types"></div>
-              <!-- 今月のNote内訳 -->
-              <div class="note-type-breakdown" id="note-type-breakdown" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"></div>
+          <!-- Bottom row: best-live / action / note-progress -->
+          <div class="today-bottom" style="margin-top:12px">
+            <!-- Best live -->
+            <div class="best-live-card">
+              <div class="bl-tag">⭐ 今月のベストライブ</div>
+              <div id="bl-name" class="bl-name">—</div>
+              <div id="bl-comment" class="bl-comment" style="display:none"></div>
+              <div id="bl-meta" class="bl-meta"></div>
+              <a id="bl-note-link" class="bl-note-link" href="#" target="_blank" rel="noopener" style="display:none">Note記事を見る →</a>
+              <div id="bl-empty" class="bl-empty" style="display:none"></div>
             </div>
-
-            <!-- ② 今月のベストライブ -->
-            <div id="best-live-card" class="best-live-card">
-              <div class="best-live-label">⭐ 今月のベストライブ</div>
-              <div id="best-live-name" class="best-live-name">—</div>
-              <div id="best-live-meta" class="best-live-meta"></div>
-              <a id="best-live-note-link" class="best-live-link" href="#" target="_blank" rel="noopener" style="display:none">Note記事を見る →</a>
+            <!-- Action -->
+            <div class="action-card" id="action-card" style="display:none">
+              <div class="ac-tag">💡 次のアクション</div>
+              <div id="ac-icon" class="ac-icon"></div>
+              <div id="ac-text" class="ac-text"></div>
+              <div id="ac-sub" class="ac-sub"></div>
             </div>
-
-            <!-- 次のアクション -->
-            <div id="action-banner" class="action-banner" style="display:none">
-              <div class="action-banner-icon" id="action-icon">💡</div>
-              <div>
-                <div class="action-banner-text" id="action-text">—</div>
-                <div class="action-banner-sub" id="action-sub"></div>
+            <!-- Note progress -->
+            <div class="nprog-card">
+              <div class="nprog-header">
+                <span class="nprog-title">今月のNote進捗</span>
+                <span class="nprog-badge" id="nprog-badge">0件</span>
               </div>
-            </div>
-          </div>
-        </div><!-- /motive-zone -->
-        <!-- ② 分析ゾーン（選択期間連動） -->
-        <div class="zone">
-          <div class="zone-header">
-            <div class="zone-title">分析・トレンド</div>
-            <span class="zone-note" id="analysis-period-label">選択期間</span>
-          </div>
-          <div class="analysis-zone">
-            <div class="charts-pair">
-              <div class="chart-card">
-                <div class="chart-card-title"><span id="bar-chart-title">月別ライブ回数</span></div>
-                <div class="chart-note" id="bar-chart-note">形式別内訳</div>
-                <div class="chart-scroll"><div id="bar-chart-inner" class="chart-inner-normal"><div class="chart-wrap"><canvas id="bar-chart"></canvas></div></div></div>
-                <div class="chart-analysis" id="bar-chart-analysis" style="display:none"></div>
+              <div class="nprog-row" id="nprog-pending-row">
+                <span class="nprog-row-icon">⚠️</span>
+                <span class="nprog-row-text" id="nprog-pending-text"></span>
               </div>
-              <div class="chart-card">
-                <div class="chart-card-title"><span id="line-chart-title">月別平均評価</span></div>
-                <div class="chart-scroll"><div id="line-chart-inner" class="chart-inner-normal"><div class="chart-wrap"><canvas id="line-chart"></canvas></div></div></div>
+              <div class="nprog-completion">
+                <div class="nprog-comp-text" id="nprog-comp-text">—</div>
+                <div class="nprog-comp-sub" id="nprog-comp-sub"></div>
+                <div class="nprog-bar-bg"><div class="nprog-bar-fill" id="nprog-bar" style="width:0%"></div></div>
               </div>
-            </div>
-            <div class="notes-panel">
-              <div class="notes-panel-header">
-                <div class="panel-title">最近のNote</div>
-                <span class="notes-count-badge" id="notes-count-badge">0件</span>
-              </div>
-              <div class="note-rate-row">
-                <span class="note-rate-text" id="note-rate-label">今月 —/—本</span>
-                <div class="note-rate-bar-wrap"><div class="note-rate-bar-bg"><div class="note-rate-bar-fill" id="note-rate-bar-panel" style="width:0%"></div></div></div>
-                <span class="note-rate-stat" id="note-rate-stat">—</span>
-              </div>
-              <div id="recent-note-list" class="note-list"></div>
-            </div>
-          </div>
-          <div class="analysis-cards">
-            <div class="list-card">
-              <div class="list-card-title" id="left-panel-title">アーティスト TOP5</div>
-              <div id="left-panel-list"></div>
-              <div class="analysis-comment" id="artist-analysis-comment" style="display:none"></div>
-            </div>
-            <div class="list-card">
-              <div class="list-card-title">会場 TOP5</div>
-              <div id="venue-ranking"></div>
+              <div class="nprog-types" id="nprog-types"></div>
             </div>
           </div>
         </div>
 
-        <!-- ③ 期間内サマリー（選択期間連動） -->
-        <div class="zone">
-          <div class="zone-header">
-            <div class="zone-title">③ 期間内サマリー</div>
-            <span class="zone-note" id="period-summary-label">選択期間</span>
+        <!-- ══ ② ANALYSIS (collapsible) ══ -->
+        <div class="analysis-zone-wrap">
+          <button class="analysis-toggle-btn" id="analysis-toggle">
+            <span class="atb-left">
+              <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">分析・トレンド</span>
+              <span id="analysis-period-label" style="font-size:10px;color:var(--text-3);font-weight:400"></span>
+            </span>
+            <span class="atb-arrow">▼</span>
+          </button>
+          <div class="analysis-body" id="analysis-body">
+            <!-- Period mini summary -->
+            <div class="sec-label" style="margin-bottom:10px">選択期間のまとめ</div>
+            <div class="period-mini" style="margin-bottom:16px">
+              <div class="pm-card"><div class="pm-val" id="ps-live">—</div><div class="pm-label">ライブ数</div></div>
+              <div class="pm-card"><div class="pm-val" id="ps-note">—</div><div class="pm-label">Note記事数</div></div>
+              <div class="pm-card"><div class="pm-val" id="ps-star5">—</div><div class="pm-label">星5ライブ</div></div>
+              <div class="pm-card"><div class="pm-val" id="ps-avg">—</div><div class="pm-label">平均評価</div></div>
+              <div class="pm-card"><div class="pm-val" id="ps-noterate">—</div><div class="pm-label">Note化率</div></div>
+              <div class="pm-card"><div class="pm-val" id="ps-star5pct">—</div><div class="pm-label">星5率</div></div>
+            </div>
+            <!-- Charts -->
+            <div class="analysis-inner">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="chart-card">
+                  <div class="chart-card-title" id="bar-chart-title">月別ライブ回数</div>
+                  <div class="chart-note-text">形式別内訳</div>
+                  <div class="chart-scroll"><div id="bar-chart-inner" class="chart-inner-normal"><div class="chart-wrap"><canvas id="bar-chart"></canvas></div></div></div>
+                  <div class="chart-comment" id="bar-chart-analysis" style="display:none"></div>
+                </div>
+                <div class="chart-card">
+                  <div class="chart-card-title" id="line-chart-title">月別平均評価</div>
+                  <div class="chart-scroll"><div id="line-chart-inner" class="chart-inner-normal"><div class="chart-wrap"><canvas id="line-chart"></canvas></div></div></div>
+                </div>
+              </div>
+              <!-- Notes panel -->
+              <div style="display:flex;flex-direction:column;gap:0">
+                <div class="sec-label" style="margin-bottom:8px">
+                  最近のNote
+                  <span class="sub" id="notes-count-badge">0件</span>
+                </div>
+                <div id="recent-note-list" class="notes-grid"></div>
+              </div>
+            </div>
+            <!-- Rankings -->
+            <div class="analysis-ranks">
+              <div class="rank-card">
+                <div class="rank-title" id="left-panel-title">アーティスト TOP5</div>
+                <div id="left-panel-list"></div>
+                <div class="rank-comment" id="artist-analysis-comment" style="display:none"></div>
+              </div>
+              <div class="rank-card">
+                <div class="rank-title">会場 TOP5</div>
+                <div id="venue-ranking"></div>
+              </div>
+            </div>
+            <!-- Star5 -->
+            <div style="margin-top:16px">
+              <div class="sec-label" style="margin-bottom:10px">
+                ⭐ 星5ライブ一覧
+                <span class="sub" id="star5-count-label"></span>
+              </div>
+              <div id="star5-list" class="star5-grid"></div>
+            </div>
           </div>
-          <div class="period-summary-grid">
-            <div class="ps-card"><div class="ps-icon">🎵</div><div class="ps-value" id="ps-live">—</div><div class="ps-label">ライブ数</div></div>
-            <div class="ps-card"><div class="ps-icon">📝</div><div class="ps-value" id="ps-note">—</div><div class="ps-label">Note記事数</div></div>
-            <div class="ps-card"><div class="ps-icon">⭐</div><div class="ps-value" id="ps-star5">—</div><div class="ps-label">星5ライブ</div></div>
-            <div class="ps-card"><div class="ps-icon">📊</div><div class="ps-value" id="ps-avg">—</div><div class="ps-label">平均評価</div></div>
-            <div class="ps-card"><div class="ps-icon">✍️</div><div class="ps-value" id="ps-noterate">—</div><div class="ps-label">Note化率</div></div>
-            <div class="ps-card"><div class="ps-icon">💫</div><div class="ps-value" id="ps-star5pct">—</div><div class="ps-label">星5率</div></div>
-          </div>
-          <div class="star5-section-header">
-            <div class="star5-title">⭐ 星5ライブ一覧 <span id="star5-count-label" style="font-size:10px;color:var(--text-3);font-weight:400;margin-left:4px"></span></div>
-          </div>
-          <div id="star5-list" class="star5-grid"></div>
         </div>
 
         <div class="page-footer">LIVE LOGは、あなたの音楽活動の記録と、未来の物語をつなぎます。<span>♥</span></div>
@@ -665,46 +620,59 @@ a:hover{text-decoration:underline}
 <div class="toast" id="toast"></div>
 
 <script>
-let allRecords=[],allNotes=[],allArtists=[];
-let notesByLiveId=new Map();
-let barChart=null,lineChart=null;
-let currentArtist='all',currentPeriod='thisYear';
-let selectedYear=new Date().getFullYear();
-let currentFormat='all',currentRating='all';
+/* ─── STATE ─── */
+var allRecords=[],allNotes=[],allArtists=[];
+var notesByLiveId=new Map();
+var barChart=null,lineChart=null;
+var currentArtist='all',currentPeriod='thisYear';
+var selectedYear=new Date().getFullYear();
+var currentFormat='all',currentRating='all';
 
+/* ─── NOTE TYPE CONFIG ─── */
+var NOTE_TYPES={
+  'ライブレポ':{icon:'🎤',cls:'nt-live',ph:'rgba(124,110,247,.2)'},
+  '楽曲レポ':{icon:'🎧',cls:'nt-song',ph:'rgba(74,158,255,.2)'},
+  'アルバム感想':{icon:'💿',cls:'nt-album',ph:'rgba(52,211,153,.2)'},
+  'まとめ':{icon:'🧾',cls:'nt-summary',ph:'rgba(251,191,36,.2)'},
+  '雑記':{icon:'✏️',cls:'nt-misc',ph:'rgba(139,147,184,.2)'}
+};
+function getNTC(type){return NOTE_TYPES[type]||{icon:'📝',cls:'nt-misc',ph:'rgba(139,147,184,.2)'};}
+
+/* ─── NORMALIZE (unchanged) ─── */
 function normalizeApiRecords(api){
-  return api.map(r=>{
+  return api.map(function(r){
     if(!r.date)return null;
-    const date=new Date(r.date);if(isNaN(date.getTime()))return null;
-    const artists=Array.isArray(r.artists)?r.artists.filter(Boolean):[];
-    return{id:r.id||'',liveName:r.liveName||'',artistRaw:artists.join(', '),artists,setlistUrl:r.setlistUrl||'',venue:r.venue||'',format:r.format||'',date,rating:Number(r.rating||0),dateStr:r.date||'',imageUrl:r.imageUrl||''};
+    var date=new Date(r.date);if(isNaN(date.getTime()))return null;
+    var artists=Array.isArray(r.artists)?r.artists.filter(Boolean):[];
+    return{id:r.id||'',liveName:r.liveName||'',artistRaw:artists.join(', '),artists:artists,setlistUrl:r.setlistUrl||'',venue:r.venue||'',format:r.format||'',date:date,rating:Number(r.rating||0),dateStr:r.date||'',imageUrl:r.imageUrl||''};
   }).filter(Boolean);
 }
 function normalizeNoteRecords(api){
-  return(Array.isArray(api)?api:[]).map(n=>{
-    const pd=n.notePublishedDate?new Date(n.notePublishedDate):null;
+  return(Array.isArray(api)?api:[]).map(function(n){
+    var pd=n.notePublishedDate?new Date(n.notePublishedDate):null;
     return{id:n.id||'',noteTitle:n.noteTitle||'',noteUrl:n.noteUrl||'',noteType:n.noteType||'',relatedLivePageIds:Array.isArray(n.relatedLivePageIds)?n.relatedLivePageIds.filter(Boolean):[],thumbnailUrl:n.thumbnailUrl||n.eyecatch||n.imageUrl||'',publishedDate:(pd&&!isNaN(pd.getTime()))?pd:null};
-  }).filter(n=>n.noteUrl).sort((a,b)=>(b.publishedDate?.getTime()||0)-(a.publishedDate?.getTime()||0));
+  }).filter(function(n){return n.noteUrl;}).sort(function(a,b){return(b.publishedDate?b.publishedDate.getTime():0)-(a.publishedDate?a.publishedDate.getTime():0);});
 }
 function buildNotesByLiveIdMap(notes){
-  const map=new Map();
-  notes.forEach(n=>n.relatedLivePageIds.forEach(id=>{if(!map.has(id))map.set(id,[]);map.get(id).push(n);}));
-  map.forEach((v,k)=>{v.sort((a,b)=>(b.publishedDate?.getTime()||0)-(a.publishedDate?.getTime()||0));map.set(k,v);});
+  var map=new Map();
+  notes.forEach(function(n){n.relatedLivePageIds.forEach(function(id){if(!map.has(id))map.set(id,[]);map.get(id).push(n);});});
+  map.forEach(function(v,k){v.sort(function(a,b){return(b.publishedDate?b.publishedDate.getTime():0)-(a.publishedDate?a.publishedDate.getTime():0);});map.set(k,v);});
   return map;
 }
 
+/* ─── FILTERS (unchanged) ─── */
 function getPeriodFilteredRecords(){
-  const now=new Date();
-  return allRecords.filter(r=>{
+  var now=new Date();
+  return allRecords.filter(function(r){
     if(currentPeriod==='thisYear')return r.date.getFullYear()===now.getFullYear();
     if(currentPeriod==='year')return r.date.getFullYear()===selectedYear;
-    if(currentPeriod==='last12'){const c=new Date(now.getFullYear(),now.getMonth()-11,1);return r.date>=c;}
+    if(currentPeriod==='last12'){var c=new Date(now.getFullYear(),now.getMonth()-11,1);return r.date>=c;}
     return true;
   });
 }
 function getFilteredRecords(){
-  return getPeriodFilteredRecords().filter(r=>{
-    if(currentArtist!=='all'&&!r.artists.includes(currentArtist))return false;
+  return getPeriodFilteredRecords().filter(function(r){
+    if(currentArtist!=='all'&&r.artists.indexOf(currentArtist)<0)return false;
     if(currentFormat!=='all'&&r.format!==currentFormat)return false;
     if(currentRating==='star5'&&r.rating!==5)return false;
     if(currentRating==='high'&&r.rating<4)return false;
@@ -713,46 +681,47 @@ function getFilteredRecords(){
   });
 }
 function getFilteredNotes(){
-  const now=new Date();
-  return allNotes.filter(n=>{
+  var now=new Date();
+  return allNotes.filter(function(n){
     if(!n.publishedDate)return false;
     if(currentPeriod==='thisYear')return n.publishedDate.getFullYear()===now.getFullYear();
     if(currentPeriod==='year')return n.publishedDate.getFullYear()===selectedYear;
-    if(currentPeriod==='last12'){const c=new Date(now.getFullYear(),now.getMonth()-11,1);return n.publishedDate>=c;}
+    if(currentPeriod==='last12'){var c=new Date(now.getFullYear(),now.getMonth()-11,1);return n.publishedDate>=c;}
     return true;
   });
 }
 function getMonthRange(records){
-  const now=new Date();const buckets=[];
+  var now=new Date();var buckets=[];
   if(currentPeriod==='thisYear'||currentPeriod==='year'){
-    const y=currentPeriod==='year'?selectedYear:now.getFullYear();
-    for(let m=0;m<12;m++)buckets.push({y,m,key:`${y}-${String(m+1).padStart(2,'0')}`,label:`${m+1}月`});
+    var y=currentPeriod==='year'?selectedYear:now.getFullYear();
+    for(var m=0;m<12;m++)buckets.push({y:y,m:m,key:y+'-'+String(m+1).padStart(2,'0'),label:(m+1)+'月'});
     return buckets;
   }
   if(currentPeriod==='last12'){
-    for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);buckets.push({y:d.getFullYear(),m:d.getMonth(),key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,label:`${d.getMonth()+1}月`});}
+    for(var i=11;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);buckets.push({y:d.getFullYear(),m:d.getMonth(),key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:(d.getMonth()+1)+'月'});}
     return buckets;
   }
-  return[...new Set(records.map(r=>r.date.getFullYear()))].sort((a,b)=>a-b).map(y=>({y,m:null,key:`${y}`,label:`${y}`}));
+  var yrs=[...new Set(records.map(function(r){return r.date.getFullYear();}))].sort(function(a,b){return a-b;});
+  return yrs.map(function(yr){return{y:yr,m:null,key:''+yr,label:''+yr};});
 }
 function buildMonthlyStats(records,buckets){
-  const fk=['ワンマン','対バン','フェス','サーキット'];
-  const mm=new Map();
-  buckets.forEach(({key})=>mm.set(key,{count:0,ratingTotal:0,ratingCount:0,star5Count:0,formats:Object.fromEntries(fk.map(f=>[f,0]))}));
-  records.forEach(r=>{
-    const key=currentPeriod==='all'?`${r.date.getFullYear()}`:`${r.date.getFullYear()}-${String(r.date.getMonth()+1).padStart(2,'0')}`;
+  var fk=['ワンマン','対バン','フェス','サーキット'];
+  var mm=new Map();
+  buckets.forEach(function(b){var fobj={};fk.forEach(function(f){fobj[f]=0;});mm.set(b.key,{count:0,ratingTotal:0,ratingCount:0,star5Count:0,formats:fobj});});
+  records.forEach(function(r){
+    var key=currentPeriod==='all'?(''+r.date.getFullYear()):(r.date.getFullYear()+'-'+String(r.date.getMonth()+1).padStart(2,'0'));
     if(!mm.has(key))return;
-    const row=mm.get(key);row.count++;
+    var row=mm.get(key);row.count++;
     if(r.rating>0){row.ratingTotal+=r.rating;row.ratingCount++;}
     if(r.rating===5)row.star5Count++;
     if(row.formats[r.format]!==undefined)row.formats[r.format]++;
   });
-  return buckets.map(({key,label})=>{const row=mm.get(key);return{label,count:row.count,avgRating:row.ratingCount?+(row.ratingTotal/row.ratingCount).toFixed(2):null,star5Count:row.star5Count,formats:row.formats};});
+  return buckets.map(function(b){var row=mm.get(b.key);return{label:b.label,count:row.count,avgRating:row.ratingCount?+(row.ratingTotal/row.ratingCount).toFixed(2):null,star5Count:row.star5Count,formats:row.formats};});
 }
 
 function getConditionText(){
-  const pn=currentPeriod==='year'?`${selectedYear}年`:currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12ヶ月':'全期間';
-  const parts=[currentArtist==='all'?'全アーティスト':currentArtist,pn];
+  var pn=currentPeriod==='year'?(selectedYear+'年'):currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12ヶ月':'全期間';
+  var parts=[currentArtist==='all'?'全アーティスト':currentArtist,pn];
   if(currentFormat!=='all')parts.push(currentFormat);
   if(currentRating==='star5')parts.push('★5のみ');
   if(currentRating==='high')parts.push('★4以上');
@@ -760,351 +729,297 @@ function getConditionText(){
   return parts.join(' / ');
 }
 function renderQualityInline(){
-  const issues=[];
-  if(allRecords.filter(r=>!r.rating).length)issues.push(`評価なし ${allRecords.filter(r=>!r.rating).length}件`);
-  if(allRecords.filter(r=>!r.format).length)issues.push(`形式なし ${allRecords.filter(r=>!r.format).length}件`);
-  const uq=new Set(allRecords.map(r=>[r.liveName,r.dateStr,r.venue,r.format,r.artistRaw].join('|'))).size;
-  if(allRecords.length-uq>0)issues.push(`重複候補 ${allRecords.length-uq}件`);
-  const el=document.getElementById('quality-inline');
-  if(!issues.length){el.className='info-bar good';el.textContent=`データ品質：問題なし（全${allRecords.length}件）`;}
-  else{el.className='info-bar warn';el.textContent=`データ品質：${issues.join(' / ')}`;}
+  var issues=[];
+  var noRate=allRecords.filter(function(r){return!r.rating;}).length;
+  var noFmt=allRecords.filter(function(r){return!r.format;}).length;
+  if(noRate)issues.push('評価なし '+noRate+'件');
+  if(noFmt)issues.push('形式なし '+noFmt+'件');
+  var uq=new Set(allRecords.map(function(r){return[r.liveName,r.dateStr,r.venue,r.format,r.artistRaw].join('|');})).size;
+  if(allRecords.length-uq>0)issues.push('重複候補 '+(allRecords.length-uq)+'件');
+  var el=document.getElementById('quality-inline');
+  if(!el)return;
+  if(!issues.length){el.className='info-bar good';el.textContent='データ品質：問題なし（全'+allRecords.length+'件）';}
+  else{el.className='info-bar warn';el.textContent='データ品質：'+issues.join(' / ');}
 }
-
-// Note type config
-const NOTE_TYPES={
-  'ライブレポ': {icon:'🎤',cls:'nt-live'},
-  '楽曲レポ':   {icon:'🎧',cls:'nt-song'},
-  'アルバム感想':{icon:'💿',cls:'nt-album'},
-  'まとめ':     {icon:'🧾',cls:'nt-summary'},
-  '雑記':       {icon:'✏️',cls:'nt-misc'},
-};
-function getNoteTypeCfg(type){return NOTE_TYPES[type]||{icon:'📝',cls:'nt-misc'};}
 
 function getDelta(cur,prev){
   if(prev==null)return{text:'—',cls:'zero'};
-  const d=cur-prev;
-  if(d>0)return{text:`先月比 +${d}`,cls:'pos'};
-  if(d<0)return{text:`先月比 ${d}`,cls:'neg'};
+  var d=cur-prev;
+  if(d>0)return{text:'先月比 +'+d,cls:'pos'};
+  if(d<0)return{text:'先月比 '+d,cls:'neg'};
   return{text:'先月比 ±0',cls:'zero'};
 }
+function setDelta(id,d){var el=document.getElementById(id);if(el){el.textContent=d.text;el.className='kpi-delta '+d.cls;}}
+function setEl(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+function setHtml(id,v){var el=document.getElementById(id);if(el)el.innerHTML=v;}
+function showEl(id,show){var el=document.getElementById(id);if(el)el.style.display=show?'':'none';}
 
+/* ─── RENDER TODAY ─── */
 function renderThisMonth(){
-  const now=new Date();
-  const mo=allRecords.filter(r=>r.date.getFullYear()===now.getFullYear()&&r.date.getMonth()===now.getMonth());
-  const pmRec=allRecords.filter(r=>{const p=new Date(now.getFullYear(),now.getMonth()-1,1);return r.date.getFullYear()===p.getFullYear()&&r.date.getMonth()===p.getMonth();});
-  const mn=allNotes.filter(n=>n.publishedDate&&n.publishedDate.getFullYear()===now.getFullYear()&&n.publishedDate.getMonth()===now.getMonth());
-  const pnNotes=allNotes.filter(n=>{if(!n.publishedDate)return false;const p=new Date(now.getFullYear(),now.getMonth()-1,1);return n.publishedDate.getFullYear()===p.getFullYear()&&n.publishedDate.getMonth()===p.getMonth();});
-  const star5Count=mo.filter(r=>r.rating===5).length;
-  const pstar5Count=pmRec.filter(r=>r.rating===5).length;
-  const liveCount=mo.length;
-  const noteCount=mn.length;
+  var now=new Date();
+  var mo=allRecords.filter(function(r){return r.date.getFullYear()===now.getFullYear()&&r.date.getMonth()===now.getMonth();});
+  var pmR=allRecords.filter(function(r){var p=new Date(now.getFullYear(),now.getMonth()-1,1);return r.date.getFullYear()===p.getFullYear()&&r.date.getMonth()===p.getMonth();});
+  var mn=allNotes.filter(function(n){return n.publishedDate&&n.publishedDate.getFullYear()===now.getFullYear()&&n.publishedDate.getMonth()===now.getMonth();});
+  var pmN=allNotes.filter(function(n){if(!n.publishedDate)return false;var p=new Date(now.getFullYear(),now.getMonth()-1,1);return n.publishedDate.getFullYear()===p.getFullYear()&&n.publishedDate.getMonth()===p.getMonth();});
+  var lc=mo.length,nc=mn.length,s5=mo.filter(function(r){return r.rating===5;}).length;
+  var pS5=pmR.filter(function(r){return r.rating===5;}).length;
 
-  document.getElementById('this-month-label').textContent=(now.getMonth()+1)+'月';
-  document.getElementById('sc-total').innerHTML=liveCount+'<span class="unit">本</span>';
-  document.getElementById('sc-avg').innerHTML=noteCount+'<span class="unit">件</span>';
-  document.getElementById('sc-star5').innerHTML=star5Count+'<span class="unit">回</span>';
+  setEl('this-month-label',now.getMonth()+1+'月');
+  setHtml('sc-total',lc+'<span class="unit">本</span>');
+  setHtml('sc-avg',nc+'<span class="unit">件</span>');
+  setHtml('sc-star5',s5+'<span class="unit">回</span>');
+  setDelta('kpi-live-delta',getDelta(lc,pmR.length));
+  setDelta('kpi-note-delta',getDelta(nc,pmN.length));
+  setDelta('kpi-star5-delta',getDelta(s5,pS5));
+  setEl('kpi-live-hint',lc===0?'':lc<=2?'じっくり味わう月':lc<=5?'いいペース！':'濃いライブ月間');
+  setEl('kpi-note-hint',nc===0&&lc>0?'あと'+lc+'本書ける':nc>0&&nc<lc?'あと'+(lc-nc)+'本残っています':'');
+  setEl('kpi-star5-hint',s5>0?'最高の体験あり':'');
 
-  var setD=function(id,d){var el=document.getElementById(id);if(el){el.textContent=d.text;el.className='kpi-delta '+d.cls;}};
-  setD('kpi-live-delta',getDelta(liveCount,pmRec.length));
-  setD('kpi-note-delta',getDelta(noteCount,pnNotes.length));
-  setD('kpi-star5-delta',getDelta(star5Count,pstar5Count));
-
-  var rate=liveCount>0?Math.round((noteCount/liveCount)*100):0;
-  var rateEl=document.getElementById('sc-note-rate');
-  if(rateEl){
-    if(liveCount>0){rateEl.innerHTML=rate+'<span style="font-size:16px;font-weight:500;color:var(--text-2);margin-left:2px">%</span>';}
-    else{rateEl.innerHTML='<span style="font-size:18px;color:var(--text-3)">—</span>';}
-  }
-  var noteRateSubEl=document.getElementById('sc-note-rate-sub');
-  if(noteRateSubEl)noteRateSubEl.textContent=liveCount>0?(noteCount+'件 / '+liveCount+'本'):'ライブ記録なし';
-  var noteRateBarEl=document.getElementById('note-rate-bar');
-  if(noteRateBarEl)noteRateBarEl.style.width=(liveCount>0?rate:0)+'%';
-
-  var liveHintEl=document.getElementById('kpi-live-hint');
-  if(liveHintEl)liveHintEl.textContent=liveCount===0?'':liveCount<=2?'じっくり味わう月':liveCount<=5?'いいペース！':'濃いライブ月間';
-  var noteHintEl=document.getElementById('kpi-note-hint');
-  if(noteHintEl)noteHintEl.textContent=(noteCount===0&&liveCount>0)?('あと'+liveCount+'本書ける'):(noteCount>0&&noteCount<liveCount?('あと'+(liveCount-noteCount)+'本残っています'):'');
-  var star5HintEl=document.getElementById('kpi-star5-hint');
-  if(star5HintEl)star5HintEl.textContent=star5Count>0?'最高の体験あり':'';
-  var rateHintEl=document.getElementById('kpi-rate-hint');
-  if(rateHintEl)rateHintEl.textContent=liveCount===0?'':rate===100?'全件Note済み ✓':rate>=50?'半分以上Note化済み':('あと'+(liveCount-noteCount)+'本でコンプリート');
-
-  // Note progress panel (note-rate-row in analysis zone)
-  var nrlEl=document.getElementById('note-rate-label');
-  if(nrlEl)nrlEl.textContent='今月 '+noteCount+'/'+liveCount+'本';
-  var nrpEl=document.getElementById('note-rate-bar-panel');
-  if(nrpEl)nrpEl.style.width=(liveCount>0?rate:0)+'%';
-  var pendingNoteCount=Math.max(0,liveCount-noteCount);
-  var nrsEl=document.getElementById('note-rate-stat');
-  if(nrsEl)nrsEl.textContent=pendingNoteCount>0?('未Note '+pendingNoteCount+'本'):liveCount>0?'完了 ✓':'—';
-
-  // Note progress card — live report rate
-  var liveReportNotes=mn.filter(function(n){return n.noteType==='ライブレポ';});
-  var lrTotal=liveReportNotes.length;
-  var lrBadgeEl=document.getElementById('note-progress-badge');
-  if(lrBadgeEl)lrBadgeEl.textContent=noteCount+'件';
-  var lrValEl=document.getElementById('note-live-rate-val');
-  var lrStatEl=document.getElementById('note-live-rate-status');
-  if(lrValEl)lrValEl.textContent=liveCount>0?(lrTotal+' / '+liveCount):(lrTotal+' / 0');
-  if(lrStatEl){
-    if(liveCount===0){lrStatEl.textContent='';lrStatEl.className='nlr-status zero';}
-    else if(lrTotal>=liveCount){lrStatEl.textContent='完了 ✓';lrStatEl.className='nlr-status';}
-    else if(lrTotal===0){lrStatEl.textContent='未作成';lrStatEl.className='nlr-status zero';}
-    else{lrStatEl.textContent='あと'+(liveCount-lrTotal)+'本';lrStatEl.className='nlr-status incomplete';}
+  /* Story headline */
+  var sEmoji='',sTxt='',sSub='';
+  if(lc===0){sEmoji='🌙';sTxt='今月はまだライブなし。楽曲レポや感想から記録を始めよう。';sSub='';}
+  else if(s5>=3){sEmoji='🔥';sTxt='今月、完全に当たり月。全部持っていかれた。';sSub=s5+'本の星5ライブ——忘れる前にNoteに残そう';}
+  else if(s5>=1&&nc>=lc){sEmoji='✨';sTxt='音楽をちゃんと言葉にできた月。';sSub='星5ライブもNote化も完璧なペース';}
+  else if(s5>=1){sEmoji='⭐';sTxt='星5あり——このライブは深掘りする価値がある。';sSub='';}
+  else if(lc>=5){sEmoji='🎶';sTxt='濃いライブ月間。記憶が薄れる前にNoteを。';sSub='';}
+  else if(lc>=2&&nc>=lc){sEmoji='✅';sTxt='今月は順調——ライブもNoteも良いペース。';sSub='このまま維持しよう';}
+  else{sEmoji='🎧';sTxt='今月のライブを振り返る時間を作ろう。';sSub='';}
+  var sh=document.getElementById('story-headline');
+  if(sh&&sTxt){
+    sh.style.display='flex';
+    setEl('story-emoji',sEmoji);setEl('story-text',sTxt);setEl('story-sub',sSub);
   }
 
-  // Pending note (未Note化)
-  var pendingLR=Math.max(0,liveCount-lrTotal);
-  var pendingRow=document.getElementById('note-pending-row');
-  var pendingTextEl=document.getElementById('note-pending-text');
-  if(pendingRow&&pendingTextEl){
-    if(pendingLR>0&&liveCount>0){pendingRow.style.display='flex';pendingTextEl.textContent='未Note化ライブ：'+pendingLR+'件';}
-    else{pendingRow.style.display='none';}
-  }
-
-  // Other note types (non-live-report)
-  var otherTypesEl=document.getElementById('note-other-types');
-  if(otherTypesEl){
-    var otherCounts={};
-    mn.forEach(function(n){if(n.noteType&&n.noteType!=='ライブレポ')otherCounts[n.noteType]=(otherCounts[n.noteType]||0)+1;});
-    var otherKeys=Object.keys(otherCounts);
-    if(otherKeys.length){
-      otherTypesEl.innerHTML=otherKeys.map(function(t){var cfg=getNoteTypeCfg(t);return'<div class="note-other-row">'+cfg.icon+' '+esc(t)+' <span class="note-other-count">+'+otherCounts[t]+'</span></div>';}).join('');
-    } else {
-      otherTypesEl.innerHTML='';
-    }
-  }
-
-  // Note type breakdown chips
-  var bdEl=document.getElementById('note-type-breakdown');
-  if(bdEl){
-    var typeCounts={};
-    mn.forEach(function(n){var t=n.noteType||'';if(t)typeCounts[t]=(typeCounts[t]||0)+1;});
-    bdEl.innerHTML=Object.entries(typeCounts).map(function(e){var t=e[0];var cnt=e[1];var cfg=getNoteTypeCfg(t);return'<span class="note-type-chip '+cfg.cls+'">'+cfg.icon+' '+esc(t)+' '+cnt+'</span>';}).join('');
-  }
-
-  // ③ Month story — 1-line narrative
-  var storyBar = document.getElementById('month-story-bar');
-  var storyIcon = document.getElementById('month-story-icon');
-  var storyText = document.getElementById('month-story-text');
-  if (storyBar && storyIcon && storyText) {
-    var sIcon = '', sText = '';
-    if (liveCount === 0) {
-      sIcon = '🌙'; sText = '今月はまだライブなし。楽曲レポやアルバム感想から記録を始めよう。';
-    } else if (star5Count >= 2) {
-      sIcon = '🔥'; sText = '今月は当たり月。星5が' + star5Count + '本——忘れる前にNoteに残そう。';
-    } else if (star5Count === 1) {
-      sIcon = '⭐'; sText = '今月は星5が1本。そのライブ、深掘りする価値あり。';
-    } else if (liveCount >= 5) {
-      sIcon = '🎶'; sText = '濃いライブ月間。記憶が薄れる前にNoteを書いておこう。';
-    } else if (liveCount >= 3 && noteCount >= liveCount) {
-      sIcon = '✅'; sText = '今月は順調——ライブもNoteも良いペース。このまま維持しよう。';
-    } else if (liveCount <= 2 && liveCount > 0) {
-      sIcon = '🎧'; sText = 'ライブ少なめの月。楽曲レポやアルバム感想で記録の習慣を続けよう。';
-    } else {
-      sIcon = '📝'; sText = '今月のライブを振り返ってNoteを書こう。';
-    }
-    storyIcon.textContent = sIcon;
-    storyText.textContent = sText;
-    storyBar.style.display = 'flex';
-  }
-
-  // ② Best live this month
-  var bestNameEl = document.getElementById('best-live-name');
-  var bestMetaEl = document.getElementById('best-live-meta');
-  var bestLinkEl = document.getElementById('best-live-note-link');
-  if (bestNameEl) {
-    var star5Lives = mo.filter(function(r){ return r.rating === 5; });
-    if (star5Lives.length > 0) {
-      // Pick most recent star5
-      star5Lives.sort(function(a,b){ return b.date - a.date; });
-      var best = star5Lives[0];
-      var bestD = best.date;
-      var bestDate = bestD.getFullYear() + '/' + String(bestD.getMonth()+1).padStart(2,'0') + '/' + String(bestD.getDate()).padStart(2,'0');
-      bestNameEl.textContent = best.liveName || '—';
-      bestNameEl.className = 'best-live-name';
-      if (bestMetaEl) bestMetaEl.textContent = bestDate + (best.venue ? '　📍 ' + best.venue : '') + (best.artists.length ? '　' + best.artists.join('・') : '');
-      // Linked note
-      var bestNote = (notesByLiveId.get(best.id) || [])[0] || null;
-      if (bestLinkEl) {
-        if (bestNote) { bestLinkEl.href = bestNote.noteUrl; bestLinkEl.style.display = 'inline-block'; }
-        else { bestLinkEl.style.display = 'none'; }
+  /* Best live */
+  var star5Mo=mo.filter(function(r){return r.rating===5;}).sort(function(a,b){return b.date-a.date;});
+  var blName=document.getElementById('bl-name');
+  var blMeta=document.getElementById('bl-meta');
+  var blNoteLink=document.getElementById('bl-note-link');
+  var blComment=document.getElementById('bl-comment');
+  var blEmpty=document.getElementById('bl-empty');
+  if(blName){
+    if(star5Mo.length>0){
+      var best=star5Mo[0];
+      var bd=best.date;
+      var bdStr=bd.getFullYear()+'/'+(bd.getMonth()+1)+'/'+(bd.getDate());
+      blName.textContent=best.liveName||'—';
+      if(blMeta)blMeta.textContent=bdStr+(best.venue?' 📍 '+best.venue:'')+(best.artists.length?' / '+best.artists.join('・'):'');
+      /* Comment based on context */
+      var comments=['音が全部、体に刺さった夜','この日のセットリスト、一生忘れない','完璧だった——言葉にできない','また行きたい、すぐにでも'];
+      var cmtIdx=Math.abs((best.liveName||'').length)%comments.length;
+      if(blComment){blComment.textContent=comments[cmtIdx];blComment.style.display='block';}
+      var bestNote=(notesByLiveId.get(best.id)||[])[0]||null;
+      if(blNoteLink){
+        if(bestNote){blNoteLink.href=bestNote.noteUrl;blNoteLink.style.display='inline-block';}
+        else blNoteLink.style.display='none';
       }
+      if(blEmpty)blEmpty.style.display='none';
     } else {
-      bestNameEl.innerHTML = '<span class="best-live-empty">今月の星5ライブを作ろう</span>';
-      if (bestMetaEl) bestMetaEl.textContent = '最高の体験は記録する価値があります';
-      if (bestLinkEl) bestLinkEl.style.display = 'none';
+      blName.textContent='今月のベストライブを作ろう';
+      if(blMeta)blMeta.textContent='';
+      if(blComment)blComment.style.display='none';
+      if(blNoteLink)blNoteLink.style.display='none';
+      if(blEmpty){blEmpty.style.display='block';blEmpty.textContent='最高の体験は記録する価値があります';}
     }
   }
 
-  // ① Action banner — more specific suggestions
-  var abBanner = document.getElementById('action-banner');
-  var abIcon = document.getElementById('action-icon');
-  var abText = document.getElementById('action-text');
-  var abSub = document.getElementById('action-sub');
-  if (abBanner && abText) {
-    var aIcon = '💡'; var aText = ''; var aSub = '';
-    var unnotedLives = liveCount - lrTotal; // live-report gap
-    if (liveCount === 0) {
-      aIcon = '🎵'; aText = '楽曲レポやアルバム感想を1本書こう'; aSub = 'ライブがなくても記録は続けられます';
-    } else if (noteCount === 0) {
-      aIcon = '✍️'; aText = 'まず1本、今月のライブをNoteにしよう'; aSub = '書き始めることが一番大事';
-    } else if (star5Count > 0 && noteCount >= liveCount) {
-      aIcon = '⭐'; aText = '星5ライブを深掘りしよう'; aSub = '完璧なNote化率——次は質の向上へ';
-    } else if (unnotedLives > 0) {
-      aIcon = '📝'; aText = 'あと' + unnotedLives + '本のライブレポを書こう'; aSub = star5Count > 0 ? '星5から書くのがおすすめ' : '印象に残った瞬間から書き始めよう';
-    } else if (liveCount <= 1) {
-      aIcon = '🎧'; aText = '楽曲レポやアルバム感想でNote継続しよう'; aSub = 'ライブが少ない月こそ音楽を深掘りするチャンス';
-    } else if (noteCount >= liveCount) {
-      aIcon = '🎯'; aText = '今月は順調、このペースを維持しよう'; aSub = '来月もNote化率100%を目指そう';
-    }
-    if (aText) {
-      abBanner.style.display = 'flex';
-      if (abIcon) abIcon.textContent = aIcon;
-      abText.textContent = aText;
-      if (abSub) abSub.textContent = aSub;
+  /* Action card */
+  var lrNotes=mn.filter(function(n){return n.noteType==='ライブレポ';}).length;
+  var aIcon='',aTxt='',aSub='',showAction=true;
+  if(lc===0){aIcon='🎵';aTxt='楽曲レポやアルバム感想を1本書こう';aSub='ライブがなくても記録は続けられます';}
+  else if(nc===0){aIcon='✍️';aTxt='まず1本、今月のライブをNoteにしよう';aSub='書き始めることが一番大事';}
+  else if(s5>0&&nc>=lc){aIcon='⭐';aTxt='星5ライブを深掘りしよう';aSub='完璧なNote化率——次は質の向上へ';}
+  else if(lc>lrNotes){aIcon='📝';aTxt='あと'+(lc-lrNotes)+'本のライブレポを書こう';aSub=s5>0?'星5ライブから書くのがおすすめ':'';}
+  else if(lc<=1){aIcon='🎧';aTxt='楽曲レポで記録を継続しよう';aSub='ライブが少ない月こそ音楽を深掘りするチャンス';}
+  else if(nc>=lc){aIcon='🎯';aTxt='今月は順調、このペースを維持しよう';aSub='来月もNote化率100%を目指そう';}
+  else{showAction=false;}
+  var acCard=document.getElementById('action-card');
+  if(acCard){
+    if(showAction&&aTxt){
+      acCard.style.display='flex';
+      setEl('ac-icon',aIcon);setEl('ac-text',aTxt);setEl('ac-sub',aSub);
     } else {
-      abBanner.style.display = 'none';
+      acCard.style.display='none';
     }
+  }
+
+  /* Note progress */
+  var rate=lc>0?Math.round((nc/lc)*100):0;
+  var pending=Math.max(0,lc-lrNotes);
+  setEl('nprog-badge',nc+'件');
+  var pendRow=document.getElementById('nprog-pending-row');
+  if(pendRow){
+    if(pending>0&&lc>0){pendRow.classList.add('show');setEl('nprog-pending-text','未Note化ライブ：'+pending+'件');}
+    else pendRow.classList.remove('show');
+  }
+  var compText='',compSub='';
+  if(lc===0){compText='ライブ記録なし';compSub='楽曲レポや感想から始めよう';}
+  else if(nc===0){compText='まだ0件';compSub='あと'+lc+'本書けます';}
+  else if(nc>=lc){compText='今月コンプリート ✓';compSub='全'+lc+'本のライブをNote化済み';}
+  else{compText='あと'+(lc-nc)+'本でコンプリート';compSub=nc+'/'+lc+'本 Note化済み（'+rate+'%）';}
+  setEl('nprog-comp-text',compText);
+  setEl('nprog-comp-sub',compSub);
+  var pBar=document.getElementById('nprog-bar');if(pBar)pBar.style.width=(lc>0?rate:0)+'%';
+
+  /* Note type chips */
+  var tCounts={};
+  mn.forEach(function(n){var t=n.noteType||'';if(t)tCounts[t]=(tCounts[t]||0)+1;});
+  var typesEl=document.getElementById('nprog-types');
+  if(typesEl){
+    typesEl.innerHTML=Object.entries(tCounts).map(function(e){
+      var cfg=getNTC(e[0]);
+      return '<span class="nt-chip '+cfg.cls+'">'+cfg.icon+' '+esc(e[0])+' '+e[1]+'</span>';
+    }).join('');
   }
 }
 
+/* ─── RENDER CHARTS ─── */
 function renderCharts(records){
   if(typeof Chart==='undefined')return;
-  const bc=document.getElementById('bar-chart'),lc=document.getElementById('line-chart');
-  if(!bc||!lc)return;
-  const buckets=getMonthRange(records);
-  const stats=buildMonthlyStats(records,buckets);
-  const labels=stats.map(s=>s.label);
-  const avgRatings=stats.map(s=>s.avgRating);
-  const maxTick=labels.length>18?2:1;
-  const isAll=currentPeriod==='all';
-  document.getElementById('bar-chart-title').textContent=isAll?'年別ライブ回数':'月別ライブ回数';
-  document.getElementById('line-chart-title').textContent=isAll?'年別平均評価':'月別平均評価';
+  var bc=document.getElementById('bar-chart'),lcc=document.getElementById('line-chart');
+  if(!bc||!lcc)return;
+  var buckets=getMonthRange(records);
+  var stats=buildMonthlyStats(records,buckets);
+  var labels=stats.map(function(s){return s.label;});
+  var avgR=stats.map(function(s){return s.avgRating;});
+  var maxTick=labels.length>18?2:1;
+  var isAll=currentPeriod==='all';
+  setEl('bar-chart-title',isAll?'年別ライブ回数':'月別ライブ回数');
+  setEl('line-chart-title',isAll?'年別平均評価':'月別平均評価');
+  var pLabel=currentPeriod==='year'?(selectedYear+'年'):currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12ヶ月':'全期間';
+  setEl('analysis-period-label',pLabel);
   if(barChart)barChart.destroy();
-  barChart=new Chart(bc.getContext('2d'),{type:'bar',data:{labels,datasets:[
-    {label:'ワンマン',data:stats.map(s=>s.formats['ワンマン']),backgroundColor:'rgba(59,130,246,.8)',stack:'l'},
-    {label:'対バン',data:stats.map(s=>s.formats['対バン']),backgroundColor:'rgba(124,110,247,.8)',stack:'l'},
-    {label:'フェス',data:stats.map(s=>s.formats['フェス']),backgroundColor:'rgba(251,191,36,.8)',stack:'l'},
-    {label:'サーキット',data:stats.map(s=>s.formats['サーキット']),backgroundColor:'rgba(52,211,153,.8)',stack:'l'}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8b93b8',boxWidth:10,usePointStyle:true,font:{size:10}}}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:(v,i)=>i%maxTick===0?labels[i]:''}},y:{stacked:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#545c7e',font:{size:10},stepSize:1},beginAtZero:true}}}});
+  var tickCb=function(v,i){return i%maxTick===0?labels[i]:'';}
+  barChart=new Chart(bc.getContext('2d'),{type:'bar',data:{labels:labels,datasets:[
+    {label:'ワンマン',data:stats.map(function(s){return s.formats['ワンマン'];}),backgroundColor:'rgba(59,130,246,.75)',stack:'l'},
+    {label:'対バン',data:stats.map(function(s){return s.formats['対バン'];}),backgroundColor:'rgba(124,110,247,.75)',stack:'l'},
+    {label:'フェス',data:stats.map(function(s){return s.formats['フェス'];}),backgroundColor:'rgba(251,191,36,.75)',stack:'l'},
+    {label:'サーキット',data:stats.map(function(s){return s.formats['サーキット'];}),backgroundColor:'rgba(52,211,153,.75)',stack:'l'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8b93b8',boxWidth:10,usePointStyle:true,font:{size:10}}}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:tickCb}},y:{stacked:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#545c7e',font:{size:10},stepSize:1},beginAtZero:true}}}});
   if(lineChart)lineChart.destroy();
-  lineChart=new Chart(lc.getContext('2d'),{type:'line',data:{labels,datasets:[{label:'平均評価',data:avgRatings,borderColor:'#7c6ef7',backgroundColor:'rgba(124,110,247,.07)',pointBackgroundColor:'#a78bfa',pointRadius:3,pointHoverRadius:5,fill:true,tension:0.3,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:(v,i)=>i%maxTick===0?labels[i]:''}},y:{grid:{color:'rgba(255,255,255,.05)'},min:1,max:5,ticks:{color:'#545c7e',font:{size:10},stepSize:1}}}}});
-  // Format analysis comment — only for last12 or all period
-  const totals={ワンマン:0,対バン:0,フェス:0,サーキット:0};
-  stats.forEach(s=>Object.keys(totals).forEach(k=>totals[k]+=s.formats[k]));
-  const total=Object.values(totals).reduce((a,b)=>a+b,0);
-  const aEl=document.getElementById('bar-chart-analysis');
+  lineChart=new Chart(lcc.getContext('2d'),{type:'line',data:{labels:labels,datasets:[{label:'平均評価',data:avgR,borderColor:'#7c6ef7',backgroundColor:'rgba(124,110,247,.06)',pointBackgroundColor:'#a78bfa',pointRadius:3,pointHoverRadius:5,fill:true,tension:0.3,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#545c7e',font:{size:10},maxRotation:45,callback:tickCb}},y:{grid:{color:'rgba(255,255,255,.04)'},min:1,max:5,ticks:{color:'#545c7e',font:{size:10},stepSize:1}}}}});
+  /* Format comment (last12 / all only) */
+  var totals={'ワンマン':0,'対バン':0,'フェス':0,'サーキット':0};
+  stats.forEach(function(s){Object.keys(totals).forEach(function(k){totals[k]+=s.formats[k];});});
+  var tot=Object.values(totals).reduce(function(a,b){return a+b;},0);
+  var aEl=document.getElementById('bar-chart-analysis');
   if(aEl){
-    const canComment=(currentPeriod==='last12'||currentPeriod==='all');
-    if(canComment&&total>0){const top=Object.entries(totals).sort((a,b)=>b[1]-a[1])[0];const pct=Math.round(top[1]/total*100);if(pct>=45){aEl.textContent=`📊 ${top[0]}の比率が高め（${pct}%）`;aEl.style.display='block';}else aEl.style.display='none';}
+    var canC=(currentPeriod==='last12'||currentPeriod==='all');
+    if(canC&&tot>0){var top=Object.entries(totals).sort(function(a,b){return b[1]-a[1];})[0];var pct=Math.round(top[1]/tot*100);if(pct>=45){aEl.textContent='📊 '+top[0]+'の比率が高め（'+pct+'%）';aEl.style.display='block';}else aEl.style.display='none';}
     else aEl.style.display='none';
   }
 }
 
-function renderRankingList(id,items,isVenue=false){
-  const el=document.getElementById(id);if(!el)return;
-  if(!items.length){el.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:12px 0">データなし</div>';return;}
-  const maxVal=items[0].value;
-  el.innerHTML=items.slice(0,5).map((item,i)=>{
-    const nc=i===0?'top1':i===1?'top2':i===2?'top3':'';
-    const bw=maxVal>0?(item.value/maxVal*100).toFixed(1):0;
-    return`<div class="ranking-item"><div class="ranking-num ${nc}">${i+1}</div><div class="ranking-bar-wrap"><div class="ranking-name" title="${escAttr(item.name)}">${esc(item.name)}</div><div class="ranking-bar-bg"><div class="ranking-bar-fill${isVenue?' venue':''}" style="width:${bw}%"></div></div></div><div class="ranking-value">${item.value}回<span class="ranking-sub">${item.sub||''}</span></div></div>`;
+/* ─── RANKINGS ─── */
+function renderRankingList(id,items,isVenue){
+  var el=document.getElementById(id);if(!el)return;
+  if(!items.length){el.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:10px 0">データなし</div>';return;}
+  var maxV=items[0].value;
+  el.innerHTML=items.slice(0,5).map(function(item,i){
+    var nc=i===0?'r1':i===1?'r2':i===2?'r3':'';
+    var bw=maxV>0?(item.value/maxV*100).toFixed(1):0;
+    return '<div class="rank-item"><div class="rank-num '+nc+'">'+(i+1)+'</div><div class="rank-bar-wrap"><div class="rank-name" title="'+escAttr(item.name)+'">'+esc(item.name)+'</div><div class="rank-bar-bg"><div class="rank-bar-fill'+(isVenue?' venue':'')+'" style="width:'+bw+'%"></div></div></div><div class="rank-val">'+item.value+'回<span class="rank-sub">'+(item.sub||'')+'</span></div></div>';
   }).join('');
 }
 function renderLeftPanel(records){
-  const map={};records.forEach(r=>r.artists.forEach(a=>{map[a]=(map[a]||0)+1;}));
-  const total=Object.values(map).reduce((s,v)=>s+v,0);
-  const items=Object.entries(map).map(([name,value])=>({name,value,sub:total?` ${((value/total)*100).toFixed(0)}%`:''})).sort((a,b)=>b.value-a.value);
+  var map={};records.forEach(function(r){r.artists.forEach(function(a){map[a]=(map[a]||0)+1;});});
+  var total=Object.values(map).reduce(function(s,v){return s+v;},0);
+  var items=Object.entries(map).map(function(e){return{name:e[0],value:e[1],sub:total?' '+(((e[1]/total)*100).toFixed(0))+'%':'';};}).sort(function(a,b){return b.value-a.value;});
   renderRankingList('left-panel-list',items,false);
-  const aEl=document.getElementById('artist-analysis-comment');
+  var aEl=document.getElementById('artist-analysis-comment');
   if(aEl&&items.length){
-    const canComment=(currentPeriod==='last12'||currentPeriod==='all');
-    const top=items[0];const pct=total>0?Math.round(top.value/total*100):0;
-    if(canComment&&pct>=40){aEl.textContent=`📊 ${top.name}への集中が高め（${pct}%）`;aEl.style.display='block';}
+    var canC=(currentPeriod==='last12'||currentPeriod==='all');
+    var top=items[0];var pct=total>0?Math.round(top.value/total*100):0;
+    if(canC&&pct>=40){aEl.textContent='📊 '+top.name+'への集中が高め（'+pct+'%）';aEl.style.display='block';}
     else aEl.style.display='none';
   }
 }
 function renderVenueRanking(records){
-  const map={};records.forEach(r=>{if(r.venue)map[r.venue]=(map[r.venue]||0)+1;});
-  const total=Object.values(map).reduce((s,v)=>s+v,0);
-  renderRankingList('venue-ranking',Object.entries(map).map(([name,value])=>({name,value,sub:total?` ${((value/total)*100).toFixed(0)}%`:''})).sort((a,b)=>b.value-a.value),true);
+  var map={};records.forEach(function(r){if(r.venue)map[r.venue]=(map[r.venue]||0)+1;});
+  var total=Object.values(map).reduce(function(s,v){return s+v;},0);
+  var items=Object.entries(map).map(function(e){return{name:e[0],value:e[1],sub:total?' '+(((e[1]/total)*100).toFixed(0))+'%':'';};}).sort(function(a,b){return b.value-a.value;});
+  renderRankingList('venue-ranking',items,true);
 }
+
+/* ─── RECENT NOTES ─── */
 function renderRecentNotes(){
-  const list=document.getElementById('recent-note-list');
-  const badge=document.getElementById('notes-count-badge');
-  const notes=getFilteredNotes();
-  if(badge)badge.textContent=`${notes.length}件`;
+  var list=document.getElementById('recent-note-list');
+  var badge=document.getElementById('notes-count-badge');
+  var notes=getFilteredNotes();
+  if(badge)badge.textContent=notes.length+'件';
+  if(!list)return;
   if(!notes.length){list.innerHTML='<div class="notes-empty">この期間のNote記事はありません</div>';return;}
-  list.innerHTML=notes.slice(0,5).map(n=>{
-    const dt=`${n.publishedDate.getFullYear()}/${String(n.publishedDate.getMonth()+1).padStart(2,'0')}/${String(n.publishedDate.getDate()).padStart(2,'0')}`;
-    const cfg=getNoteTypeCfg(n.noteType);
-    const chip=n.noteType?`<span class="note-type-chip ${cfg.cls}">${cfg.icon} ${esc(n.noteType)}</span>`:'';
-    const thumb=n.thumbnailUrl?`<img src="${escAttr(n.thumbnailUrl)}" alt="" class="note-thumb" onerror="this.style.display='none'">`:`<div class="note-thumb-ph">${cfg.icon||'📝'}</div>`;
-    return`<a class="note-item" href="${escAttr(n.noteUrl)}" target="_blank" rel="noopener"><div class="note-thumb-wrap">${thumb}</div><div class="note-body"><div class="note-date">${dt}</div><div class="note-title">${esc(n.noteTitle||'無題')}</div><div class="note-meta">${chip}<span class="note-link-text">見る →</span></div></div></a>`;
-  }).join('');
-}
-function renderPeriodSummary(records){
-  const periodNotes=getFilteredNotes();
-  const star5=records.filter(r=>r.rating===5).length;
-  const rated=records.filter(r=>r.rating>0);
-  const avg=rated.length?(rated.reduce((s,r)=>s+r.rating,0)/rated.length).toFixed(2):'—';
-  const noteRate=records.length>0?`${Math.round((periodNotes.length/records.length)*100)}%`:'—';
-  const star5Pct=records.length>0?`${Math.round((star5/records.length)*100)}%`:'—';
-  const pn=currentPeriod==='year'?`${selectedYear}年`:currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12ヶ月':'全期間';
-  const lbl=document.getElementById('period-summary-label');if(lbl)lbl.textContent=pn;
-  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-  set('ps-live',`${records.length}回`);
-  set('ps-note',`${periodNotes.length}件`);
-  set('ps-star5',`${star5}回`);
-  set('ps-avg',avg==='—'?'—':`${avg}★`);
-  set('ps-noterate',noteRate);
-  set('ps-star5pct',star5Pct);
-}
-// Keep renderTotals as no-op to avoid errors if called elsewhere
-function renderTotals(){}
-function renderStar5List(records){
-  const star5=records.filter(r=>r.rating===5).sort((a,b)=>b.date-a.date);
-  const el=document.getElementById('star5-list');
-  const label=document.getElementById('star5-count-label');
-  if(label)label.textContent=`${star5.length}件`;
-  if(!el)return;
-  if(!star5.length){el.innerHTML='<div class="star5-empty">この条件の星5ライブはありません</div>';return;}
-  el.innerHTML=star5.map(r=>{
-    const d=r.date;
-    const ds=`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
-    const artist=r.artists.join('・');
-    const ln=(notesByLiveId.get(r.id)||[])[0]||null;
-    const thumbHtml=r.imageUrl?`<div class="star5-thumb-wrap"><img src="${escAttr(r.imageUrl)}" alt="" class="star5-thumb" onerror="this.parentElement.style.display='none'"></div>`:'';
-    const sl=r.setlistUrl?`<a class="star5-link" href="${escAttr(r.setlistUrl)}" target="_blank" rel="noopener">セットリスト</a>`:'';
-    const nl=ln?`<a class="star5-link" href="${escAttr(ln.noteUrl)}" target="_blank" rel="noopener">Note</a>`:'';
-    return`<div class="star5-card">${thumbHtml}<div class="star5-body"><div class="star5-date">${ds}</div><div class="star5-name">${esc(r.liveName||'—')}</div><div class="star5-artist">${esc(artist||'—')}</div><div class="star5-meta"><div class="star5-meta-row">📍 ${esc(r.venue||'—')}</div><div class="star5-meta-row"><span class="star5-rating">★${r.rating}</span></div></div><div class="star5-actions">${sl}${nl}</div></div></div>`;
+  list.innerHTML=notes.slice(0,6).map(function(n){
+    var dt=n.publishedDate.getFullYear()+'/'+(n.publishedDate.getMonth()+1)+'/'+(n.publishedDate.getDate());
+    var cfg=getNTC(n.noteType);
+    var chip=n.noteType?'<span class="nt-chip '+cfg.cls+'">'+cfg.icon+' '+esc(n.noteType)+'</span>':'';
+    var thumbHtml=n.thumbnailUrl?'<img src="'+escAttr(n.thumbnailUrl)+'" alt="" class="note-card-thumb" onerror="this.style.display=\'none\'">'
+      :'<div class="note-card-ph" style="background:'+cfg.ph+'">'+cfg.icon+'</div>';
+    return '<a class="note-card" href="'+escAttr(n.noteUrl)+'" target="_blank" rel="noopener">'+thumbHtml+'<div class="note-card-body"><div class="note-card-title">'+esc(n.noteTitle||'無題')+'</div><div class="note-card-date">'+dt+'</div><div class="note-card-footer">'+chip+'<span class="note-card-link">見る →</span></div></div></a>';
   }).join('');
 }
 
-function renderHeader(records){
-  const ct=getConditionText();
-  document.getElementById('condition-text').textContent=ct;
-  document.getElementById('filter-status-text').textContent=ct;
-  const pn=currentPeriod==='year'?`${selectedYear}年`:currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12ヶ月':'全期間';
-  const apl=document.getElementById('analysis-period-label');if(apl)apl.textContent=pn;
+/* ─── PERIOD SUMMARY ─── */
+function renderPeriodSummary(records){
+  var pNotes=getFilteredNotes();
+  var pS5=records.filter(function(r){return r.rating===5;}).length;
+  var rated=records.filter(function(r){return r.rating>0;});
+  var avg=rated.length?(rated.reduce(function(s,r){return s+r.rating;},0)/rated.length).toFixed(2):'—';
+  var nRate=records.length>0?Math.round((pNotes.length/records.length)*100)+'%':'—';
+  var s5Pct=records.length>0?Math.round((pS5/records.length)*100)+'%':'—';
+  setEl('ps-live',records.length+'回');
+  setEl('ps-note',pNotes.length+'件');
+  setEl('ps-star5',pS5+'回');
+  setEl('ps-avg',avg==='—'?'—':avg+'★');
+  setEl('ps-noterate',nRate);
+  setEl('ps-star5pct',s5Pct);
+  var pn=currentPeriod==='year'?(selectedYear+'年'):currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12ヶ月':'全期間';
+  setEl('period-summary-label',pn);
 }
+function renderPeriodSummaryLabel(){}
+
+/* ─── STAR5 ─── */
+function renderStar5List(records){
+  var star5=records.filter(function(r){return r.rating===5;}).sort(function(a,b){return b.date-a.date;});
+  var el=document.getElementById('star5-list');
+  var label=document.getElementById('star5-count-label');
+  if(label)label.textContent=star5.length+'件';
+  if(!el)return;
+  if(!star5.length){el.innerHTML='<div class="s5-empty">この条件の星5ライブはありません</div>';return;}
+  el.innerHTML=star5.map(function(r){
+    var d=r.date;var ds=d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
+    var artist=r.artists.join('・');
+    var ln=(notesByLiveId.get(r.id)||[])[0]||null;
+    var thumbHtml=r.imageUrl?'<div class="s5-thumb-wrap"><img src="'+escAttr(r.imageUrl)+'" alt="" class="s5-thumb" onerror="this.parentElement.style.display=\'none\'"></div>':'';
+    var sl=r.setlistUrl?'<a class="s5-link" href="'+escAttr(r.setlistUrl)+'" target="_blank" rel="noopener">セットリスト</a>':'';
+    var nl=ln?'<a class="s5-link" href="'+escAttr(ln.noteUrl)+'" target="_blank" rel="noopener">Note</a>':'';
+    return '<div class="s5-card">'+thumbHtml+'<div class="s5-body"><div class="s5-date">'+ds+'</div><div class="s5-name">'+esc(r.liveName||'—')+'</div><div class="s5-artist">'+esc(artist||'—')+'</div><div class="s5-meta">📍 '+esc(r.venue||'—')+'&nbsp;&nbsp;<span class="s5-rating">★'+r.rating+'</span></div><div class="s5-actions">'+sl+nl+'</div></div></div>';
+  }).join('');
+}
+
+/* ─── HEADER / DASHBOARD ─── */
+function renderHeader(){
+  var ct=getConditionText();
+  setEl('condition-text',ct);
+  setEl('filter-status-text',ct);
+}
+function renderTotals(){}
 function renderDashboard(){
-  const records=getFilteredRecords();
-  try{renderHeader(records);}catch(e){console.error('header',e);}
+  var records=getFilteredRecords();
+  try{renderHeader();}catch(e){console.error('header',e);}
   try{renderQualityInline();}catch(e){console.error('quality',e);}
   try{renderThisMonth();}catch(e){console.error('thisMonth',e);}
   try{renderCharts(records);}catch(e){console.error('charts',e);}
   try{renderRecentNotes();}catch(e){console.error('notes',e);}
   try{renderLeftPanel(records);}catch(e){console.error('artist',e);}
   try{renderVenueRanking(records);}catch(e){console.error('venue',e);}
-  try{renderTotals();}catch(e){console.error('totals',e);}
   try{renderPeriodSummary(records);}catch(e){console.error('periodSummary',e);}
   try{renderStar5List(records);}catch(e){console.error('star5',e);}
 }
 function showDashboard(){document.getElementById('no-data-screen').classList.add('hidden');document.getElementById('app-pages').classList.remove('hidden');}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
 
+/* ─── DRAWER / SIDEBAR ─── */
 function openDrawer(){
   document.getElementById('filter-drawer').classList.add('open');
   document.getElementById('drawer-backdrop').classList.add('open');
@@ -1119,53 +1034,78 @@ function openSidebar(){document.getElementById('sidebar').classList.add('open');
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-backdrop').classList.remove('open');}
 
 function renderArtistOptions(kw){
-  const c=document.getElementById('artist-options');
-  const q=kw.trim().toLowerCase();
-  const f=['all',...allArtists.filter(a=>a.toLowerCase().includes(q))];
-  c.innerHTML=f.map(n=>`<div class="artist-option${n===currentArtist?' active':''}" data-value="${escAttr(n)}">${esc(n==='all'?'全アーティスト':n)}</div>`).join('');
+  var c=document.getElementById('artist-options');
+  var q=kw.trim().toLowerCase();
+  var f=['all'].concat(allArtists.filter(function(a){return a.toLowerCase().indexOf(q)>=0;}));
+  c.innerHTML=f.map(function(n){return '<div class="artist-option'+(n===currentArtist?' active':'')+'" data-value="'+escAttr(n)+'">'+esc(n==='all'?'全アーティスト':n)+'</div>';}).join('');
   c.classList.add('show');
 }
 function selectArtist(name){
   currentArtist=name;
   document.getElementById('artist-search-input').value=name==='all'?'':name;
-  document.getElementById('artist-current-label').textContent=`現在：${name==='all'?'全アーティスト':name}`;
+  document.getElementById('artist-current-label').textContent='現在：'+(name==='all'?'全アーティスト':name);
   document.getElementById('artist-options').classList.remove('show');
   renderDashboard();
 }
 function initYearOptions(){
-  const ys=new Set([new Date().getFullYear()]);
-  allRecords.forEach(r=>ys.add(r.date.getFullYear()));
-  allNotes.forEach(n=>{if(n.publishedDate)ys.add(n.publishedDate.getFullYear());});
-  document.getElementById('year-select').innerHTML='<option value="">年を選択</option>'+[...ys].sort((a,b)=>b-a).map(y=>`<option value="${y}">${y}</option>`).join('');
+  var ys=new Set([new Date().getFullYear()]);
+  allRecords.forEach(function(r){ys.add(r.date.getFullYear());});
+  allNotes.forEach(function(n){if(n.publishedDate)ys.add(n.publishedDate.getFullYear());});
+  document.getElementById('year-select').innerHTML='<option value="">年を選択</option>'+[...ys].sort(function(a,b){return b-a;}).map(function(y){return '<option value="'+y+'">'+y+'</option>';}).join('');
 }
 function updatePeriodControls(){
-  document.querySelectorAll('#period-filter-drawer .filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.value===currentPeriod));
+  document.querySelectorAll('#period-filter-drawer .filter-btn').forEach(function(b){b.classList.toggle('active',b.dataset.value===currentPeriod);});
   document.getElementById('year-select').value=currentPeriod==='year'?String(selectedYear):'';
 }
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function escAttr(s){return esc(s).replace(/'/g,'&#39;');}
 
+/* ─── THEME TOGGLE ─── */
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme',theme);
+  var btn=document.getElementById('theme-toggle');
+  if(btn)btn.textContent=theme==='dark'?'☀️ ライト':'🌙 ダーク';
+  try{localStorage.setItem('ll-theme',theme);}catch(e){}
+  if(barChart||lineChart)renderDashboard();
+}
+(function(){try{var t=localStorage.getItem('ll-theme');if(t)applyTheme(t);}catch(e){}})();
+
+/* ─── ANALYSIS COLLAPSIBLE ─── */
+function initAnalysisToggle(){
+  var btn=document.getElementById('analysis-toggle');
+  var body=document.getElementById('analysis-body');
+  if(!btn||!body)return;
+  btn.addEventListener('click',function(){
+    var open=body.classList.toggle('open');
+    btn.classList.toggle('open',open);
+  });
+  /* Open by default */
+  body.classList.add('open');btn.classList.add('open');
+}
+
+/* ─── API LOAD ─── */
 async function loadFromApi(){
   try{
-    const[lr,nr]=await Promise.all([fetch('/api/live-log'),fetch('/api/note-log')]);
-    const[ld,nd]=await Promise.all([lr.json(),nr.json()]);
-    if(!lr.ok)throw new Error(ld.error||'ライブAPIの取得に失敗しました');
-    if(!nr.ok)throw new Error(nd.error||'NOTE APIの取得に失敗しました');
-    allRecords=normalizeApiRecords(ld).sort((a,b)=>a.date-b.date);
-    allNotes=normalizeNoteRecords(nd);
+    var res=await Promise.all([fetch('/api/live-log'),fetch('/api/note-log')]);
+    var data=await Promise.all([res[0].json(),res[1].json()]);
+    if(!res[0].ok)throw new Error(data[0].error||'ライブAPIの取得に失敗しました');
+    if(!res[1].ok)throw new Error(data[1].error||'NOTE APIの取得に失敗しました');
+    allRecords=normalizeApiRecords(data[0]).sort(function(a,b){return a.date-b.date;});
+    allNotes=normalizeNoteRecords(data[1]);
     notesByLiveId=buildNotesByLiveIdMap(allNotes);
-    allArtists=[...new Set(allRecords.flatMap(r=>r.artists))].sort((a,b)=>a.localeCompare(b,'ja'));
+    allArtists=[...new Set(allRecords.flatMap(function(r){return r.artists;}))].sort(function(a,b){return a.localeCompare(b,'ja');});
     if(!allRecords.length){showToast('データは取得できましたが、表示対象がありません');return;}
-    const now=new Date();
-    document.getElementById('sidebar-updated').textContent=`${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+    var now=new Date();
+    setEl('sidebar-updated',now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate());
     initYearOptions();updatePeriodControls();renderArtistOptions('');
     document.getElementById('artist-options').classList.remove('show');
     showDashboard();renderDashboard();
-    showToast(`${allRecords.length} 件のNotionデータを読み込みました`);
-  }catch(err){console.error(err);showToast(`読み込み失敗: ${err.message}`);}
+    showToast(allRecords.length+' 件のNotionデータを読み込みました');
+  }catch(err){console.error(err);showToast('読み込み失敗: '+err.message);}
 }
 
+/* ─── EVENTS ─── */
 document.getElementById('fab-filter').addEventListener('click',openDrawer);
 document.getElementById('topbar-filter-btn').addEventListener('click',openDrawer);
 document.getElementById('filter-status-pill').addEventListener('click',openDrawer);
@@ -1173,30 +1113,34 @@ document.getElementById('drawer-close').addEventListener('click',closeDrawer);
 document.getElementById('drawer-backdrop').addEventListener('click',closeDrawer);
 document.getElementById('sidebar-toggle').addEventListener('click',openSidebar);
 document.getElementById('sidebar-backdrop').addEventListener('click',closeSidebar);
-document.getElementById('artist-search-input').addEventListener('focus',e=>renderArtistOptions(e.target.value||''));
-document.getElementById('artist-search-input').addEventListener('input',e=>renderArtistOptions(e.target.value||''));
-document.getElementById('artist-options').addEventListener('click',e=>{const o=e.target.closest('.artist-option');if(o)selectArtist(o.dataset.value);});
-document.addEventListener('click',e=>{const w=document.querySelector('.search-combobox');if(w&&!w.contains(e.target))document.getElementById('artist-options').classList.remove('show');});
-document.getElementById('period-filter-drawer').addEventListener('click',e=>{
-  const btn=e.target.closest('.filter-btn');if(!btn)return;
+document.getElementById('theme-toggle').addEventListener('click',function(){
+  var cur=document.documentElement.getAttribute('data-theme')||'dark';
+  applyTheme(cur==='dark'?'light':'dark');
+});
+document.getElementById('artist-search-input').addEventListener('focus',function(e){renderArtistOptions(e.target.value||'');});
+document.getElementById('artist-search-input').addEventListener('input',function(e){renderArtistOptions(e.target.value||'');});
+document.getElementById('artist-options').addEventListener('click',function(e){var o=e.target.closest('.artist-option');if(o)selectArtist(o.dataset.value);});
+document.addEventListener('click',function(e){var w=document.querySelector('.search-combobox');if(w&&!w.contains(e.target))document.getElementById('artist-options').classList.remove('show');});
+document.getElementById('period-filter-drawer').addEventListener('click',function(e){
+  var btn=e.target.closest('.filter-btn');if(!btn)return;
   currentPeriod=btn.dataset.value;if(currentPeriod==='thisYear')selectedYear=new Date().getFullYear();
   updatePeriodControls();renderDashboard();
 });
-document.getElementById('year-select').addEventListener('change',e=>{
+document.getElementById('year-select').addEventListener('change',function(e){
   if(!e.target.value)return;selectedYear=Number(e.target.value);currentPeriod='year';
   updatePeriodControls();renderDashboard();
 });
-document.getElementById('format-filter').addEventListener('click',e=>{
-  const btn=e.target.closest('.filter-btn');if(!btn)return;
-  document.querySelectorAll('#format-filter .filter-btn').forEach(b=>b.classList.remove('active'));
+document.getElementById('format-filter').addEventListener('click',function(e){
+  var btn=e.target.closest('.filter-btn');if(!btn)return;
+  document.querySelectorAll('#format-filter .filter-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');currentFormat=btn.dataset.value;renderDashboard();
 });
-document.getElementById('rating-filter').addEventListener('click',e=>{
-  const btn=e.target.closest('.filter-btn');if(!btn)return;
-  document.querySelectorAll('#rating-filter .filter-btn').forEach(b=>b.classList.remove('active'));
+document.getElementById('rating-filter').addEventListener('click',function(e){
+  var btn=e.target.closest('.filter-btn');if(!btn)return;
+  document.querySelectorAll('#rating-filter .filter-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');currentRating=btn.dataset.value;renderDashboard();
 });
-
+initAnalysisToggle();
 loadFromApi();
 </script>
 </body>
