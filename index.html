@@ -509,43 +509,70 @@ a:hover{text-decoration:underline}
   background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
   padding:16px;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s;
   box-shadow:var(--shadow-card);display:flex;flex-direction:column;gap:0;
+  /* ① overflow guard */
+  min-width:0;overflow:hidden;
 }
 .ap-list-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.3);box-shadow:0 8px 24px rgba(0,0,0,.22)}
 [data-theme="light"] .ap-list-card{background:#fff}
-.ap-card-name{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ap-card-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-bottom:10px}
-.ap-card-stat{display:flex;flex-direction:column}
-.ap-card-stat-val{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.2}
-.ap-card-stat-key{font-size:9px;color:var(--text-3);letter-spacing:.03em}
-.ap-card-dates{display:flex;gap:6px;font-size:10px;color:var(--text-3);margin-bottom:8px;flex-wrap:wrap}
-.ap-card-dates span{white-space:nowrap}
-.ap-card-last-live{font-size:11px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-top:1px solid var(--border);padding-top:8px;margin-top:2px}
+.ap-card-name{
+  font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;
+  color:var(--text);margin-bottom:8px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  /* ① explicit max-width so ellipsis works in grid */
+  max-width:100%;
+}
+.ap-card-stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-bottom:8px;
+  min-width:0;/* ① prevent overflow */
+}
+.ap-card-stat{display:flex;flex-direction:column;min-width:0}
+.ap-card-stat-val{
+  font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:15px;font-weight:700;
+  color:var(--text);line-height:1.2;
+  /* ① clip long values */
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+}
+.ap-card-stat-key{font-size:9px;color:var(--text-3);letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ① dates row — wrap instead of overflowing */
+.ap-card-dates{display:flex;gap:4px 8px;font-size:10px;color:var(--text-3);margin-bottom:8px;flex-wrap:wrap;min-width:0}
+.ap-card-dates span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.ap-card-last-live{
+  font-size:11px;color:var(--text-2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  border-top:1px solid var(--border);padding-top:8px;margin-top:2px;
+  max-width:100%;/* ① */
+}
 .ap-card-last-live::before{content:'🎵 ';font-size:10px}
 [data-theme="light"] .ap-card-last-live{border-color:var(--border)}
 .ap-list-more{width:100%;margin-top:10px;background:transparent;border:1px dashed var(--border-s);border-radius:10px;color:var(--text-2);font-size:11px;font-weight:600;padding:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
 .ap-list-more:hover{border-color:var(--accent);color:var(--accent-2);background:rgba(124,110,247,.05)}
 
-/* ── Detail: first/last cards (main hero) ── */
-.ap-firstlast{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+/* ── Detail: first/last cards ── */
+/* Keep 2-col on ALL screen sizes (② スマホでも2列) */
+.ap-firstlast{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
 .ap-fl-card{
-  background:var(--bg-card);border:1px solid var(--border);border-radius:16px;
-  padding:16px 18px;position:relative;overflow:hidden;box-shadow:var(--shadow-card);
-  transition:transform .16s,border-color .16s;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+  padding:14px 14px;position:relative;overflow:hidden;box-shadow:var(--shadow-card);
+  transition:transform .16s,border-color .16s;min-width:0;
 }
 .ap-fl-card.first-card{border-color:rgba(74,158,255,.25)}
-.ap-fl-card.first-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),transparent);border-radius:16px 16px 0 0}
+.ap-fl-card.first-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),transparent);border-radius:14px 14px 0 0}
 .ap-fl-card.last-card{border-color:rgba(124,110,247,.25)}
-.ap-fl-card.last-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);border-radius:16px 16px 0 0}
+.ap-fl-card.last-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);border-radius:14px 14px 0 0}
 [data-theme="light"] .ap-fl-card{background:#fff}
 [data-theme="light"] .ap-fl-card.first-card{border-color:rgba(37,99,235,.2)}
 [data-theme="light"] .ap-fl-card.last-card{border-color:rgba(109,92,224,.2)}
-.ap-fl-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.ap-fl-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
 .ap-fl-card.first-card .ap-fl-label{color:var(--blue)}
 .ap-fl-card.last-card .ap-fl-label{color:var(--accent-2)}
-.ap-fl-name{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ap-fl-meta{font-size:11px;color:var(--text-2);margin-bottom:6px;line-height:1.6}
-.ap-fl-rating{font-size:13px;color:var(--amber);font-weight:700;margin-bottom:8px}
-.ap-fl-actions{display:flex;gap:5px;flex-wrap:wrap}
+.ap-fl-name{
+  font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;
+  color:var(--text);line-height:1.4;margin-bottom:5px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.ap-fl-meta{font-size:10px;color:var(--text-2);margin-bottom:5px;line-height:1.55;word-break:break-all}
+.ap-fl-rating{font-size:12px;color:var(--amber);font-weight:700;margin-bottom:7px}
+.ap-fl-actions{display:flex;gap:4px;flex-wrap:wrap}
 
 /* Insight row */
 .ap-insight-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
@@ -599,11 +626,24 @@ a:hover{text-decoration:underline}
 @media(max-width:640px){
   .ap-name{font-size:22px}
   .ap-stats-row{gap:6px}
-  .ap-stat{padding:6px 10px;min-width:68px}
-  .ap-stat-val{font-size:14px}
+  /* ② statチップの折り返し — 横スクロールなし */
+  .ap-stat{padding:6px 10px;min-width:60px;max-width:calc(50% - 4px)}
+  .ap-stat-val{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ap-history-grid{grid-template-columns:1fr}
   .ap-list-grid{grid-template-columns:1fr}
-  .ap-firstlast{grid-template-columns:1fr}
+  /* ② firstlast: 2列維持（削除済みの grid-template-columns:1fr を上書きしない） */
+  .ap-firstlast{grid-template-columns:1fr 1fr;gap:8px}
+  .ap-fl-card{padding:11px 10px}
+  .ap-fl-name{font-size:11px}
+  .ap-fl-meta{font-size:9px}
+  .ap-fl-rating{font-size:11px;margin-bottom:5px}
+  .ap-fl-label{font-size:8px}
+  .ap-link{font-size:9px;padding:2px 7px}
+  /* ⑥ Safari下部バー対応 */
+  #page-artist{padding-bottom:calc(80px + env(safe-area-inset-bottom,12px))}
+  /* ⑥ スマホ一覧カードの stat-val を少し小さく */
+  .ap-card-stat-val{font-size:13px}
+  .ap-card-name{font-size:13px}
 }
 </style>
 </head>
@@ -1577,8 +1617,9 @@ function renderArtistPage(artistName){
     }
   }
 
-  /* ⑤ ライブ履歴 */
-  var histLimit=window.innerWidth<=640?5:8;
+  /* ⑤ ライブ履歴 — PC8件/SP5件、5件ずつ追加 */
+  var HIST_STEP=5;
+  var histLimitInit=window.innerWidth<=640?5:8;
   var histEl=document.getElementById('ap-history-grid');
   var histMore=document.getElementById('ap-history-more');
   if(document.getElementById('ap-history-count'))document.getElementById('ap-history-count').textContent=recs.length+'件';
@@ -1586,23 +1627,33 @@ function renderArtistPage(artistName){
     var ds=fmt(r.date);
     var ln=(notesByLiveId.get(r.id)||[])[0]||null;
     var sl=r.setlistUrl?'<a class="ap-link" href="'+escAttr(r.setlistUrl)+'" target="_blank" rel="noopener">SL</a>':'';
+    /* ③ Noteボタン */
     var nl=ln?'<a class="ap-link" href="'+escAttr(ln.noteUrl)+'" target="_blank" rel="noopener">Note</a>':'';
     return '<div class="ap-live-card"><div class="apl-date">'+ds+'</div><div class="apl-name">'+esc(r.liveName||'—')+'</div><div class="apl-venue">📍 '+esc(r.venue||'—')+'</div><div class="apl-meta"><span class="apl-format">'+esc(r.format||'—')+'</span><span class="apl-rating">'+(r.rating?'★'+r.rating:'—')+'</span></div><div class="apl-actions">'+sl+nl+'</div></div>';
   };
+  var histShown=histLimitInit;
   if(histEl){
-    histEl.innerHTML=recs.slice(0,histLimit).map(mkHist).join('');
-    if(histMore){
-      if(recs.length>histLimit){
-        histMore.classList.remove('hidden');
-        histMore.textContent='もっと見る（あと'+(recs.length-histLimit)+'件）';
-        histMore.onclick=function(){histEl.innerHTML=recs.map(mkHist).join('');histMore.classList.add('hidden');};
-      } else {
-        histMore.classList.add('hidden');
+    histEl.innerHTML=recs.slice(0,histShown).map(mkHist).join('');
+    var refreshHistMore=function(){
+      if(histMore){
+        if(histShown<recs.length){
+          histMore.classList.remove('hidden');
+          histMore.textContent='もっと見る（あと'+(recs.length-histShown)+'件）';
+          /* ④ 5件ずつ追加 */
+          histMore.onclick=function(){
+            histShown=Math.min(histShown+HIST_STEP,recs.length);
+            histEl.innerHTML=recs.slice(0,histShown).map(mkHist).join('');
+            refreshHistMore();
+          };
+        } else {
+          histMore.classList.add('hidden');
+        }
       }
-    }
+    };
+    refreshHistMore();
   }
 
-  /* ⑥ 関連Note — ライブ紐付け優先、次にタイトルにアーティスト名を含むもの */
+  /* ⑥ 関連Note — スマホ初期3件、PC5件 */
   var noteIds=new Set();
   recs.forEach(function(r){(notesByLiveId.get(r.id)||[]).forEach(function(n){noteIds.add(n.id);});});
   var lowerName=artistName.toLowerCase();
@@ -1613,7 +1664,7 @@ function renderArtistPage(artistName){
   var noteCountEl=document.getElementById('ap-notes-count');
   if(noteCountEl)noteCountEl.textContent=artistNotes.length+'件';
   var apNotesGrid=document.getElementById('ap-notes-grid');
-  var NOTE_LIMIT=5;
+  var NOTE_LIMIT=window.innerWidth<=640?3:5;
   if(apNotesGrid){
     if(!artistNotes.length){
       apNotesGrid.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:8px 0">関連Noteはまだありません</div>';
