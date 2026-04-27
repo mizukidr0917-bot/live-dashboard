@@ -605,18 +605,49 @@ a:hover{text-decoration:underline}
 /* Artist chart */
 .ap-chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;box-shadow:var(--shadow-card)}
 
-/* Artist history */
-.ap-history-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:8px}
-.ap-live-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow-card);transition:transform .15s,border-color .15s}
+/* Artist history — ① 常時2列、高さ揃え */
+.ap-history-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));/* ① 2列固定 */
+  gap:10px;
+  margin-bottom:8px;
+  /* ① overflow防止 */
+  width:100%;
+  overflow:hidden;
+}
+.ap-live-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+  padding:11px 12px;box-shadow:var(--shadow-card);transition:transform .15s,border-color .15s;
+  /* ① 高さ揃え */
+  display:flex;flex-direction:column;
+  min-width:0;overflow:hidden;
+}
 .ap-live-card:hover{transform:translateY(-2px);border-color:var(--border-s)}
 [data-theme="light"] .ap-live-card{background:#fff}
-.apl-date{font-size:10px;color:var(--text-3);margin-bottom:4px}
-.apl-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.38;margin-bottom:4px;font-family:'Space Grotesk','Noto Sans JP',sans-serif;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.apl-venue{font-size:11px;color:var(--text-2);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.apl-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.apl-format{font-size:10px;background:var(--bg-3);color:var(--text-2);border-radius:99px;padding:2px 8px;border:1px solid var(--border)}
-.apl-rating{font-size:12px;color:var(--amber);font-weight:700}
-.apl-actions{display:flex;gap:5px;flex-wrap:wrap}
+.apl-date{font-size:10px;color:var(--text-3);margin-bottom:3px;white-space:nowrap}
+.apl-name{
+  font-size:12px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:4px;
+  font-family:'Space Grotesk','Noto Sans JP',sans-serif;
+  /* ④ 2行で省略 */
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  /* ① overflow guard */
+  word-break:break-all;
+}
+.apl-venue{
+  font-size:10px;color:var(--text-2);margin-bottom:5px;
+  /* ④ 1行省略 */
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  max-width:100%;
+}
+.apl-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:4px}
+.apl-format{
+  font-size:9px;background:var(--bg-3);color:var(--text-2);border-radius:99px;
+  padding:2px 7px;border:1px solid var(--border);
+  /* ④ 省略 */
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;
+}
+.apl-rating{font-size:11px;color:var(--amber);font-weight:700;white-space:nowrap;flex-shrink:0}
+.apl-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
 .ap-history-more{width:100%;margin-top:6px;background:transparent;border:1px dashed var(--border-s);border-radius:10px;color:var(--text-2);font-size:11px;font-weight:600;padding:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
 .ap-history-more:hover{border-color:var(--accent);color:var(--accent-2);background:rgba(124,110,247,.05)}
 
@@ -626,12 +657,10 @@ a:hover{text-decoration:underline}
 @media(max-width:640px){
   .ap-name{font-size:22px}
   .ap-stats-row{gap:6px}
-  /* ② statチップの折り返し — 横スクロールなし */
   .ap-stat{padding:6px 10px;min-width:60px;max-width:calc(50% - 4px)}
   .ap-stat-val{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ap-history-grid{grid-template-columns:1fr}
+  /* ① history は全幅で2列維持（上書き不要） */
   .ap-list-grid{grid-template-columns:1fr}
-  /* ② firstlast: 2列維持（削除済みの grid-template-columns:1fr を上書きしない） */
   .ap-firstlast{grid-template-columns:1fr 1fr;gap:8px}
   .ap-fl-card{padding:11px 10px}
   .ap-fl-name{font-size:11px}
@@ -639,12 +668,22 @@ a:hover{text-decoration:underline}
   .ap-fl-rating{font-size:11px;margin-bottom:5px}
   .ap-fl-label{font-size:8px}
   .ap-link{font-size:9px;padding:2px 7px}
-  /* ⑥ Safari下部バー対応 */
+  /* ⑥ 履歴カードのスマホ調整 */
+  .apl-name{font-size:11px}
+  .apl-venue{font-size:9px}
+  .ap-history-grid{gap:7px}
+  /* Safari下部バー対応 */
   #page-artist{padding-bottom:calc(80px + env(safe-area-inset-bottom,12px))}
-  /* ⑥ スマホ一覧カードの stat-val を少し小さく */
   .ap-card-stat-val{font-size:13px}
   .ap-card-name{font-size:13px}
 }
+/* ② アーティストカード: フォーマット内訳チップ */
+.ap-card-fmt-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.ap-card-fmt-chip{font-size:9px;background:var(--bg-3);color:var(--text-2);border:1px solid var(--border);border-radius:99px;padding:1px 7px;white-space:nowrap}
+
+/* body global overflow guard — prevent horizontal scroll */
+body{overflow-x:hidden}
+.app-shell{overflow-x:hidden;max-width:100vw}
 </style>
 </head>
 <body>
@@ -1435,9 +1474,12 @@ function buildArtistItems(){
     var rated=recs.filter(function(r){return r.rating>0;});
     var avg=rated.length?(rated.reduce(function(s,r){return s+r.rating;},0)/rated.length):0;
     var s5=recs.filter(function(r){return r.rating===5;}).length;
+    /* ② ワンマン/フェス回数 */
+    var wanman=recs.filter(function(r){return r.format==='ワンマン';}).length;
+    var fes=recs.filter(function(r){return r.format==='フェス';}).length;
     var first=recs[0];
     var last=recs[recs.length-1];
-    return{name:e[0],count:recs.length,avg:avg,s5:s5,first:first,last:last};
+    return{name:e[0],count:recs.length,avg:avg,s5:s5,wanman:wanman,fes:fes,first:first,last:last};
   });
 }
 
@@ -1463,18 +1505,22 @@ function renderArtistList(){
   var mkCard=function(item){
     var avgStr=item.avg?item.avg.toFixed(1)+'★':'—';
     var lastLiveName=(item.last&&item.last.liveName)?item.last.liveName:'—';
+    /* ② フォーマット内訳チップ（あるものだけ） */
+    var fmtChips='';
+    if(item.wanman)fmtChips+='<span class="ap-card-fmt-chip">ワンマン '+item.wanman+'</span>';
+    if(item.fes)fmtChips+='<span class="ap-card-fmt-chip">フェス '+item.fes+'</span>';
     return '<div class="ap-list-card" onclick="openArtistPage(\''+escAttr(item.name)+'\')">'+
       '<div class="ap-card-name">'+esc(item.name)+'</div>'+
+      /* ② 主要スタッツ3つに絞る */
       '<div class="ap-card-stats">'+
         '<div class="ap-card-stat"><span class="ap-card-stat-val">'+item.count+'回</span><span class="ap-card-stat-key">ライブ回数</span></div>'+
         '<div class="ap-card-stat"><span class="ap-card-stat-val">'+avgStr+'</span><span class="ap-card-stat-key">平均評価</span></div>'+
-        '<div class="ap-card-stat"><span class="ap-card-stat-val">'+item.s5+'回</span><span class="ap-card-stat-key">星5ライブ</span></div>'+
-        '<div class="ap-card-stat"><span class="ap-card-stat-val">'+(item.last&&item.last.venue?esc(item.last.venue):'—')+'</span><span class="ap-card-stat-key">直近会場</span></div>'+
+        '<div class="ap-card-stat"><span class="ap-card-stat-val">'+item.s5+'回</span><span class="ap-card-stat-key">星5</span></div>'+
+        '<div class="ap-card-stat"><span class="ap-card-stat-val" style="font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(item.last&&item.last.venue?esc(item.last.venue):'—')+'</span><span class="ap-card-stat-key">直近会場</span></div>'+
       '</div>'+
-      '<div class="ap-card-dates">'+
-        '<span>初回 '+fmt(item.first?item.first.date:null)+'</span>'+
-        '<span>直近 '+fmt(item.last?item.last.date:null)+'</span>'+
-      '</div>'+
+      (fmtChips?'<div class="ap-card-fmt-row">'+fmtChips+'</div>':'')+
+      /* ② 日付は小さく1行 */
+      '<div class="ap-card-dates"><span>初 '+fmt(item.first?item.first.date:null)+'</span><span>近 '+fmt(item.last?item.last.date:null)+'</span></div>'+
       '<div class="ap-card-last-live">'+esc(lastLiveName)+'</div>'+
     '</div>';
   };
