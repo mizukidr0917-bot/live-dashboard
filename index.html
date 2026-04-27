@@ -519,6 +519,84 @@ a:hover{text-decoration:underline}
   .rl-name{font-size:11px}
 }
 
+/* ②-2 Sidebar scroll fix */
+.sidebar{overflow-y:auto;overflow-x:hidden}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:99px}
+
+/* ② On This Day */
+.otd-section{}
+.otd-row{display:flex;flex-direction:column;gap:8px}
+.otd-card{
+  display:flex;align-items:center;gap:12px;
+  background:var(--bg-card);border:1px solid rgba(124,110,247,.2);border-radius:12px;
+  padding:12px 14px;box-shadow:var(--shadow-card);
+  transition:transform .15s,border-color .15s;
+}
+.otd-card:hover{transform:translateY(-2px);border-color:rgba(124,110,247,.35)}
+[data-theme="light"] .otd-card{background:#fff}
+.otd-years{
+  background:rgba(124,110,247,.12);color:var(--accent-2);
+  border-radius:99px;padding:4px 11px;font-size:11px;font-weight:700;
+  white-space:nowrap;flex-shrink:0;border:1px solid rgba(124,110,247,.2);
+}
+.otd-body{flex:1;min-width:0}
+.otd-name{font-size:13px;font-weight:700;color:var(--text);font-family:'Space Grotesk','Noto Sans JP',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.otd-meta{font-size:11px;color:var(--text-2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.otd-empty{font-size:12px;color:var(--text-3);padding:8px 0}
+
+/* ① Live list page */
+.ll-header{margin-bottom:14px}
+.ll-title{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:3px}
+.ll-sub{font-size:11px;color:var(--text-2)}
+.ll-filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.ll-select{
+  background:var(--bg-card);border:1px solid var(--border-s);border-radius:8px;
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:6px 10px;
+  outline:none;cursor:pointer;transition:border-color .15s;
+}
+.ll-select:focus,.ll-select:hover{border-color:var(--accent)}
+[data-theme="light"] .ll-select{background:#fff}
+.ll-count{font-size:11px;color:var(--text-3);margin-left:auto;white-space:nowrap}
+.ll-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:12px;margin-bottom:8px;
+}
+@media(max-width:640px){
+  .ll-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .ll-filter-row{gap:6px}
+  .ll-select{font-size:10px;padding:5px 8px}
+}
+
+/* ① Live card (list page) */
+.ll-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;box-shadow:var(--shadow-card);
+  display:flex;flex-direction:column;
+  transition:transform .16s,border-color .16s;
+}
+.ll-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.28)}
+[data-theme="light"] .ll-card{background:#fff}
+.ll-thumb{width:100%;height:100px;object-fit:cover;display:block;background:var(--bg-3)}
+.ll-thumb-ph{width:100%;height:100px;background:linear-gradient(135deg,var(--bg-3),var(--bg-2));display:flex;align-items:center;justify-content:center;font-size:32px}
+.ll-body{padding:10px 11px;flex:1;display:flex;flex-direction:column;gap:3px}
+.ll-date{font-size:10px;color:var(--text-3)}
+.ll-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.35;font-family:'Space Grotesk','Noto Sans JP',sans-serif;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ll-venue{font-size:10px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ll-row2{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:5px}
+.ll-fmt{font-size:9px;background:var(--bg-3);color:var(--text-2);border:1px solid var(--border);border-radius:99px;padding:1px 7px;white-space:nowrap}
+.ll-rating{font-size:11px;color:var(--amber);font-weight:700}
+.ll-actions{display:flex;gap:4px;padding:0 11px 9px;flex-wrap:wrap}
+@media(max-width:640px){
+  .ll-thumb,.ll-thumb-ph{height:75px}
+  .ll-name{font-size:11px}
+  .ll-thumb-ph{font-size:24px}
+}
+
+/* ⑤ Note page additions */
+.np-grid-wrap{margin-top:4px}
+
 /* Footer */
 .page-footer{text-align:center;padding:20px 0 10px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border);margin-top:10px}
 .page-footer span{color:var(--accent-2)}
@@ -824,7 +902,9 @@ body{overflow-x:hidden}
   </div>
   <nav class="sidebar-nav">
     <button class="sidebar-link active" id="nav-dashboard"><span style="font-size:13px">🏠</span>ダッシュボード</button>
+    <button class="sidebar-link" id="nav-lives"><span style="font-size:13px">🎵</span>ライブ履歴</button>
     <button class="sidebar-link" id="nav-artist"><span style="font-size:13px">🎤</span>アーティスト</button>
+    <button class="sidebar-link" id="nav-notes"><span style="font-size:13px">📝</span>Note</button>
   </nav>
   <div class="sidebar-quote">
     <div class="sidebar-quote-char">🎧</div>
@@ -981,16 +1061,79 @@ body{overflow-x:hidden}
           </div>
         </div>
 
+        <!-- ② On This Day -->
+        <div id="otd-section" class="otd-section" style="display:none;margin-bottom:28px">
+          <div class="sec-label" style="margin-bottom:10px">
+            📅 On This Day
+            <span class="sub" id="otd-date-label"></span>
+          </div>
+          <div class="otd-row" id="otd-row"></div>
+        </div>
+
         <!-- ⑤ 最近のライブ -->
         <div style="margin-bottom:28px">
           <div class="sec-label" style="margin-bottom:12px">
             最近のライブ
-            <a id="recent-lives-more" style="margin-left:auto;font-size:11px;color:var(--accent-2);cursor:pointer;font-weight:500;letter-spacing:0;text-transform:none" onclick="openArtistListView()">もっと見る</a>
+            <a id="recent-lives-more" style="margin-left:auto;font-size:11px;color:var(--accent-2);cursor:pointer;font-weight:500;letter-spacing:0;text-transform:none" onclick="openLivesPage()">もっと見る →</a>
           </div>
           <div class="recent-lives-row" id="recent-lives-row"></div>
         </div>
 
         <div class="page-footer">LIVE LOGは、あなたの音楽活動の記録と、未来の物語をつなぎます。<span>♥</span></div>
+      </section>
+
+      <!-- ══ LIVE LIST PAGE ══ -->
+      <section id="page-lives" style="display:none">
+        <div class="ll-header">
+          <div class="ll-title">🎵 ライブ履歴</div>
+          <div class="ll-sub">全ライブを絞り込み・検索できます</div>
+        </div>
+        <!-- Filters -->
+        <div class="ll-filter-row">
+          <select id="ll-year-sel" class="ll-select"><option value="">すべての年</option></select>
+          <select id="ll-artist-sel" class="ll-select"><option value="">すべてのアーティスト</option></select>
+          <select id="ll-format-sel" class="ll-select">
+            <option value="">すべての形式</option>
+            <option value="ワンマン">ワンマン</option>
+            <option value="フェス">フェス</option>
+            <option value="対バン">対バン</option>
+            <option value="サーキット">サーキット</option>
+          </select>
+          <select id="ll-sort-sel" class="ll-select">
+            <option value="new">新しい順</option>
+            <option value="old">古い順</option>
+            <option value="rating">評価順</option>
+          </select>
+          <span class="ll-count" id="ll-count"></span>
+        </div>
+        <div class="ll-grid" id="ll-grid"></div>
+        <button class="ap-history-more hidden" id="ll-more">もっと見る</button>
+      </section>
+
+      <!-- ══ NOTE PAGE ══ -->
+      <section id="page-notes" style="display:none">
+        <div class="ll-header">
+          <div class="ll-title">📝 Note 作品集</div>
+          <div class="ll-sub">これまでに書いたNote記事の一覧</div>
+        </div>
+        <!-- Filters -->
+        <div class="ll-filter-row">
+          <select id="np-type-sel" class="ll-select">
+            <option value="">すべての種別</option>
+            <option value="ライブレポ">ライブレポ</option>
+            <option value="楽曲レポ">楽曲レポ</option>
+            <option value="アルバム感想">アルバム感想</option>
+            <option value="まとめ">まとめ</option>
+            <option value="雑記">雑記</option>
+          </select>
+          <select id="np-sort-sel" class="ll-select">
+            <option value="new">新しい順</option>
+            <option value="old">古い順</option>
+          </select>
+          <span class="ll-count" id="np-count"></span>
+        </div>
+        <div class="notes-grid" id="np-grid" style="margin-top:4px"></div>
+        <button class="ap-history-more hidden" id="np-more">もっと見る</button>
       </section>
 
       <!-- ══ ARTIST PAGE ══ -->
@@ -1469,17 +1612,186 @@ function renderStar5List(records){
   }).join('');
 }
 
-/* ─── ARTIST PAGE ─── */
+/* ─── PAGE NAVIGATION HELPERS ─── */
+var ALL_PAGES=['page-dashboard','page-artist','page-lives','page-notes'];
+var ALL_NAVS=['nav-dashboard','nav-artist','nav-lives','nav-notes'];
+
+function switchPage(pageId,navId){
+  ALL_PAGES.forEach(function(p){
+    var el=document.getElementById(p);
+    if(el){el.style.display=p===pageId?'block':'none';el.classList.toggle('active',p===pageId);}
+  });
+  ALL_NAVS.forEach(function(n){
+    var el=document.getElementById(n);if(el)el.classList.toggle('active',n===navId);
+  });
+  window.scrollTo(0,0);
+  closeSidebar();
+}
+
+function openLivesPage(){
+  switchPage('page-lives','nav-lives');
+  _apAllItems=[];/* reset artist cache */
+  renderLivesPage();
+}
+function openNotesPage(){
+  switchPage('page-notes','nav-notes');
+  renderNotesPage();
+}
+
+/* ─── ON THIS DAY ─── */
+function renderOnThisDay(){
+  var now=new Date();
+  var mo=now.getMonth(),dy=now.getDate();
+  var matches=allRecords.filter(function(r){
+    return r.date.getMonth()===mo&&r.date.getDate()===dy&&r.date.getFullYear()!==now.getFullYear();
+  }).sort(function(a,b){return b.date-a.date;});
+  var sec=document.getElementById('otd-section');
+  var row=document.getElementById('otd-row');
+  var lbl=document.getElementById('otd-date-label');
+  if(!sec||!row)return;
+  if(lbl)lbl.textContent=(mo+1)+'/'+dy;
+  if(!matches.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  row.innerHTML=matches.slice(0,5).map(function(r){
+    var yr=now.getFullYear()-r.date.getFullYear();
+    var artist=r.artists.length?r.artists.join('・'):'—';
+    return '<div class="otd-card" onclick="openArtistPage(\''+escAttr(r.artists[0]||'')+'\')">'+
+      '<span class="otd-years">'+yr+'年前</span>'+
+      '<div class="otd-body">'+
+        '<div class="otd-name">'+esc(r.liveName||'—')+'</div>'+
+        '<div class="otd-meta">'+esc(artist)+(r.venue?' 📍 '+esc(r.venue):'')+'</div>'+
+      '</div>'+
+      (r.rating?'<span style="font-size:12px;color:var(--amber);font-weight:700;flex-shrink:0">★'+r.rating+'</span>':'')+
+    '</div>';
+  }).join('');
+}
+
+/* ─── LIVE LIST PAGE ─── */
+var LL_STEP=20;
+var _llFiltered=[];
+var _llShown=0;
+
+function initLivesFilters(){
+  var yrSel=document.getElementById('ll-year-sel');
+  var artSel=document.getElementById('ll-artist-sel');
+  if(yrSel&&yrSel.options.length<=1){
+    var yrs=[...new Set(allRecords.map(function(r){return r.date.getFullYear();}))].sort(function(a,b){return b-a;});
+    yrs.forEach(function(y){var o=document.createElement('option');o.value=y;o.textContent=y+'年';yrSel.appendChild(o);});
+  }
+  if(artSel&&artSel.options.length<=1){
+    var arts=[...new Set(allRecords.flatMap(function(r){return r.artists;}))].sort(function(a,b){return a.localeCompare(b,'ja');});
+    arts.forEach(function(a){var o=document.createElement('option');o.value=a;o.textContent=a;artSel.appendChild(o);});
+  }
+}
+
+function applyLivesFilters(){
+  var yr=document.getElementById('ll-year-sel').value;
+  var art=document.getElementById('ll-artist-sel').value;
+  var fmt=document.getElementById('ll-format-sel').value;
+  var srt=document.getElementById('ll-sort-sel').value;
+  var r=allRecords.slice();
+  if(yr)r=r.filter(function(x){return String(x.date.getFullYear())===yr;});
+  if(art)r=r.filter(function(x){return x.artists.indexOf(art)>=0;});
+  if(fmt)r=r.filter(function(x){return x.format===fmt;});
+  if(srt==='old')r.sort(function(a,b){return a.date-b.date;});
+  else if(srt==='rating')r.sort(function(a,b){return (b.rating||0)-(a.rating||0);});
+  else r.sort(function(a,b){return b.date-a.date;});
+  return r;
+}
+
+function mkLlCard(r){
+  var d=r.date;var ds=d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
+  var ln=(notesByLiveId.get(r.id)||[])[0]||null;
+  var sl=r.setlistUrl?'<a class="ap-link" href="'+escAttr(r.setlistUrl)+'" target="_blank" rel="noopener">SL</a>':'';
+  var nl=ln?'<a class="ap-link" href="'+escAttr(ln.noteUrl)+'" target="_blank" rel="noopener">Note</a>':'';
+  var acts=(sl||nl)?'<div class="ll-actions">'+sl+nl+'</div>':'';
+  var thumb=r.imageUrl?'<img src="'+escAttr(r.imageUrl)+'" alt="" class="ll-thumb" onerror="this.parentElement.innerHTML=\'<div class=ll-thumb-ph>🎵</div>\'">':'<div class="ll-thumb-ph">🎵</div>';
+  return '<div class="ll-card">'+thumb+
+    '<div class="ll-body">'+
+      '<div class="ll-date">'+ds+'</div>'+
+      '<div class="ll-name">'+esc(r.liveName||'—')+'</div>'+
+      '<div class="ll-venue">📍 '+esc(r.venue||'—')+'</div>'+
+      '<div class="ll-row2">'+
+        '<span class="ll-fmt">'+esc(r.format||'—')+'</span>'+
+        '<span class="ll-rating">'+(r.rating?'★'+r.rating:'')+'</span>'+
+      '</div>'+
+    '</div>'+
+    acts+
+  '</div>';
+}
+
+function renderLivesPage(){
+  initLivesFilters();
+  _llFiltered=applyLivesFilters();
+  _llShown=Math.min(LL_STEP,_llFiltered.length);
+  var grid=document.getElementById('ll-grid');
+  var more=document.getElementById('ll-more');
+  var cnt=document.getElementById('ll-count');
+  if(cnt)cnt.textContent=_llFiltered.length+'件';
+  if(grid)grid.innerHTML=_llFiltered.slice(0,_llShown).map(mkLlCard).join('');
+  if(more){
+    if(_llShown<_llFiltered.length){
+      more.classList.remove('hidden');
+      more.textContent='もっと見る（あと'+(_llFiltered.length-_llShown)+'件）';
+      more.onclick=function(){
+        _llShown=Math.min(_llShown+LL_STEP,_llFiltered.length);
+        if(grid)grid.innerHTML=_llFiltered.slice(0,_llShown).map(mkLlCard).join('');
+        if(_llShown>=_llFiltered.length)more.classList.add('hidden');
+        else more.textContent='もっと見る（あと'+(_llFiltered.length-_llShown)+'件）';
+      };
+    } else more.classList.add('hidden');
+  }
+}
+
+/* ─── NOTE PAGE ─── */
+var NP_STEP=20;
+var _npFiltered=[];
+var _npShown=0;
+
+function applyNotesFilters(){
+  var typ=document.getElementById('np-type-sel').value;
+  var srt=document.getElementById('np-sort-sel').value;
+  var n=allNotes.filter(function(x){return x.publishedDate;});
+  if(typ)n=n.filter(function(x){return x.noteType===typ;});
+  if(srt==='old')n.sort(function(a,b){return a.publishedDate-b.publishedDate;});
+  else n.sort(function(a,b){return b.publishedDate-a.publishedDate;});
+  return n;
+}
+
+function renderNotesPage(){
+  _npFiltered=applyNotesFilters();
+  _npShown=Math.min(NP_STEP,_npFiltered.length);
+  var grid=document.getElementById('np-grid');
+  var more=document.getElementById('np-more');
+  var cnt=document.getElementById('np-count');
+  if(cnt)cnt.textContent=_npFiltered.length+'件';
+  var mkNote=function(n){
+    var dt=n.publishedDate?n.publishedDate.getFullYear()+'/'+(n.publishedDate.getMonth()+1)+'/'+n.publishedDate.getDate():'';
+    var cfg=getNTC(n.noteType);
+    var chip=n.noteType?'<span class="nt-chip '+cfg.cls+'">'+cfg.icon+' '+esc(n.noteType)+'</span>':'';
+    var thumb=n.thumbnailUrl?'<img src="'+escAttr(n.thumbnailUrl)+'" alt="" class="note-card-thumb" onerror="this.style.display=\'none\'">':'<div class="note-card-ph" style="background:'+cfg.ph+'">'+cfg.icon+'</div>';
+    return '<a class="note-card" href="'+escAttr(n.noteUrl)+'" target="_blank" rel="noopener">'+thumb+'<div class="note-card-body"><div class="note-card-title">'+esc(n.noteTitle||'無題')+'</div><div class="note-card-date">'+dt+'</div><div class="note-card-footer">'+chip+'<span class="note-card-link">見る →</span></div></div></a>';
+  };
+  if(grid)grid.innerHTML=_npFiltered.slice(0,_npShown).map(mkNote).join('');
+  if(more){
+    if(_npShown<_npFiltered.length){
+      more.classList.remove('hidden');
+      more.textContent='もっと見る（あと'+(_npFiltered.length-_npShown)+'件）';
+      more.onclick=function(){
+        _npShown=Math.min(_npShown+NP_STEP,_npFiltered.length);
+        if(grid)grid.innerHTML=_npFiltered.slice(0,_npShown).map(mkNote).join('');
+        if(_npShown>=_npFiltered.length)more.classList.add('hidden');
+        else more.textContent='もっと見る（あと'+(_npFiltered.length-_npShown)+'件）';
+      };
+    } else more.classList.add('hidden');
+  }
+  if(!_npFiltered.length&&grid)grid.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:20px 0">Note記事がありません</div>';
+}
 var apChart=null;
 var currentArtistPage='';
 
 function openArtistPageSection(){
-  document.getElementById('nav-dashboard').classList.remove('active');
-  document.getElementById('nav-artist').classList.add('active');
-  document.getElementById('page-dashboard').style.display='none';
-  var ap=document.getElementById('page-artist');
-  ap.classList.add('active');ap.style.display='block';
-  closeSidebar();
+  switchPage('page-artist','nav-artist');
 }
 
 /* Open artist list (no artist selected) */
@@ -1507,11 +1819,7 @@ function openArtistPage(artistName){
 }
 
 function openDashboardPage(){
-  document.getElementById('nav-artist').classList.remove('active');
-  document.getElementById('nav-dashboard').classList.add('active');
-  document.getElementById('page-artist').style.display='none';
-  document.getElementById('page-artist').classList.remove('active');
-  document.getElementById('page-dashboard').style.display='block';
+  switchPage('page-dashboard','nav-dashboard');
   currentArtistPage='';
 }
 
@@ -1823,6 +2131,7 @@ function renderDashboard(){
   try{renderLeftPanel(records);}catch(e){console.error('artist',e);}
   try{renderVenueRanking(records);}catch(e){console.error('venue',e);}
   try{renderPeriodSummary(records);}catch(e){console.error('periodSummary',e);}
+  try{renderOnThisDay();}catch(e){console.error('onThisDay',e);}
   try{renderRecentLives();}catch(e){console.error('recentLives',e);}
   try{renderStar5List(records);}catch(e){console.error('star5',e);}
   /* If artist page is open, refresh it */
@@ -1976,8 +2285,21 @@ initAnalysisToggle();
   });
 })();
 /* Artist page nav */
-document.getElementById('nav-dashboard').addEventListener('click',function(){openDashboardPage();closeSidebar();});
+document.getElementById('nav-dashboard').addEventListener('click',function(){openDashboardPage();});
 document.getElementById('nav-artist').addEventListener('click',function(){openArtistListView();});
+document.getElementById('nav-lives').addEventListener('click',function(){openLivesPage();});
+document.getElementById('nav-notes').addEventListener('click',function(){openNotesPage();});
+
+/* Live list filter changes */
+['ll-year-sel','ll-artist-sel','ll-format-sel','ll-sort-sel'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el)el.addEventListener('change',function(){renderLivesPage();});
+});
+/* Note page filter changes */
+['np-type-sel','np-sort-sel'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el)el.addEventListener('change',function(){renderNotesPage();});
+});
 document.getElementById('ap-back-btn').addEventListener('click',function(){
   /* From detail → go back to list */
   document.getElementById('ap-list-view').style.display='block';
