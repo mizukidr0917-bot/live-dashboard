@@ -688,10 +688,22 @@ a:hover{text-decoration:underline}
 .ap-sort-btn.active{background:rgba(124,110,247,.18);border-color:rgba(124,110,247,.4);color:var(--accent-2);font-weight:600}
 .ap-list-count{font-size:11px;color:var(--text-3);margin-left:auto}
 
-/* アーティスト一覧カード — サムネイル（画像ありのみ表示） */
+/* ── List: card grid — PC 3〜4列 / SP 2列固定 ── */
+.ap-list-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:12px;
+}
+@media(max-width:640px){
+  .ap-list-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+}
+
+/* アーティスト一覧カード */
 .ap-list-card{
   background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
-  /* padding は画像なし時のみ */ 
   cursor:pointer;
   transition:transform .16s,border-color .16s,box-shadow .16s;
   box-shadow:var(--shadow-card);
@@ -700,40 +712,23 @@ a:hover{text-decoration:underline}
 }
 .ap-list-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.3);box-shadow:0 8px 24px rgba(0,0,0,.22)}
 [data-theme="light"] .ap-list-card{background:#fff}
+
+/* カード上部サムネイル（最新ワンマン画像がある場合のみ表示） */
 .ap-card-thumb{
-  width:100%;height:80px;
+  width:100%;height:90px;
   object-fit:cover;object-position:center center;
   display:block;border-radius:14px 14px 0 0;
+  flex-shrink:0;
 }
+@media(max-width:640px){
+  .ap-card-thumb{height:70px}
+}
+
+/* カード本体 */
 .ap-card-body{
-  padding:12px 12px 12px;
+  padding:12px 12px 10px;
   flex:1;display:flex;flex-direction:column;
 }
-/* 画像なし時は .ap-list-card に直接 padding を持つ — JS で切り替え */
-.ap-list-card.no-thumb .ap-card-body{padding-top:14px}
-@media(max-width:640px){
-  .ap-card-thumb{height:65px}
-}
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:12px;
-}
-@media(max-width:640px){
-  .ap-list-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));/* ① 2列固定 */
-    gap:8px;
-  }
-}
-.ap-list-card{
-  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
-  padding:14px 12px;cursor:pointer;
-  transition:transform .16s,border-color .16s,box-shadow .16s;
-  box-shadow:var(--shadow-card);
-  display:flex;flex-direction:column;
-  min-width:0;overflow:hidden;
-}
-.ap-list-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.3);box-shadow:0 8px 24px rgba(0,0,0,.22)}
-[data-theme="light"] .ap-list-card{background:#fff}
 
 /* ② アーティスト名を強調 */
 .ap-card-name{
@@ -869,18 +864,29 @@ a:hover{text-decoration:underline}
 .ap-header.has-img .ap-stat-val{color:#fff}
 .ap-header.has-img .ap-stat-label{color:rgba(255,255,255,.7)}
 @media(max-width:640px){
-  /* ① スマホは高さを抑えてトリミング範囲を減らす */
-  .ap-hero-img{height:175px;object-position:center 30%}
-  .ap-header.has-img .ap-header-body{padding:12px 14px 16px}
-  /* ② スマホはオーバーレイをさらに強く */
-  .ap-hero-overlay{
+  /* スマホ: ヒーロー画像の高さを確保して文字スペースを作る */
+  .ap-hero-img{height:200px;object-position:center center}
+  /* スマホ: テキストエリアを画像下部に十分なスペースで配置 */
+  .ap-header.has-img .ap-header-body{
+    padding:12px 14px 18px;
+    /* 戻るボタンの高さ（約40px）+ 余白分を top で確保 */
+    padding-top:14px;
+  }
+  /* スマホ: オーバーレイを上部からしっかりかける */
+  .ap-header.has-img .ap-hero-overlay{
     background:linear-gradient(
       to bottom,
-      rgba(0,0,0,.3) 0%,
-      rgba(0,0,0,.55) 40%,
+      rgba(0,0,0,.5) 0%,
+      rgba(0,0,0,.55) 35%,
       rgba(0,0,0,.82) 100%
     );
   }
+  /* スマホ: アーティスト名サイズを少し抑える */
+  .ap-header.has-img .ap-name{font-size:22px}
+  /* スマホ: KPIピルが収まるよう折り返しを許容 */
+  .ap-header.has-img .ap-stats-row{gap:5px}
+  .ap-header.has-img .ap-stat{min-width:60px;padding:5px 9px}
+  .ap-header.has-img .ap-stat-val{font-size:13px}
 }
 
 /* artist header body */
