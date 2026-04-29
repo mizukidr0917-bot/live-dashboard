@@ -60,7 +60,7 @@ a{color:var(--accent-2);text-decoration:none}
 a:hover{text-decoration:underline}
 
 /* ═══════════════════════════════════════  LAYOUT  */
-.app-shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+.app-shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh;align-items:start}
 
 /* ═══════════════════════════════════════  SIDEBAR  */
 .sidebar{position:sticky;top:0;height:100vh;background:var(--bg-2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px 18px;z-index:30;overflow:hidden;transition:background .25s}
@@ -783,31 +783,41 @@ a:hover{text-decoration:underline}
 .ap-list-more:hover{border-color:var(--accent);color:var(--accent-2);background:rgba(124,110,247,.05)}
 
 /* ── Detail: first/last cards ── */
-/* Keep 2-col on ALL screen sizes (② スマホでも2列) */
 .ap-firstlast{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
 .ap-fl-card{
   background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
-  padding:14px 14px;position:relative;overflow:hidden;box-shadow:var(--shadow-card);
+  position:relative;overflow:hidden;box-shadow:var(--shadow-card);
   transition:transform .16s,border-color .16s;min-width:0;
+  display:flex;flex-direction:column;
+  /* padding は画像なし時にのみ apl-fl-body が持つ */
 }
 .ap-fl-card.first-card{border-color:rgba(74,158,255,.25)}
-.ap-fl-card.first-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),transparent);border-radius:14px 14px 0 0}
+.ap-fl-card.first-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),transparent);border-radius:14px 14px 0 0;z-index:1}
 .ap-fl-card.last-card{border-color:rgba(124,110,247,.25)}
-.ap-fl-card.last-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);border-radius:14px 14px 0 0}
+.ap-fl-card.last-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);border-radius:14px 14px 0 0;z-index:1}
 [data-theme="light"] .ap-fl-card{background:#fff}
 [data-theme="light"] .ap-fl-card.first-card{border-color:rgba(37,99,235,.2)}
 [data-theme="light"] .ap-fl-card.last-card{border-color:rgba(109,92,224,.2)}
-.ap-fl-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+/* 初回/直近カードの画像 */
+.ap-fl-thumb{
+  width:100%;height:110px;
+  object-fit:cover;object-position:center center;
+  display:block;border-radius:14px 14px 0 0;flex-shrink:0;
+}
+@media(max-width:640px){.ap-fl-thumb{height:75px}}
+/* テキスト部分 */
+.ap-fl-body{padding:12px 12px 10px;flex:1;display:flex;flex-direction:column;}
+.ap-fl-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
 .ap-fl-card.first-card .ap-fl-label{color:var(--blue)}
 .ap-fl-card.last-card .ap-fl-label{color:var(--accent-2)}
 .ap-fl-name{
   font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;
-  color:var(--text);line-height:1.4;margin-bottom:5px;
+  color:var(--text);line-height:1.4;margin-bottom:4px;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
-.ap-fl-meta{font-size:10px;color:var(--text-2);margin-bottom:5px;line-height:1.55;word-break:break-all}
-.ap-fl-rating{font-size:12px;color:var(--amber);font-weight:700;margin-bottom:7px}
-.ap-fl-actions{display:flex;gap:4px;flex-wrap:wrap}
+.ap-fl-meta{font-size:10px;color:var(--text-2);margin-bottom:4px;line-height:1.55;word-break:break-all}
+.ap-fl-rating{font-size:12px;color:var(--amber);font-weight:700;margin-bottom:6px}
+.ap-fl-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:auto}
 
 /* Insight row */
 .ap-insight-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
@@ -924,14 +934,14 @@ a:hover{text-decoration:underline}
 }
 .ap-live-card:hover{transform:translateY(-2px);border-color:var(--border-s)}
 [data-theme="light"] .ap-live-card{background:#fff}
-/* ライブカードのサムネイル画像 */
+/* ライブカードのサムネイル画像 — ll-card と同サイズ */
 .apl-thumb{
-  width:100%;height:80px;
+  width:100%;height:130px;
   object-fit:cover;object-position:center center;
   display:block;border-radius:12px 12px 0 0;
   flex-shrink:0;
 }
-@media(max-width:640px){.apl-thumb{height:65px}}
+@media(max-width:640px){.apl-thumb{height:90px}}
 /* テキストボディ */
 .apl-body{
   padding:9px 10px 8px;
@@ -2101,18 +2111,25 @@ function renderArtistPage(artistName){
     var mkFlCard=function(rec,isFirst){
       if(!rec){
         return '<div class="ap-fl-card '+(isFirst?'first-card':'last-card')+'">'+
-          '<div class="ap-fl-label">'+(isFirst?'🎵 初回ライブ':'⭐ 直近ライブ')+'</div>'+
-          '<div class="ap-fl-name" style="color:var(--text-3)">記録なし</div></div>';
+          '<div class="ap-fl-body"><div class="ap-fl-label">'+(isFirst?'🎵 初回ライブ':'⭐ 直近ライブ')+'</div>'+
+          '<div class="ap-fl-name" style="color:var(--text-3)">記録なし</div></div></div>';
       }
       var ln=(notesByLiveId.get(rec.id)||[])[0]||null;
       var sl=rec.setlistUrl?'<a class="ap-link" href="'+escAttr(rec.setlistUrl)+'" target="_blank" rel="noopener">セットリスト</a>':'';
       var nl=ln?'<a class="ap-link" href="'+escAttr(ln.noteUrl)+'" target="_blank" rel="noopener">Note記事</a>':'';
+      /* 画像サムネ（imageUrlがある場合のみ） */
+      var thumb=rec.imageUrl
+        ?'<img src="'+escAttr(rec.imageUrl)+'" alt="" class="ap-fl-thumb" onerror="this.remove()">'
+        :'';
       return '<div class="ap-fl-card '+(isFirst?'first-card':'last-card')+'">'+
-        '<div class="ap-fl-label">'+(isFirst?'🎵 初回ライブ':'⭐ 直近ライブ')+'</div>'+
-        '<div class="ap-fl-name">'+esc(rec.liveName||'—')+'</div>'+
-        '<div class="ap-fl-meta">'+esc(fmt(rec.date))+(rec.venue?'<br>📍 '+esc(rec.venue):'')+(rec.format?'　'+esc(rec.format):'')+'</div>'+
-        '<div class="ap-fl-rating">'+(rec.rating?'★'+rec.rating:'評価なし')+'</div>'+
-        '<div class="ap-fl-actions">'+sl+nl+'</div>'+
+        thumb+
+        '<div class="ap-fl-body">'+
+          '<div class="ap-fl-label">'+(isFirst?'🎵 初回ライブ':'⭐ 直近ライブ')+'</div>'+
+          '<div class="ap-fl-name">'+esc(rec.liveName||'—')+'</div>'+
+          '<div class="ap-fl-meta">'+esc(fmt(rec.date))+(rec.venue?'<br>📍 '+esc(rec.venue):'')+(rec.format?'　'+esc(rec.format):'')+'</div>'+
+          '<div class="ap-fl-rating">'+(rec.rating?'★'+rec.rating:'評価なし')+'</div>'+
+          '<div class="ap-fl-actions">'+sl+nl+'</div>'+
+        '</div>'+
       '</div>';
     };
     flEl.innerHTML=mkFlCard(first,true)+mkFlCard(last,false);
