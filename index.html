@@ -60,10 +60,19 @@ a{color:var(--accent-2);text-decoration:none}
 a:hover{text-decoration:underline}
 
 /* ═══════════════════════════════════════  LAYOUT  */
-.app-shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh;align-items:start}
+.app-shell{display:block;min-height:100vh}
 
 /* ═══════════════════════════════════════  SIDEBAR  */
-.sidebar{position:sticky;top:0;height:100vh;background:var(--bg-2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px 18px;z-index:30;overflow-y:auto;overflow-x:hidden;transition:background .25s}
+.sidebar{
+  position:fixed;top:0;left:0;
+  width:220px;height:100vh;
+  background:var(--bg-2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  padding:20px 14px 18px;
+  z-index:30;
+  overflow-y:auto;overflow-x:hidden;
+  transition:background .25s,transform .24s;
+}
 .sidebar::before{content:'';position:absolute;top:-80px;left:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(124,110,247,.12) 0%,transparent 70%);pointer-events:none}
 .logo{display:flex;align-items:center;gap:10px;margin-bottom:24px}
 .logo-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#5b6ef0);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;box-shadow:0 3px 14px rgba(124,110,247,.4)}
@@ -103,7 +112,7 @@ a:hover{text-decoration:underline}
 .theme-toggle:hover{border-color:var(--accent);color:var(--accent-2)}
 
 /* ═══════════════════════════════════════  MAIN  */
-.content-area{min-width:0;display:flex;flex-direction:column}
+.content-area{min-width:0;display:flex;flex-direction:column;margin-left:220px}
 .main{flex:1;max-width:1460px;width:100%;margin:0 auto;padding:22px 22px 48px}
 
 /* No data */
@@ -455,9 +464,11 @@ a:hover{text-decoration:underline}
 }
 
 /* ══ KPI + total counter layout ══ */
-.kpi-and-total{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:12px;align-items:start}
+.kpi-and-total{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:12px;align-items:stretch}
 @media(max-width:960px){.kpi-and-total{grid-template-columns:1fr}}
-.kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch}
+/* KPI カードは高さを揃える */
+.kpi-card{display:flex;flex-direction:column}
 @media(max-width:640px){
   .kpi-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
   .kpi-and-total{grid-template-columns:1fr;gap:10px}
@@ -612,8 +623,9 @@ a:hover{text-decoration:underline}
   .period-mini{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(max-width:960px){
-  .app-shell{grid-template-columns:1fr}
-  .sidebar{position:fixed;top:0;left:0;width:min(240px,80vw);transform:translateX(-100%);transition:transform .24s;box-shadow:8px 0 32px rgba(0,0,0,.5);z-index:75;height:100vh}
+  /* モバイル: content-area のマージンをリセット（サイドバーは隠れているため） */
+  .content-area{margin-left:0}
+  .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .sidebar-toggle{display:flex}
   .fab-filter{display:inline-flex}
