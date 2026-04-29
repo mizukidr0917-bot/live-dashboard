@@ -1,45 +1,45 @@
 const express = require("express");
 const fetch = require("node-fetch");
 const dotenv = require("dotenv");
- 
+
 dotenv.config({ path: "env.txt" });
- 
+
 const app = express();
 const PORT = 3000;
 const LIVE_DB_ID = process.env.NOTION_DB_ID || "";
 const NOTE_DB_ID = process.env.NOTION_NOTE_DB_ID || "";
- 
+
 app.use(express.static(__dirname));
- 
+
 function normalizeId(id) {
   return String(id || "").replace(/-/g, "");
 }
- 
+
 function getTitle(prop) {
   if (!prop || prop.type !== "title" || !Array.isArray(prop.title)) return "";
   return prop.title.map((t) => t.plain_text || "").join("").trim();
 }
- 
+
 function getRichText(prop) {
   if (!prop || prop.type !== "rich_text" || !Array.isArray(prop.rich_text)) return "";
   return prop.rich_text.map((t) => t.plain_text || "").join("").trim();
 }
- 
+
 function getSelect(prop) {
   if (!prop || prop.type !== "select" || !prop.select) return "";
   return prop.select.name || "";
 }
- 
+
 function getMultiSelect(prop) {
   if (!prop || prop.type !== "multi_select" || !Array.isArray(prop.multi_select)) return [];
   return prop.multi_select.map((x) => x.name).filter(Boolean);
 }
- 
+
 function getDate(prop) {
   if (!prop || prop.type !== "date" || !prop.date) return "";
   return prop.date.start || "";
 }
- 
+
 function getUrl(prop) {
   if (!prop || prop.type !== "url") return "";
   return prop.url || "";
@@ -59,19 +59,49 @@ function getRelationIds(prop) {
   if (!prop || prop.type !== "relation" || !Array.isArray(prop.relation)) return [];
   return prop.relation.map((x) => x.id).filter(Boolean);
 }
- 
+
 function getProperty(properties, names) {
   for (const name of names) {
     if (properties[name]) return properties[name];
   }
   return null;
 }
- 
+
+// ── 追加：画像URL取得ヘルパー ──────────────────────────────
+// 優先順位：
+//   1. image プロパティ（Files & media 型）の file.url
+//   2. image プロパティの external.url
+//   3. ページカバーの file.url
+//   4. ページカバーの external.url
+//   5. 空文字
+function getImageUrl(page, properties) {
+  // 1 & 2: properties の image / 画像 / Image プロパティ
+  const imgProp = getProperty(properties, ["image", "画像", "Image"]);
+  if (imgProp && imgProp.type === "files" && Array.isArray(imgProp.files) && imgProp.files.length > 0) {
+    const f = imgProp.files[0];
+    if (f.type === "file" && f.file && f.file.url) return f.file.url;
+    if (f.type === "external" && f.external && f.external.url) return f.external.url;
+  }
+
+  // 3 & 4: ページカバー
+  if (page.cover) {
+    if (page.cover.type === "file" && page.cover.file && page.cover.file.url) {
+      return page.cover.file.url;
+    }
+    if (page.cover.type === "external" && page.cover.external && page.cover.external.url) {
+      return page.cover.external.url;
+    }
+  }
+
+  return "";
+}
+// ─────────────────────────────────────────────────────────────
+
 async function fetchAllSearchResults() {
   let allResults = [];
   let startCursor = undefined;
   let hasMore = true;
- 
+
   while (hasMore) {
     const body = {
       page_size: 100,
@@ -84,11 +114,11 @@ async function fetchAllSearchResults() {
         timestamp: "last_edited_time"
       }
     };
- 
+
     if (startCursor) {
       body.start_cursor = startCursor;
     }
- 
+
     const response = await fetch("https://api.notion.com/v1/search", {
       method: "POST",
       headers: {
@@ -98,18 +128,18 @@ async function fetchAllSearchResults() {
       },
       body: JSON.stringify(body)
     });
- 
+
     const data = await response.json();
- 
+
     if (!response.ok) {
       throw new Error(JSON.stringify(data));
     }
- 
+
     allResults = allResults.concat(data.results || []);
     hasMore = data.has_more;
     startCursor = data.next_cursor || undefined;
   }
- 
+
   return allResults;
 }
 
@@ -121,12 +151,12 @@ function assertEnvReady() {
     throw new Error("NOTION_DB_ID is not configured");
   }
 }
- 
+
 app.get("/api/live-log", async (req, res) => {
   try {
     assertEnvReady();
     const allPages = await fetchAllSearchResults();
- 
+
     const livePages = allPages.filter((item) => {
       return (
         item.object === "page" &&
@@ -135,37 +165,41 @@ app.get("/api/live-log", async (req, res) => {
         normalizeId(item.parent.database_id) === normalizeId(LIVE_DB_ID)
       );
     });
- 
+
     const records = livePages.map((page) => {
       const p = page.properties || {};
- 
+
       const liveName =
         getTitle(getProperty(p, ["ライブ", "ライブ名", "イベント名", "Name", "名前"])) || "";
- 
+
       const artists =
         getMultiSelect(getProperty(p, ["アーティスト", "artists", "Artist"])) || [];
- 
+
       const venue =
         getSelect(getProperty(p, ["会場", "Venue"])) ||
         getRichText(getProperty(p, ["会場", "Venue"])) ||
         "";
- 
+
       const format =
         getSelect(getProperty(p, ["形式", "Format"])) ||
         getRichText(getProperty(p, ["形式", "Format"])) ||
         "";
- 
+
       const date =
         getDate(getProperty(p, ["日付", "Date", "ライブ日"])) || "";
- 
+
       const ratingText =
         getSelect(getProperty(p, ["評価", "Rating"])) ||
         getRichText(getProperty(p, ["評価", "Rating"])) ||
         "";
- 
+
       const setlistUrl =
         getUrl(getProperty(p, ["セットリスト", "セットリストURL", "URL"])) || "";
- 
+
+      // ── 追加：imageUrl ──
+      const imageUrl = getImageUrl(page, p);
+      // ───────────────────
+
       return {
         id: page.id,
         liveName,
@@ -174,14 +208,15 @@ app.get("/api/live-log", async (req, res) => {
         format,
         date,
         rating: (ratingText.match(/★/g) || []).length,
-        setlistUrl
+        setlistUrl,
+        imageUrl,   // ← 追加
       };
     });
- 
+
     const validRecords = records
       .filter((r) => r.date)
       .sort((a, b) => new Date(a.date) - new Date(b.date));
- 
+
     res.json(validRecords);
   } catch (err) {
     console.error(err);
@@ -258,7 +293,7 @@ app.get("/api/note-log", async (req, res) => {
     });
   }
 });
- 
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
