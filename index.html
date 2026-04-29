@@ -502,7 +502,7 @@ a:hover{text-decoration:underline}
 }
 .rl-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.28)}
 [data-theme="light"] .rl-card{background:#fff}
-.rl-thumb{width:100%;height:90px;object-fit:cover;background:var(--bg-3);display:block}
+.rl-thumb{width:100%;height:90px;object-fit:cover;object-position:center center;background:var(--bg-3);display:block}
 .rl-thumb-ph{width:100%;height:90px;background:linear-gradient(135deg,var(--bg-3),var(--bg-2));display:flex;align-items:center;justify-content:center;font-size:28px}
 .rl-body{padding:11px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
 .rl-date{font-size:10px;color:var(--text-3)}
@@ -515,7 +515,9 @@ a:hover{text-decoration:underline}
 .rl-actions{display:flex;gap:4px;flex-wrap:wrap;padding:0 12px 10px}
 @media(max-width:640px){
   .recent-lives-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .rl-thumb,.rl-thumb-ph{height:70px}
+  /* ① スマホは高さ抑制 + center center */
+  .rl-thumb{height:65px;object-position:center center}
+  .rl-thumb-ph{height:65px}
   .rl-name{font-size:11px}
 }
 
@@ -578,7 +580,7 @@ a:hover{text-decoration:underline}
 }
 .ll-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.28)}
 [data-theme="light"] .ll-card{background:#fff}
-.ll-thumb{width:100%;height:100px;object-fit:cover;display:block;background:var(--bg-3)}
+.ll-thumb{width:100%;height:100px;object-fit:cover;object-position:center center;display:block;background:var(--bg-3)}
 .ll-thumb-ph{width:100%;height:100px;background:linear-gradient(135deg,var(--bg-3),var(--bg-2));display:flex;align-items:center;justify-content:center;font-size:32px}
 .ll-body{padding:10px 11px;flex:1;display:flex;flex-direction:column;gap:3px}
 .ll-date{font-size:10px;color:var(--text-3)}
@@ -590,8 +592,10 @@ a:hover{text-decoration:underline}
 .ll-actions{display:flex;gap:4px;padding:0 11px 9px;flex-wrap:wrap}
 @media(max-width:640px){
   .ll-thumb,.ll-thumb-ph{height:75px}
+  /* ① スマホはさらに高さを抑えてトリミングを弱める */
+  .ll-thumb{height:70px;object-position:center center}
   .ll-name{font-size:11px}
-  .ll-thumb-ph{font-size:24px}
+  .ll-thumb-ph{font-size:24px;height:70px}
 }
 
 /* ⑤ Note page additions */
@@ -684,8 +688,32 @@ a:hover{text-decoration:underline}
 .ap-sort-btn.active{background:rgba(124,110,247,.18);border-color:rgba(124,110,247,.4);color:var(--accent-2);font-weight:600}
 .ap-list-count{font-size:11px;color:var(--text-3);margin-left:auto}
 
-/* ── List: card grid — ① スマホでも2列固定 ── */
-.ap-list-grid{
+/* アーティスト一覧カード — サムネイル（画像ありのみ表示） */
+.ap-list-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+  /* padding は画像なし時のみ */ 
+  cursor:pointer;
+  transition:transform .16s,border-color .16s,box-shadow .16s;
+  box-shadow:var(--shadow-card);
+  display:flex;flex-direction:column;
+  min-width:0;overflow:hidden;
+}
+.ap-list-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.3);box-shadow:0 8px 24px rgba(0,0,0,.22)}
+[data-theme="light"] .ap-list-card{background:#fff}
+.ap-card-thumb{
+  width:100%;height:80px;
+  object-fit:cover;object-position:center center;
+  display:block;border-radius:14px 14px 0 0;
+}
+.ap-card-body{
+  padding:12px 12px 12px;
+  flex:1;display:flex;flex-direction:column;
+}
+/* 画像なし時は .ap-list-card に直接 padding を持つ — JS で切り替え */
+.ap-list-card.no-thumb .ap-card-body{padding-top:14px}
+@media(max-width:640px){
+  .ap-card-thumb{height:65px}
+}
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
   gap:12px;
@@ -803,12 +831,21 @@ a:hover{text-decoration:underline}
   background:transparent;
 }
 .ap-hero-img{
-  width:100%;height:220px;object-fit:cover;object-position:center top;
+  width:100%;height:220px;
+  object-fit:cover;
+  /* ① center center でトリミング対策 */
+  object-position:center center;
   display:block;border-radius:18px 18px 0 0;
 }
 .ap-hero-overlay{
   position:absolute;top:0;left:0;right:0;bottom:0;
-  background:linear-gradient(to bottom,rgba(0,0,0,.08) 0%,rgba(0,0,0,.65) 100%);
+  /* ② オーバーレイを強めに — 文字が必ず読めるように */
+  background:linear-gradient(
+    to bottom,
+    rgba(0,0,0,.25) 0%,
+    rgba(0,0,0,.45) 40%,
+    rgba(0,0,0,.75) 100%
+  );
   border-radius:18px;
 }
 .ap-header.has-img .ap-header-body{
@@ -817,19 +854,36 @@ a:hover{text-decoration:underline}
 }
 .ap-header.has-img .ap-back{
   position:absolute;top:14px;left:14px;z-index:3;
-  background:rgba(0,0,0,.35);border-color:rgba(255,255,255,.3);color:#fff;
-  backdrop-filter:blur(6px);
+  background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.35);color:#fff;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
 }
-.ap-header.has-img .ap-name{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5)}
-.ap-header.has-img .ap-tagline{color:rgba(255,255,255,.8)}
-.ap-header.has-img .ap-stat{background:rgba(0,0,0,.3);border-color:rgba(255,255,255,.2);backdrop-filter:blur(6px)}
+.ap-header.has-img .ap-name{
+  color:#fff;
+  text-shadow:0 1px 8px rgba(0,0,0,.7),0 2px 16px rgba(0,0,0,.4);
+}
+.ap-header.has-img .ap-tagline{color:rgba(255,255,255,.85)}
+.ap-header.has-img .ap-stat{
+  background:rgba(0,0,0,.4);border-color:rgba(255,255,255,.25);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
 .ap-header.has-img .ap-stat-val{color:#fff}
-.ap-header.has-img .ap-stat-label{color:rgba(255,255,255,.65)}
+.ap-header.has-img .ap-stat-label{color:rgba(255,255,255,.7)}
 @media(max-width:640px){
-  .ap-hero-img{height:160px}
-  .ap-header.has-img .ap-header-body{padding:14px 16px 18px}
+  /* ① スマホは高さを抑えてトリミング範囲を減らす */
+  .ap-hero-img{height:175px;object-position:center 30%}
+  .ap-header.has-img .ap-header-body{padding:12px 14px 16px}
+  /* ② スマホはオーバーレイをさらに強く */
+  .ap-hero-overlay{
+    background:linear-gradient(
+      to bottom,
+      rgba(0,0,0,.3) 0%,
+      rgba(0,0,0,.55) 40%,
+      rgba(0,0,0,.82) 100%
+    );
+  }
 }
-/* artist header body — no-image default has no extra wrapper padding needed */
+
+/* artist header body */
 .ap-header::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(124,110,247,.15) 0%,transparent 65%);pointer-events:none}
 .ap-header.has-img::before{display:none}
 [data-theme="light"] .ap-header{background:linear-gradient(135deg,rgba(109,92,224,.08),rgba(37,99,235,.05));border-color:rgba(109,92,224,.18)}
@@ -1873,12 +1927,14 @@ function buildArtistItems(){
     var rated=recs.filter(function(r){return r.rating>0;});
     var avg=rated.length?(rated.reduce(function(s,r){return s+r.rating;},0)/rated.length):0;
     var s5=recs.filter(function(r){return r.rating===5;}).length;
-    /* ② ワンマン/フェス回数 */
     var wanman=recs.filter(function(r){return r.format==='ワンマン';}).length;
     var fes=recs.filter(function(r){return r.format==='フェス';}).length;
     var first=recs[0];
     var last=recs[recs.length-1];
-    return{name:e[0],count:recs.length,avg:avg,s5:s5,wanman:wanman,fes:fes,first:first,last:last};
+    /* 最新ワンマン画像（アーティスト一覧カード用） */
+    var wanmanWithImg=recs.slice().sort(function(a,b){return b.date-a.date;}).filter(function(r){return r.format==='ワンマン'&&r.imageUrl;});
+    var heroImg=wanmanWithImg.length?wanmanWithImg[0].imageUrl:'';
+    return{name:e[0],count:recs.length,avg:avg,s5:s5,wanman:wanman,fes:fes,first:first,last:last,heroImg:heroImg};
   });
 }
 
@@ -1904,19 +1960,28 @@ function renderArtistList(){
   var mkCard=function(item){
     var avgStr=item.avg?item.avg.toFixed(1)+'★':'—';
     var lastLiveName=(item.last&&item.last.liveName)?item.last.liveName:'—';
-    /* ② ワンマン回数バッジ（フェス/対バンは削除） */
     var wanmanBadge=item.wanman?'<div class="ap-card-wanman">🎤 ワンマン '+item.wanman+'回</div>':'';
-    return '<div class="ap-list-card" onclick="openArtistPage(\''+escAttr(item.name)+'\')">'+
-      '<div class="ap-card-name">'+esc(item.name)+'</div>'+
-      '<div class="ap-card-stats">'+
-        '<div class="ap-card-stat"><span class="ap-card-stat-val">'+item.count+'回</span><span class="ap-card-stat-key">ライブ回数</span></div>'+
-        '<div class="ap-card-stat"><span class="ap-card-stat-val">'+avgStr+'</span><span class="ap-card-stat-key">平均評価</span></div>'+
-        '<div class="ap-card-stat"><span class="ap-card-stat-val">'+item.s5+'回</span><span class="ap-card-stat-key">星5</span></div>'+
-        '<div class="ap-card-stat"><span class="ap-card-stat-val" style="font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(item.last&&item.last.venue?esc(item.last.venue):'—')+'</span><span class="ap-card-stat-key">直近会場</span></div>'+
+    /* サムネイル（最新ワンマン画像があるときのみ） */
+    var thumbHtml='';
+    var noThumbCls=' no-thumb';
+    if(item.heroImg){
+      thumbHtml='<img src="'+escAttr(item.heroImg)+'" alt="" class="ap-card-thumb" onerror="this.remove();this.parentElement.classList.add(\'no-thumb\')">';
+      noThumbCls='';
+    }
+    return '<div class="ap-list-card'+noThumbCls+'" onclick="openArtistPage(\''+escAttr(item.name)+'\')">'+
+      thumbHtml+
+      '<div class="ap-card-body">'+
+        '<div class="ap-card-name">'+esc(item.name)+'</div>'+
+        '<div class="ap-card-stats">'+
+          '<div class="ap-card-stat"><span class="ap-card-stat-val">'+item.count+'回</span><span class="ap-card-stat-key">ライブ回数</span></div>'+
+          '<div class="ap-card-stat"><span class="ap-card-stat-val">'+avgStr+'</span><span class="ap-card-stat-key">平均評価</span></div>'+
+          '<div class="ap-card-stat"><span class="ap-card-stat-val">'+item.s5+'回</span><span class="ap-card-stat-key">星5</span></div>'+
+          '<div class="ap-card-stat"><span class="ap-card-stat-val" style="font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(item.last&&item.last.venue?esc(item.last.venue):'—')+'</span><span class="ap-card-stat-key">直近会場</span></div>'+
+        '</div>'+
+        wanmanBadge+
+        '<div class="ap-card-dates"><span>初 '+fmt(item.first?item.first.date:null)+'</span><span>近 '+fmt(item.last?item.last.date:null)+'</span></div>'+
+        '<div class="ap-card-last-live">'+esc(lastLiveName)+'</div>'+
       '</div>'+
-      wanmanBadge+
-      '<div class="ap-card-dates"><span>初 '+fmt(item.first?item.first.date:null)+'</span><span>近 '+fmt(item.last?item.last.date:null)+'</span></div>'+
-      '<div class="ap-card-last-live">'+esc(lastLiveName)+'</div>'+
     '</div>';
   };
   var moreBtn=document.getElementById('ap-list-more');
