@@ -792,13 +792,46 @@ a:hover{text-decoration:underline}
 .ap-insight strong{color:var(--accent-2);font-weight:700}
 [data-theme="light"] .ap-insight{background:rgba(109,92,224,.06);border-color:rgba(109,92,224,.14)}
 
-/* Artist header */
+/* Artist header — 画像ありのビジュアルヒーロー */
 .ap-header{
   background:linear-gradient(135deg,rgba(124,110,247,.14) 0%,rgba(74,158,255,.08) 60%,transparent 100%);
   border:1px solid rgba(124,110,247,.22);border-radius:18px;
   padding:24px 26px;margin-bottom:18px;position:relative;overflow:hidden;
 }
+.ap-header.has-img{
+  padding:0;border:none;
+  background:transparent;
+}
+.ap-hero-img{
+  width:100%;height:220px;object-fit:cover;object-position:center top;
+  display:block;border-radius:18px 18px 0 0;
+}
+.ap-hero-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(to bottom,rgba(0,0,0,.08) 0%,rgba(0,0,0,.65) 100%);
+  border-radius:18px;
+}
+.ap-header.has-img .ap-header-body{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:20px 24px 22px;z-index:2;
+}
+.ap-header.has-img .ap-back{
+  position:absolute;top:14px;left:14px;z-index:3;
+  background:rgba(0,0,0,.35);border-color:rgba(255,255,255,.3);color:#fff;
+  backdrop-filter:blur(6px);
+}
+.ap-header.has-img .ap-name{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.ap-header.has-img .ap-tagline{color:rgba(255,255,255,.8)}
+.ap-header.has-img .ap-stat{background:rgba(0,0,0,.3);border-color:rgba(255,255,255,.2);backdrop-filter:blur(6px)}
+.ap-header.has-img .ap-stat-val{color:#fff}
+.ap-header.has-img .ap-stat-label{color:rgba(255,255,255,.65)}
+@media(max-width:640px){
+  .ap-hero-img{height:160px}
+  .ap-header.has-img .ap-header-body{padding:14px 16px 18px}
+}
+/* artist header body — no-image default has no extra wrapper padding needed */
 .ap-header::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(124,110,247,.15) 0%,transparent 65%);pointer-events:none}
+.ap-header.has-img::before{display:none}
 [data-theme="light"] .ap-header{background:linear-gradient(135deg,rgba(109,92,224,.08),rgba(37,99,235,.05));border-color:rgba(109,92,224,.18)}
 .ap-back{border:1px solid var(--border-s);background:transparent;color:var(--text-2);border-radius:99px;padding:4px 11px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:14px;display:inline-flex;align-items:center;gap:4px;transition:all .15s}
 .ap-back:hover{border-color:var(--accent);color:var(--accent-2)}
@@ -1162,12 +1195,15 @@ body{overflow-x:hidden}
 
         <!-- Artist detail view -->
         <div id="ap-detail-view" style="display:none">
-          <!-- Header -->
-          <div class="ap-header">
+          <!-- Header（画像あり/なしで動的に構造が変わる） -->
+          <div class="ap-header" id="ap-header">
+            <!-- 画像あり時にここに img + overlay が挿入される -->
             <button class="ap-back" id="ap-back-btn">← アーティスト一覧へ</button>
-            <div class="ap-name" id="ap-name">—</div>
-            <div class="ap-tagline" id="ap-tagline"></div>
-            <div class="ap-stats-row" id="ap-stats-row"></div>
+            <div class="ap-header-body" id="ap-header-body">
+              <div class="ap-name" id="ap-name">—</div>
+              <div class="ap-tagline" id="ap-tagline"></div>
+              <div class="ap-stats-row" id="ap-stats-row"></div>
+            </div>
           </div>
 
           <!-- ② 初回 / 直近 ライブカード（主役） -->
@@ -1910,6 +1946,44 @@ function renderArtistPage(artistName){
 
   /* ① ヘッダー */
   setEl('ap-name',artistName);
+
+  /* ② 最新ワンマン画像をヘッダーに適用 */
+  var apHeader=document.getElementById('ap-header');
+  var apHeaderBody=document.getElementById('ap-header-body');
+  var apBackBtn=document.getElementById('ap-back-btn');
+  /* 最新ワンマン（imageUrlあり）を探す */
+  var heroImg=null;
+  var wanmanWithImg=recs.filter(function(r){return r.format==='ワンマン'&&r.imageUrl;}).sort(function(a,b){return b.date-a.date;});
+  if(wanmanWithImg.length)heroImg=wanmanWithImg[0].imageUrl;
+
+  /* 前回のimg/overlayを除去してリセット */
+  var oldImg=apHeader?apHeader.querySelector('.ap-hero-img'):null;
+  var oldOv=apHeader?apHeader.querySelector('.ap-hero-overlay'):null;
+  if(oldImg)oldImg.remove();
+  if(oldOv)oldOv.remove();
+
+  if(heroImg&&apHeader&&apHeaderBody&&apBackBtn){
+    /* 画像ありモード */
+    apHeader.classList.add('has-img');
+    var imgEl=document.createElement('img');
+    imgEl.className='ap-hero-img';
+    imgEl.src=heroImg;
+    imgEl.alt=artistName+' ライブ';
+    imgEl.onerror=function(){
+      /* 画像読み込み失敗時はno-imgモードに戻す */
+      apHeader.classList.remove('has-img');
+      imgEl.remove();
+      ovEl.remove();
+    };
+    var ovEl=document.createElement('div');
+    ovEl.className='ap-hero-overlay';
+    /* img と overlay を先頭に挿入（backボタンの前） */
+    apHeader.insertBefore(ovEl,apBackBtn);
+    apHeader.insertBefore(imgEl,ovEl);
+  } else if(apHeader){
+    /* 画像なしモード — グラデ背景に戻す */
+    apHeader.classList.remove('has-img');
+  }
 
   /* タグライン */
   var tagline='';
