@@ -63,7 +63,7 @@ a:hover{text-decoration:underline}
 .app-shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh;align-items:start}
 
 /* ═══════════════════════════════════════  SIDEBAR  */
-.sidebar{position:sticky;top:0;height:100vh;background:var(--bg-2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px 18px;z-index:30;overflow:hidden;transition:background .25s}
+.sidebar{position:sticky;top:0;height:100vh;background:var(--bg-2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px 18px;z-index:30;overflow-y:auto;overflow-x:hidden;transition:background .25s}
 .sidebar::before{content:'';position:absolute;top:-80px;left:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(124,110,247,.12) 0%,transparent 70%);pointer-events:none}
 .logo{display:flex;align-items:center;gap:10px;margin-bottom:24px}
 .logo-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#5b6ef0);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;box-shadow:0 3px 14px rgba(124,110,247,.4)}
@@ -521,8 +521,7 @@ a:hover{text-decoration:underline}
   .rl-name{font-size:11px}
 }
 
-/* ②-2 Sidebar scroll fix */
-.sidebar{overflow-y:auto;overflow-x:hidden}
+/* ②-2 Sidebar scrollbar style */
 .sidebar::-webkit-scrollbar{width:3px}
 .sidebar::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:99px}
 
@@ -916,13 +915,16 @@ a:hover{text-decoration:underline}
 /* Artist chart */
 .ap-chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;box-shadow:var(--shadow-card)}
 
-/* Artist history — 常時2列、高さ揃え */
+/* Artist history — ll-card と同じ auto-fill グリッド */
 .ap-history-grid{
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:12px;
   margin-bottom:8px;
   width:100%;overflow:hidden;
+}
+@media(max-width:640px){
+  .ap-history-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 }
 .ap-live-card{
   background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
@@ -941,7 +943,7 @@ a:hover{text-decoration:underline}
   display:block;border-radius:12px 12px 0 0;
   flex-shrink:0;
 }
-@media(max-width:640px){.apl-thumb{height:90px}}
+@media(max-width:640px){.apl-thumb{height:85px}}
 /* テキストボディ */
 .apl-body{
   padding:9px 10px 8px;
@@ -986,7 +988,6 @@ a:hover{text-decoration:underline}
   .ap-link{font-size:9px;padding:2px 7px}
   .apl-name{font-size:11px}
   .apl-venue{font-size:9px}
-  .ap-history-grid{gap:7px}
   #page-artist{padding-bottom:calc(80px + env(safe-area-inset-bottom,12px))}
 }
 /* body global overflow guard */
