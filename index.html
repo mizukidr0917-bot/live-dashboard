@@ -147,7 +147,6 @@ a:hover{text-decoration:underline}
 .story-sub{font-size:11px;color:var(--text-2);margin-top:3px}
 
 /* KPI 3-col */
-.kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
 .kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:20px 18px 16px;position:relative;overflow:hidden;transition:transform .16s,border-color .16s,box-shadow .16s;box-shadow:var(--shadow-card)}
 .kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:16px 16px 0 0}
 .kpi-card.c-blue::after{background:linear-gradient(90deg,var(--blue),transparent)}
@@ -464,14 +463,15 @@ a:hover{text-decoration:underline}
 }
 
 /* ══ KPI + total counter layout ══ */
-.kpi-and-total{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:12px;align-items:stretch}
+.kpi-and-total{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:12px;align-items:stretch;margin-bottom:16px}
 @media(max-width:960px){.kpi-and-total{grid-template-columns:1fr}}
-.kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch}
-/* KPI カードは高さを揃える */
-.kpi-card{display:flex;flex-direction:column}
+/* kpi-row と kpi-card が親の高さいっぱいに伸びるよう設定 */
+.kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch;height:100%}
+.kpi-card{display:flex;flex-direction:column;height:100%}
 @media(max-width:640px){
-  .kpi-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .kpi-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;height:auto}
   .kpi-and-total{grid-template-columns:1fr;gap:10px}
+  .kpi-card{height:auto}
 }
 
 /* ══ Total counter card ══ */
