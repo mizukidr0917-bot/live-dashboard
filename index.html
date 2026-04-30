@@ -69,7 +69,7 @@ a:hover{text-decoration:underline}
   background:var(--bg-2);border-right:1px solid var(--border);
   display:flex;flex-direction:column;
   padding:20px 14px 18px;
-  z-index:30;
+  z-index:80;/* バックドロップ(70)より高く */
   overflow-y:auto;overflow-x:hidden;
   transition:background .25s,transform .24s;
 }
@@ -623,10 +623,9 @@ a:hover{text-decoration:underline}
   .period-mini{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(max-width:960px){
-  /* モバイル: content-area のマージンをリセット（サイドバーは隠れているため） */
   .content-area{margin-left:0}
   .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
+  .sidebar.open{transform:translateX(0);box-shadow:8px 0 32px rgba(0,0,0,.5)}
   .sidebar-toggle{display:flex}
   .fab-filter{display:inline-flex}
   .topbar-filter-btn{display:none}
