@@ -1903,6 +1903,28 @@ var LL_STEP=20;
 var _llFiltered=[];
 var _llShown=0;
 
+/* mkLlCard: ライブ1件のカードHTMLを生成 */
+function mkLlCard(r){
+  var d=r.date;var ds=d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
+  var ln=(notesByLiveId.get(r.id)||[])[0]||null;
+  var sl=r.setlistUrl?'<a class="ap-link" href="'+escAttr(r.setlistUrl)+'" target="_blank" rel="noopener">セットリスト</a>':'';
+  var nl=ln?'<a class="ap-link" href="'+escAttr(ln.noteUrl)+'" target="_blank" rel="noopener">Note</a>':'';
+  var acts=(sl||nl)?'<div class="ll-actions">'+sl+nl+'</div>':'';
+  var thumb=r.imageUrl?'<img src="'+escAttr(r.imageUrl)+'" alt="" class="ll-thumb" onerror="this.parentElement.innerHTML=\'<div class=ll-thumb-ph>🎵</div>\'">':'<div class="ll-thumb-ph">🎵</div>';
+  return '<div class="ll-card">'+thumb+
+    '<div class="ll-body">'+
+      '<div class="ll-date">'+ds+'</div>'+
+      '<div class="ll-name">'+esc(r.liveName||'—')+'</div>'+
+      '<div class="ll-venue">📍 '+esc(r.venue||'—')+'</div>'+
+      '<div class="ll-row2">'+
+        '<span class="ll-fmt">'+esc(r.format||'—')+'</span>'+
+        '<span class="ll-rating">'+(r.rating?'★'+r.rating:'')+'</span>'+
+      '</div>'+
+    '</div>'+
+    acts+
+  '</div>';
+}
+
 function renderLivesPage(){
   /* グローバルフィルター適用 */
   var srt=document.getElementById('ll-sort-sel');
