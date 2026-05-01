@@ -612,35 +612,83 @@ a:hover{text-decoration:underline}
 .np-grid-wrap{margin-top:4px}
 
 /* ══ Venue page ══ */
+/* KPI cards */
+.venue-kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow-card)}
+[data-theme="light"] .venue-kpi-card{background:#fff}
+.vkpi-label{font-size:11px;color:var(--text-2);margin-bottom:6px}
+.vkpi-val{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:26px;font-weight:700;color:var(--accent-2);line-height:1.1}
+.vkpi-sub{font-size:11px;color:var(--text-3);margin-top:3px}
+/* Donut type table */
+.vt-table-row{display:grid;grid-template-columns:12px 1fr 50px 50px 1fr;gap:8px;align-items:center;padding:5px 0;border-bottom:0.5px solid var(--border);font-size:11px}
+.vt-table-row:last-child{border-bottom:none}
+.vt-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.vt-table-name{color:var(--text);font-weight:500}
+.vt-table-count{color:var(--text);font-weight:600;text-align:right}
+.vt-table-pct{color:var(--text-3);text-align:right}
+.vt-table-venues{color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Ranking horizontal scroll cards */
+.vr-rank-card{
+  flex-shrink:0;width:150px;scroll-snap-align:start;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+  padding:12px 12px 10px;cursor:pointer;
+  transition:transform .15s,border-color .15s;box-shadow:var(--shadow-card);
+}
+.vr-rank-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.3)}
+[data-theme="light"] .vr-rank-card{background:#fff}
+.vrrc-num{font-size:18px;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-bottom:6px}
+.vrrc-num.n1{color:var(--amber)}.vrrc-num.n2{color:#9ca3af}.vrrc-num.n3{color:#c8a068}.vrrc-num.nn{color:var(--text-3)}
+.vrrc-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-family:'Space Grotesk','Noto Sans JP',sans-serif;line-height:1.35}
+.vrrc-count{font-size:11px;color:var(--text-2);margin-bottom:3px}
+.vrrc-dates{font-size:10px;color:var(--text-3);line-height:1.5}
+.vrrc-type{display:inline-block;font-size:9px;padding:1px 7px;border-radius:99px;background:var(--bg-3);color:var(--text-2);border:1px solid var(--border);margin-top:5px;white-space:nowrap}
+/* Venue list rows */
+.vr-list-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+  padding:12px 14px;cursor:pointer;
+  transition:transform .15s,border-color .15s;box-shadow:var(--shadow-card);
+}
+.vr-list-row:hover{transform:translateY(-1px);border-color:rgba(124,110,247,.28)}
+[data-theme="light"] .vr-list-row{background:#fff}
+.vrl-name-col{flex:1;min-width:0}
+.vrl-name{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Space Grotesk','Noto Sans JP',sans-serif}
+.vrl-type{display:inline-flex;align-items:center;gap:4px;font-size:10px;margin-top:3px}
+.vrl-type-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.vrl-type-name{color:var(--text-3)}
+.vrl-count-col{text-align:right;flex-shrink:0}
+.vrl-count{font-size:14px;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif}
+.vrl-count-lbl{font-size:10px;color:var(--text-3)}
+.vrl-dates{font-size:10px;color:var(--text-2);flex-shrink:0;min-width:80px}
+.vrl-artists{font-size:10px;color:var(--text-3);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vrl-arrow{color:var(--text-3);font-size:12px;flex-shrink:0}
+/* vt-analysis responsive */
+@media(max-width:800px){#vt-inner{grid-template-columns:1fr;gap:14px}#vt-inner>div:first-child{margin:0 auto}}
+@media(max-width:640px){
+  #venue-kpi-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .vkpi-val{font-size:20px}
+  .vrl-dates,.vrl-artists{display:none}
+}
+
+/* vt-grid and vr-grid kept as fallback */
 .vt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:4px}
-.vt-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow-card);cursor:default}
+.vt-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow-card)}
 [data-theme="light"] .vt-card{background:#fff}
 .vt-type{font-size:11px;font-weight:700;color:var(--accent-2);margin-bottom:6px}
 .vt-count{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:28px;font-weight:700;color:var(--text);line-height:1}
 .vt-pct{font-size:11px;color:var(--text-3);margin-bottom:6px}
 .vt-venues{font-size:10px;color:var(--text-2);margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .vt-artists{font-size:10px;color:var(--text-3)}
-
 .vr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-.vr-card{
-  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
-  padding:14px 16px;box-shadow:var(--shadow-card);cursor:pointer;
-  transition:transform .15s,border-color .15s;display:flex;align-items:center;gap:12px;
-}
+.vr-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow-card);cursor:pointer;transition:transform .15s,border-color .15s;display:flex;align-items:center;gap:12px}
 .vr-card:hover{transform:translateY(-2px);border-color:rgba(124,110,247,.3)}
 [data-theme="light"] .vr-card{background:#fff}
 .vr-rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:var(--bg-3);color:var(--text-3)}
-.vr-rank.r1{background:var(--amber-soft);color:var(--amber)}
-.vr-rank.r2{background:rgba(156,163,175,.15);color:#9ca3af}
-.vr-rank.r3{background:rgba(200,160,104,.15);color:#c8a068}
+.vr-rank.r1{background:var(--amber-soft);color:var(--amber)}.vr-rank.r2{background:rgba(156,163,175,.15);color:#9ca3af}.vr-rank.r3{background:rgba(200,160,104,.15);color:#c8a068}
 .vr-body{flex:1;min-width:0}
 .vr-name{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Space Grotesk','Noto Sans JP',sans-serif}
 .vr-meta{font-size:11px;color:var(--text-2);margin-top:2px}
 .vr-count{font-size:13px;font-weight:700;color:var(--accent-2);white-space:nowrap;flex-shrink:0}
-@media(max-width:640px){
-  .vt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .vr-grid{grid-template-columns:1fr}
-}
+@media(max-width:640px){.vr-grid{grid-template-columns:1fr}}
 
 /* Footer */
 .page-footer{text-align:center;padding:20px 0 10px;font-size:11px;color:var(--text-3);border-top:1px solid var(--border);margin-top:10px}
@@ -1288,28 +1336,48 @@ body{overflow-x:hidden}
       <section id="page-venues" style="display:none">
         <div class="ll-header">
           <div class="ll-title">📍 会場</div>
-          <div class="ll-sub">ライブ体験を場所から振り返る</div>
+          <div class="ll-sub" id="venues-filter-label">あなたが行った会場の記録と分析</div>
         </div>
 
-        <!-- 会場タイプ別サマリー -->
-        <div class="sec-label" style="margin-bottom:10px">会場タイプ別</div>
-        <div class="vt-grid" id="vt-grid"></div>
+        <!-- KPI 4枚 -->
+        <div id="venue-kpi-row" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:20px"></div>
 
-        <!-- 会場ランキング -->
-        <div class="sec-label" style="margin-top:22px;margin-bottom:10px">よく行った会場 <span class="sub" id="venue-rank-count"></span></div>
-        <div class="vr-grid" id="vr-grid"></div>
+        <!-- 会場タイプ分析 -->
+        <div class="sec-label" style="margin-bottom:10px">会場タイプ分析</div>
+        <div id="vt-analysis" style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:var(--shadow-card)">
+          <div style="font-size:11px;color:var(--text-2);margin-bottom:14px">どんなタイプの会場によく行っているか</div>
+          <div id="vt-inner" style="display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:center">
+            <div style="position:relative;width:180px;height:180px">
+              <canvas id="venue-donut-chart" width="180" height="180"></canvas>
+              <div id="venue-donut-center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;line-height:1.3">
+                <div style="font-size:10px;color:var(--text-3)">総ライブ数</div>
+                <div id="venue-donut-total" style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--text)">—</div>
+                <div style="font-size:10px;color:var(--text-3)">回</div>
+              </div>
+            </div>
+            <div id="vt-table"></div>
+          </div>
+        </div>
+
+        <!-- よく行った会場ランキング -->
+        <div class="sec-label" style="margin-bottom:10px">よく行った会場ランキング <span class="sub" id="venue-rank-count"></span></div>
+        <div id="vr-scroll-row" style="display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;margin-bottom:20px;-webkit-overflow-scrolling:touch"></div>
+
+        <!-- 会場一覧（検索＋タイプフィルター） -->
+        <div class="sec-label" style="margin-bottom:10px">会場を選んで詳細を見る</div>
+        <input type="text" id="venue-search-input" class="ap-search-input" placeholder="🔍 会場名で検索..." style="width:100%;margin-bottom:8px">
+        <div id="venue-type-filter" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
+        <div id="vr-list" style="display:flex;flex-direction:column;gap:8px"></div>
         <button class="ap-history-more hidden" id="vr-more">もっと見る</button>
 
-        <!-- 会場詳細（クリック時に表示） -->
+        <!-- 会場詳細 -->
         <div id="vd-section" style="display:none;margin-top:24px">
           <div class="sec-label" style="margin-bottom:10px">
             <button onclick="closeVenueDetail()" style="background:transparent;border:1px solid var(--border-s);border-radius:99px;padding:2px 10px;font-size:11px;color:var(--text-2);cursor:pointer;margin-right:8px;font-family:DM Sans,sans-serif">← 一覧へ</button>
             <span id="vd-name">—</span>
             <span class="sub" id="vd-count"></span>
           </div>
-          <!-- 統計チップ -->
           <div class="ap-insight-row" id="vd-insights"></div>
-          <!-- ライブ一覧 -->
           <div class="ap-history-grid" id="vd-lives"></div>
           <button class="ap-history-more hidden" id="vd-more">もっと見る</button>
         </div>
@@ -1981,74 +2049,173 @@ function openVenuePage(){
 /* ─── VENUE PAGE ─── */
 var VR_STEP=20;var _vrShown=0;var _vrItems=[];
 
+/* ─── VENUE PAGE ─── */
+var VR_STEP=20;var _vrShown=0;var _vrItems=[];
+var _venueDonutChart=null;
+var _venueSearchQuery='';var _venueTypeFilter='all';
+var VENUE_TYPE_COLORS=['#7c6ef7','#4a9eff','#fbbf24','#34d399','#f472b6','#a78bfa','#fb923c','#38bdf8','#86efac','#fde68a'];
+
 function renderVenuePage(){
+  var recs=getFilteredRecords().filter(function(r){return r.venue;});
   var vds=document.getElementById('vd-section');if(vds)vds.style.display='none';
-  document.querySelectorAll('#page-venues .sec-label').forEach(function(el){el.style.display='';});
-  var vtg=document.getElementById('vt-grid');if(vtg)vtg.style.display='';
-  var vrg=document.getElementById('vr-grid');if(vrg)vrg.style.display='';
-  var vrm=document.getElementById('vr-more');if(vrm)vrm.style.display='';
+  /* フィルターラベル更新 */
+  var fl=document.getElementById('venues-filter-label');if(fl)fl.textContent='表示条件：'+getConditionText();
 
-  var typeMap={};
+  var fmt=function(d){return d?d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate():'—';};
+
+  /* Build vmap */
   var vmap={};
-  var total=0;
-  allRecords.forEach(function(r){
-    if(!r.venue)return;
-    total++;
-    var t=r.venueType||'未設定';
-    if(!typeMap[t])typeMap[t]={count:0,venues:new Set(),artists:{}};
-    typeMap[t].count++;typeMap[t].venues.add(r.venue);
-    r.artists.forEach(function(a){typeMap[t].artists[a]=(typeMap[t].artists[a]||0)+1;});
-    if(!vmap[r.venue])vmap[r.venue]={count:0,recs:[],type:t};
-    vmap[r.venue].count++;vmap[r.venue].recs.push(r);
+  recs.forEach(function(r){
+    var v=r.venue;
+    if(!vmap[v])vmap[v]={count:0,recs:[],type:r.venueType||''};
+    vmap[v].count++;vmap[v].recs.push(r);
   });
+  _vrItems=Object.entries(vmap).map(function(e){
+    var rs=e[1].recs.slice().sort(function(a,b){return a.date-b.date;});
+    var artMap={};rs.forEach(function(r){r.artists.forEach(function(a){artMap[a]=(artMap[a]||0)+1;});});
+    var topArts=Object.entries(artMap).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(x){return x[0];});
+    return{name:e[0],count:e[1].count,recs:rs,type:e[1].type,first:rs[0],last:rs[rs.length-1],topArts:topArts};
+  }).sort(function(a,b){return b.count-a.count;});
 
-  var vtGrid=document.getElementById('vt-grid');
-  if(vtGrid){
-    var types=Object.entries(typeMap).sort(function(a,b){return b[1].count-a[1].count;});
-    vtGrid.innerHTML=types.map(function(e){
+  /* ── KPI 4枚 ── */
+  var kpiRow=document.getElementById('venue-kpi-row');
+  if(kpiRow){
+    var allVenueRecs=recs.slice().sort(function(a,b){return a.date-b.date;});
+    var firstVenue=allVenueRecs.length?allVenueRecs[0]:null;
+    var lastVenue=allVenueRecs.length?allVenueRecs[allVenueRecs.length-1]:null;
+    var kpis=[
+      {label:'総ライブ数',val:recs.length+'回',sub:getConditionText()},
+      {label:'訪れた会場数',val:_vrItems.length+'会場',sub:getConditionText()},
+      {label:'初めての会場',val:firstVenue?fmt(firstVenue.date):'—',sub:firstVenue?esc(firstVenue.venue):''},
+      {label:'直近の会場',val:lastVenue?fmt(lastVenue.date):'—',sub:lastVenue?esc(lastVenue.venue):''}
+    ];
+    kpiRow.innerHTML=kpis.map(function(k){
+      return '<div class="venue-kpi-card"><div class="vkpi-label">'+k.label+'</div><div class="vkpi-val">'+k.val+'</div><div class="vkpi-sub">'+k.sub+'</div></div>';
+    }).join('');
+  }
+
+  /* ── 会場タイプ分析（ドーナツ＋テーブル） ── */
+  var typeMap={};
+  recs.forEach(function(r){
+    var t=r.venueType||'未設定';
+    if(!typeMap[t])typeMap[t]={count:0,venues:new Set()};
+    typeMap[t].count++;if(r.venue)typeMap[t].venues.add(r.venue);
+  });
+  var types=Object.entries(typeMap).sort(function(a,b){return b[1].count-a[1].count;});
+  var total=recs.length;
+  setEl('venue-donut-total',total);
+
+  /* Donut chart */
+  var cvs=document.getElementById('venue-donut-chart');
+  if(cvs&&typeof Chart!=='undefined'){
+    if(_venueDonutChart)_venueDonutChart.destroy();
+    var isDark=(document.documentElement.getAttribute('data-theme')||'dark')==='dark';
+    _venueDonutChart=new Chart(cvs.getContext('2d'),{
+      type:'doughnut',
+      data:{
+        labels:types.map(function(e){return e[0];}),
+        datasets:[{data:types.map(function(e){return e[1].count;}),backgroundColor:types.map(function(_,i){return VENUE_TYPE_COLORS[i%VENUE_TYPE_COLORS.length];}),borderWidth:2,borderColor:isDark?'#0c1025':'#ffffff'}]
+      },
+      options:{responsive:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ctx.label+': '+ctx.raw+'回 ('+Math.round(ctx.raw/total*100)+'%)';}}}}
+    }});
+  }
+
+  /* Type table */
+  var vtTable=document.getElementById('vt-table');
+  if(vtTable){
+    vtTable.innerHTML='<div style="display:grid;grid-template-columns:12px 1fr 50px 50px 1fr;gap:6px 10px;font-size:10px;color:var(--text-3);padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:4px"><span></span><span>タイプ</span><span style="text-align:right">ライブ数</span><span style="text-align:right">割合</span><span>代表的な会場</span></div>'+
+    types.map(function(e,i){
       var t=e[0];var d=e[1];
       var pct=total?Math.round(d.count/total*100):0;
-      var topVenues=[...d.venues].slice(0,3).map(esc).join(' / ');
-      var topArts=Object.entries(d.artists).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(x){return esc(x[0]);}).join(' / ');
-      return '<div class="vt-card">'+
-        '<div class="vt-type">'+esc(t)+'</div>'+
-        '<div class="vt-count">'+d.count+'<span style="font-size:12px;color:var(--text-2);font-weight:400;margin-left:3px">回</span></div>'+
-        '<div class="vt-pct">全体の '+pct+'%</div>'+
-        (topVenues?'<div class="vt-venues">📍 '+topVenues+'</div>':'')+
-        (topArts?'<div class="vt-artists">🎤 '+topArts+'</div>':'')+
+      var topV=[...d.venues].slice(0,2).join(' / ');
+      var clr=VENUE_TYPE_COLORS[i%VENUE_TYPE_COLORS.length];
+      return '<div class="vt-table-row">'+
+        '<div class="vt-dot" style="background:'+clr+'"></div>'+
+        '<div class="vt-table-name">'+esc(t)+'</div>'+
+        '<div class="vt-table-count">'+d.count+'回</div>'+
+        '<div class="vt-table-pct">'+pct+'%</div>'+
+        '<div class="vt-table-venues">'+esc(topV)+'</div>'+
       '</div>';
     }).join('');
   }
 
-  _vrItems=Object.entries(vmap).map(function(e){return{name:e[0],count:e[1].count,recs:e[1].recs,type:e[1].type};}).sort(function(a,b){return b.count-a.count;});
-  _vrShown=Math.min(VR_STEP,_vrItems.length);
+  /* ── 会場ランキング（横スクロールカード） ── */
   var vrCount=document.getElementById('venue-rank-count');if(vrCount)vrCount.textContent=_vrItems.length+'会場';
-  var mkVrCard=function(item,i){
-    var rankCls=i===0?'r1':i===1?'r2':i===2?'r3':'';
-    var artMap={};item.recs.forEach(function(r){r.artists.forEach(function(a){artMap[a]=(artMap[a]||0)+1;});});
-    var art1=Object.entries(artMap).sort(function(a,b){return b[1]-a[1];})[0];
-    return '<div class="vr-card" onclick="openVenueDetail(\''+escAttr(item.name)+'\')">'+
-      '<div class="vr-rank '+rankCls+'">'+(i+1)+'</div>'+
-      '<div class="vr-body">'+
-        '<div class="vr-name">'+esc(item.name)+'</div>'+
-        '<div class="vr-meta">'+(item.type&&item.type!=='未設定'?esc(item.type)+' · ':'')+( art1?'よく見た: '+esc(art1[0]):'')+'</div>'+
+  var scrollRow=document.getElementById('vr-scroll-row');
+  if(scrollRow){
+    scrollRow.innerHTML=_vrItems.slice(0,10).map(function(item,i){
+      var nc=i===0?'n1':i===1?'n2':i===2?'n3':'nn';
+      var typeColor=VENUE_TYPE_COLORS[types.findIndex(function(e){return e[0]===item.type;})%VENUE_TYPE_COLORS.length]||'var(--text-3)';
+      return '<div class="vr-rank-card" onclick="openVenueDetail(\''+escAttr(item.name)+'\')">'+
+        '<div class="vrrc-num '+nc+'">'+(i+1)+'</div>'+
+        '<div class="vrrc-name">'+esc(item.name)+'</div>'+
+        '<div class="vrrc-count">'+item.count+'回</div>'+
+        '<div class="vrrc-dates">初 '+fmt(item.first?item.first.date:null)+'<br>近 '+fmt(item.last?item.last.date:null)+'</div>'+
+        (item.type&&item.type!=='未設定'?'<div class="vrrc-type" style="color:'+typeColor+';border-color:'+typeColor+'22;background:'+typeColor+'15">'+esc(item.type)+'</div>':'')+
+      '</div>';
+    }).join('');
+  }
+
+  /* ── 会場一覧（検索＋タイプフィルター） ── */
+  /* タイプフィルターボタン */
+  var vtFilter=document.getElementById('venue-type-filter');
+  if(vtFilter&&vtFilter.children.length===0){
+    var allTypes=['すべて'].concat(types.map(function(e){return e[0];}));
+    vtFilter.innerHTML=allTypes.map(function(t){
+      var val=t==='すべて'?'all':t;
+      var isActive=(_venueTypeFilter==='all'&&t==='すべて')||_venueTypeFilter===t;
+      return '<button class="ap-sort-btn'+(isActive?' active':'')+'" onclick="setVenueTypeFilter(\''+escAttr(val)+'\')">'+esc(t)+'</button>';
+    }).join('');
+  }
+  renderVenueList();
+}
+
+function setVenueTypeFilter(t){
+  _venueTypeFilter=t;
+  /* update button active state */
+  var btns=document.querySelectorAll('#venue-type-filter .ap-sort-btn');
+  btns.forEach(function(b){b.classList.toggle('active',(t==='all'&&b.textContent==='すべて')||b.textContent===t);});
+  renderVenueList();
+}
+
+function renderVenueList(){
+  var VRL_STEP=20;
+  var fmt=function(d){return d?d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate():'—';};
+  var q=_venueSearchQuery.toLowerCase();
+  var filtered=_vrItems.filter(function(item){
+    if(q&&item.name.toLowerCase().indexOf(q)<0)return false;
+    if(_venueTypeFilter!=='all'&&item.type!==_venueTypeFilter)return false;
+    return true;
+  });
+  _vrShown=Math.min(VRL_STEP,filtered.length);
+  var mkRow=function(item){
+    var typeIdx=VENUE_TYPE_COLORS.indexOf;/* unused */
+    var clr=item.type&&item.type!=='未設定'?VENUE_TYPE_COLORS[(_vrItems.findIndex(function(x){return x.name===item.name;})%VENUE_TYPE_COLORS.length)]:'var(--text-3)';
+    return '<div class="vr-list-row" onclick="openVenueDetail(\''+escAttr(item.name)+'\')">'+
+      '<div class="vrl-name-col">'+
+        '<div class="vrl-name">'+esc(item.name)+'</div>'+
+        (item.type&&item.type!=='未設定'?'<div class="vrl-type"><span class="vrl-type-dot" style="background:'+clr+'"></span><span class="vrl-type-name">'+esc(item.type)+'</span></div>':'')+
       '</div>'+
-      '<div class="vr-count">'+item.count+'回</div>'+
+      '<div class="vrl-count-col"><div class="vrl-count">'+item.count+'回</div></div>'+
+      '<div class="vrl-dates">初 '+fmt(item.first?item.first.date:null)+'<br>近 '+fmt(item.last?item.last.date:null)+'</div>'+
+      '<div class="vrl-artists">'+item.topArts.map(esc).join(' / ')+'</div>'+
+      '<div class="vrl-arrow">›</div>'+
     '</div>';
   };
-  var vrGrid=document.getElementById('vr-grid');
+  var vrl=document.getElementById('vr-list');
   var vrMore=document.getElementById('vr-more');
-  if(vrGrid)vrGrid.innerHTML=_vrItems.slice(0,_vrShown).map(mkVrCard).join('');
+  if(vrl)vrl.innerHTML=filtered.slice(0,_vrShown).map(mkRow).join('');
   if(vrMore){
-    var refreshVrMore=function(){
-      if(_vrShown<_vrItems.length){
+    var refresh=function(){
+      if(_vrShown<filtered.length){
         vrMore.classList.remove('hidden');
-        vrMore.textContent='もっと見る（あと'+(_vrItems.length-_vrShown)+'件）';
-        vrMore.onclick=function(){_vrShown=Math.min(_vrShown+VR_STEP,_vrItems.length);if(vrGrid)vrGrid.innerHTML=_vrItems.slice(0,_vrShown).map(mkVrCard).join('');refreshVrMore();};
+        vrMore.textContent='もっと見る（あと'+(filtered.length-_vrShown)+'件）';
+        vrMore.onclick=function(){_vrShown=Math.min(_vrShown+VRL_STEP,filtered.length);if(vrl)vrl.innerHTML=filtered.slice(0,_vrShown).map(mkRow).join('');refresh();};
       } else vrMore.classList.add('hidden');
     };
-    refreshVrMore();
+    refresh();
   }
+  if(!filtered.length&&vrl)vrl.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:16px 0">該当する会場がありません</div>';
 }
 
 function openVenueDetail(venueName){
@@ -2092,10 +2259,7 @@ function openVenueDetail(venueName){
 
 function closeVenueDetail(){
   var vds=document.getElementById('vd-section');if(vds)vds.style.display='none';
-  document.querySelectorAll('#page-venues .sec-label').forEach(function(el){el.style.display='';});
-  var vtg=document.getElementById('vt-grid');if(vtg)vtg.style.display='';
-  var vrg=document.getElementById('vr-grid');if(vrg)vrg.style.display='';
-  var vrm=document.getElementById('vr-more');if(vrm)vrm.style.display='';
+  renderVenuePage();
 }
 
 var apChart=null;
@@ -2518,10 +2682,19 @@ function renderDashboard(){
   try{renderOnThisDay();}catch(e){console.error('onThisDay',e);}
   try{renderRecentLives();}catch(e){console.error('recentLives',e);}
   try{renderStar5List(records);}catch(e){console.error('star5',e);}
-  /* If artist page is open, refresh it */
-  if(currentArtistPage){try{renderArtistPage(currentArtistPage);}catch(e){console.error('artistPage',e);}}
-  else if(document.getElementById('page-artist')&&document.getElementById('page-artist').style.display==='block'){
-    try{renderArtistList();}catch(e){console.error('artistList',e);}
+  /* アクティブなページを連動更新 */
+  var activePage=ALL_PAGES.find(function(p){var el=document.getElementById(p);return el&&el.style.display==='block';});
+  if(activePage==='page-artist'){
+    if(currentArtistPage){try{renderArtistPage(currentArtistPage);}catch(e){console.error('artistPage',e);}}
+    else{try{_apAllItems=[];renderArtistList();}catch(e){console.error('artistList',e);}}
+  } else if(activePage==='page-venues'){
+    _venueTypeFilter='all';_venueSearchQuery='';
+    var vtf=document.getElementById('venue-type-filter');if(vtf)vtf.innerHTML='';
+    try{renderVenuePage();}catch(e){console.error('venuePage',e);}
+  } else if(activePage==='page-lives'){
+    try{renderLivesPage();}catch(e){console.error('livesPage',e);}
+  } else if(activePage==='page-notes'){
+    try{renderNotesPage();}catch(e){console.error('notesPage',e);}
   }
 }
 function showDashboard(){
@@ -2697,6 +2870,11 @@ document.getElementById('nav-venues').addEventListener('click',function(){openVe
   var el=document.getElementById(id);
   if(el)el.addEventListener('change',function(){renderNotesPage();});
 });
+/* Venue search */
+(function(){
+  var vs=document.getElementById('venue-search-input');
+  if(vs)vs.addEventListener('input',function(e){_venueSearchQuery=e.target.value||'';renderVenueList();});
+})();
 document.getElementById('ap-back-btn').addEventListener('click',function(){
   /* From detail → go back to list */
   document.getElementById('ap-list-view').style.display='block';
