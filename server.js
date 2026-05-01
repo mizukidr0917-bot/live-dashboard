@@ -67,23 +67,14 @@ function getProperty(properties, names) {
   return null;
 }
 
-// ── 追加：画像URL取得ヘルパー ──────────────────────────────
-// 優先順位：
-//   1. image プロパティ（Files & media 型）の file.url
-//   2. image プロパティの external.url
-//   3. ページカバーの file.url
-//   4. ページカバーの external.url
-//   5. 空文字
+// ── 画像URL取得（優先順位：imageプロパティ → カバー画像 → 空文字）
 function getImageUrl(page, properties) {
-  // 1 & 2: properties の image / 画像 / Image プロパティ
   const imgProp = getProperty(properties, ["image", "画像", "Image"]);
   if (imgProp && imgProp.type === "files" && Array.isArray(imgProp.files) && imgProp.files.length > 0) {
     const f = imgProp.files[0];
     if (f.type === "file" && f.file && f.file.url) return f.file.url;
     if (f.type === "external" && f.external && f.external.url) return f.external.url;
   }
-
-  // 3 & 4: ページカバー
   if (page.cover) {
     if (page.cover.type === "file" && page.cover.file && page.cover.file.url) {
       return page.cover.file.url;
@@ -92,10 +83,8 @@ function getImageUrl(page, properties) {
       return page.cover.external.url;
     }
   }
-
   return "";
 }
-// ─────────────────────────────────────────────────────────────
 
 async function fetchAllSearchResults() {
   let allResults = [];
@@ -180,6 +169,12 @@ app.get("/api/live-log", async (req, res) => {
         getRichText(getProperty(p, ["会場", "Venue"])) ||
         "";
 
+      // ── 追加：会場タイプ
+      const venueType =
+        getSelect(getProperty(p, ["会場タイプ", "VenueType", "venue_type", "Venue Type"])) ||
+        getRichText(getProperty(p, ["会場タイプ", "VenueType", "venue_type", "Venue Type"])) ||
+        "";
+
       const format =
         getSelect(getProperty(p, ["形式", "Format"])) ||
         getRichText(getProperty(p, ["形式", "Format"])) ||
@@ -196,20 +191,20 @@ app.get("/api/live-log", async (req, res) => {
       const setlistUrl =
         getUrl(getProperty(p, ["セットリスト", "セットリストURL", "URL"])) || "";
 
-      // ── 追加：imageUrl ──
+      // ── 追加：imageUrl
       const imageUrl = getImageUrl(page, p);
-      // ───────────────────
 
       return {
         id: page.id,
         liveName,
         artists,
         venue,
+        venueType,   // ← 追加
         format,
         date,
         rating: (ratingText.match(/★/g) || []).length,
         setlistUrl,
-        imageUrl,   // ← 追加
+        imageUrl,    // ← 追加
       };
     });
 
@@ -220,9 +215,7 @@ app.get("/api/live-log", async (req, res) => {
     res.json(validRecords);
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      error: err.message
-    });
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -253,8 +246,7 @@ app.get("/api/note-log", async (req, res) => {
       const noteUrl =
         getUrl(getProperty(p, ["Note URL", "noteUrl", "URL", "リンク"])) || "";
       const noteTitle =
-        getTitle(getProperty(p, ["タイトル", "Title", "Name", "記事タイトル"])) ||
-        "";
+        getTitle(getProperty(p, ["タイトル", "Title", "Name", "記事タイトル"])) || "";
       const notePublishedDate =
         getDate(getProperty(p, ["公開日", "投稿日", "Published", "Date"])) || "";
       const relatedLivePageIds =
@@ -267,7 +259,7 @@ app.get("/api/note-log", async (req, res) => {
         notePublishedDate,
         noteType,
         noteStatus,
-        relatedLivePageIds
+        relatedLivePageIds,
       };
     });
 
@@ -288,9 +280,7 @@ app.get("/api/note-log", async (req, res) => {
     res.json(validRecords);
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      error: err.message
-    });
+    res.status(500).json({ error: err.message });
   }
 });
 
