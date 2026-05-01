@@ -1402,8 +1402,6 @@ body{overflow-x:hidden}
             <button class="ap-sort-btn" data-sort="recent">最近見た順</button>
             <button class="ap-sort-btn" data-sort="rating">評価高い順</button>
             <button class="ap-sort-btn" data-sort="kana">五十音順</button>
-            <button class="ap-sort-btn" data-sort="wanman">ワンマン多い順</button>
-            <button class="ap-sort-btn" data-sort="fes">フェス多い順</button>
           </div>
           <div class="ap-list-grid" id="ap-list-grid"></div>
           <button class="ap-list-more hidden" id="ap-list-more">もっと見る</button>
@@ -2339,25 +2337,31 @@ function sortArtistItems(items,mode){
 
 function renderArtistList(){
   var grid=document.getElementById('ap-list-grid');if(!grid)return;
-  /* (Re)build if empty */
   if(!_apAllItems.length)_apAllItems=buildArtistItems();
+
+  /* currentFormat に応じてソートを自動決定 */
+  var fmtSortMap={'ワンマン':'wanman','フェス':'fes','対バン':'taiban','サーキット':'circuit'};
+  var effectiveSort=fmtSortMap[currentFormat]||_apSortMode;
+
   var q=_apSearchQuery.trim().toLowerCase();
   var filtered=q?_apAllItems.filter(function(it){return it.name.toLowerCase().indexOf(q)>=0;}):_apAllItems;
-  var sorted=sortArtistItems(filtered,_apSortMode);
+  var sorted=sortArtistItems(filtered,effectiveSort);
   var countEl=document.getElementById('ap-list-count');
   if(countEl)countEl.textContent=sorted.length+'件';
   var fmt=function(d){return d?d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate():'—';};
+
+  /* currentFormat に応じてバッジ表示を切り替え */
+  var badgeFmt=currentFormat&&currentFormat!=='all'?currentFormat:'ワンマン';
+  var badgeKey=badgeFmt==='ワンマン'?'wanman':badgeFmt==='フェス'?'fes':badgeFmt==='対バン'?'taiban':badgeFmt==='サーキット'?'circuit':'wanman';
+  var badgeIcon=badgeFmt==='ワンマン'?'🎤':badgeFmt==='フェス'?'🎪':badgeFmt==='対バン'?'🎸':'🎡';
+
   var mkCard=function(item){
     var avgStr=item.avg?item.avg.toFixed(1)+'★':'—';
     var lastLiveName=(item.last&&item.last.liveName)?item.last.liveName:'—';
-    var wanmanBadge=item.wanman?'<div class="ap-card-wanman">🎤 ワンマン '+item.wanman+'回</div>':'';
-    /* サムネイル（最新ワンマン画像があるときのみ） */
-    var thumbHtml='';
-    var noThumbCls=' no-thumb';
-    if(item.heroImg){
-      thumbHtml='<img src="'+escAttr(item.heroImg)+'" alt="" class="ap-card-thumb" onerror="this.remove();this.parentElement.classList.add(\'no-thumb\')">';
-      noThumbCls='';
-    }
+    var badgeCount=item[badgeKey]||0;
+    var wanmanBadge=badgeCount?'<div class="ap-card-wanman">'+badgeIcon+' '+esc(badgeFmt)+' '+badgeCount+'回</div>':'';
+    var thumbHtml='';var noThumbCls=' no-thumb';
+    if(item.heroImg){thumbHtml='<img src="'+escAttr(item.heroImg)+'" alt="" class="ap-card-thumb" onerror="this.remove();this.parentElement.classList.add(\'no-thumb\')">';noThumbCls='';}
     return '<div class="ap-list-card'+noThumbCls+'" onclick="openArtistPage(\''+escAttr(item.name)+'\')">'+
       thumbHtml+
       '<div class="ap-card-body">'+
