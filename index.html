@@ -705,8 +705,6 @@ a:hover{text-decoration:underline}
 /* ═══════════════════════════════════════
    ARTIST PAGE
 ═══════════════════════════════════════ */
-#page-artist{display:none}
-#page-artist.active{display:block}
 
 /* ── List: search + sort bar ── */
 .ap-list-header{margin-bottom:12px}
@@ -1051,10 +1049,10 @@ body{overflow-x:hidden}
   </div>
   <nav class="sidebar-nav">
     <button class="sidebar-link active" id="nav-dashboard"><span style="font-size:13px">🏠</span>ダッシュボード</button>
-    <button class="sidebar-link" id="nav-lives"><span style="font-size:13px">🎵</span>ライブ履歴</button>
     <button class="sidebar-link" id="nav-artist"><span style="font-size:13px">🎤</span>アーティスト</button>
-    <button class="sidebar-link" id="nav-notes"><span style="font-size:13px">📝</span>Note</button>
     <button class="sidebar-link" id="nav-venues"><span style="font-size:13px">📍</span>会場</button>
+    <button class="sidebar-link" id="nav-lives"><span style="font-size:13px">🎵</span>ライブ履歴</button>
+    <button class="sidebar-link" id="nav-notes"><span style="font-size:13px">📝</span>Note履歴</button>
   </nav>
   <div class="sidebar-quote">
     <div class="sidebar-quote-char">🎧</div>
@@ -1315,7 +1313,7 @@ body{overflow-x:hidden}
       </section>
 
       <!-- ══ ARTIST PAGE ══ -->
-      <section id="page-artist">
+      <section id="page-artist" style="display:none">
 
         <!-- Artist list (default view) -->
         <div id="ap-list-view">
@@ -1802,7 +1800,7 @@ var ALL_NAVS=['nav-dashboard','nav-artist','nav-lives','nav-notes','nav-venues']
 function switchPage(pageId,navId){
   ALL_PAGES.forEach(function(p){
     var el=document.getElementById(p);
-    if(el){el.style.display=p===pageId?'block':'none';el.classList.toggle('active',p===pageId);}
+    if(el)el.style.display=(p===pageId?'block':'none');
   });
   ALL_NAVS.forEach(function(n){
     var el=document.getElementById(n);if(el)el.classList.toggle('active',n===navId);
@@ -2521,7 +2519,19 @@ function renderDashboard(){
     try{renderArtistList();}catch(e){console.error('artistList',e);}
   }
 }
-function showDashboard(){document.getElementById('no-data-screen').classList.add('hidden');document.getElementById('app-pages').classList.remove('hidden');}
+function showDashboard(){
+  document.getElementById('no-data-screen').classList.add('hidden');
+  document.getElementById('app-pages').classList.remove('hidden');
+  /* ダッシュボードだけ表示、他は非表示 */
+  ALL_PAGES.forEach(function(p){
+    var el=document.getElementById(p);
+    if(el)el.style.display=(p==='page-dashboard'?'block':'none');
+  });
+  ALL_NAVS.forEach(function(n){
+    var el=document.getElementById(n);
+    if(el)el.classList.toggle('active',n==='nav-dashboard');
+  });
+}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
 
 /* ─── DRAWER / SIDEBAR ─── */
