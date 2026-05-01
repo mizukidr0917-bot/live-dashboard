@@ -1282,25 +1282,15 @@ body{overflow-x:hidden}
       <section id="page-lives" style="display:none">
         <div class="ll-header">
           <div class="ll-title">🎵 ライブ履歴</div>
-          <div class="ll-sub">全ライブを絞り込み・検索できます</div>
+          <div class="ll-sub" id="lives-filter-label">表示条件：全体</div>
         </div>
-        <!-- Filters -->
-        <div class="ll-filter-row">
-          <select id="ll-year-sel" class="ll-select"><option value="">すべての年</option></select>
-          <select id="ll-artist-sel" class="ll-select"><option value="">すべてのアーティスト</option></select>
-          <select id="ll-format-sel" class="ll-select">
-            <option value="">すべての形式</option>
-            <option value="ワンマン">ワンマン</option>
-            <option value="フェス">フェス</option>
-            <option value="対バン">対バン</option>
-            <option value="サーキット">サーキット</option>
-          </select>
-          <select id="ll-sort-sel" class="ll-select">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <span class="ll-count" id="ll-count"></span>
+          <select id="ll-sort-sel" class="ll-select" style="width:auto">
             <option value="new">新しい順</option>
             <option value="old">古い順</option>
             <option value="rating">評価順</option>
           </select>
-          <span class="ll-count" id="ll-count"></span>
         </div>
         <div class="ll-grid" id="ll-grid"></div>
         <button class="ap-history-more hidden" id="ll-more">もっと見る</button>
@@ -1309,24 +1299,15 @@ body{overflow-x:hidden}
       <!-- ══ NOTE PAGE ══ -->
       <section id="page-notes" style="display:none">
         <div class="ll-header">
-          <div class="ll-title">📝 Note 作品集</div>
-          <div class="ll-sub">これまでに書いたNote記事の一覧</div>
+          <div class="ll-title">📝 Note履歴</div>
+          <div class="ll-sub" id="notes-filter-label">表示条件：全体</div>
         </div>
-        <!-- Filters -->
-        <div class="ll-filter-row">
-          <select id="np-type-sel" class="ll-select">
-            <option value="">すべての種別</option>
-            <option value="ライブレポ">ライブレポ</option>
-            <option value="楽曲レポ">楽曲レポ</option>
-            <option value="アルバム感想">アルバム感想</option>
-            <option value="まとめ">まとめ</option>
-            <option value="雑記">雑記</option>
-          </select>
-          <select id="np-sort-sel" class="ll-select">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <span class="ll-count" id="np-count"></span>
+          <select id="np-sort-sel" class="ll-select" style="width:auto">
             <option value="new">新しい順</option>
             <option value="old">古い順</option>
           </select>
-          <span class="ll-count" id="np-count"></span>
         </div>
         <div class="notes-grid" id="np-grid" style="margin-top:4px"></div>
         <button class="ap-history-more hidden" id="np-more">もっと見る</button>
@@ -1390,7 +1371,7 @@ body{overflow-x:hidden}
         <div id="ap-list-view">
           <div class="ap-list-header">
             <div class="ap-list-title">🎤 アーティスト図鑑</div>
-            <div class="ap-list-sub">アーティスト名をクリックすると詳細ページへ</div>
+            <div class="ap-list-sub" id="artist-filter-label">アーティスト名をクリックすると詳細ページへ</div>
           </div>
           <!-- Search + sort -->
           <div class="ap-search-row">
@@ -1922,96 +1903,50 @@ var LL_STEP=20;
 var _llFiltered=[];
 var _llShown=0;
 
-function initLivesFilters(){
-  var yrSel=document.getElementById('ll-year-sel');
-  var artSel=document.getElementById('ll-artist-sel');
-  if(yrSel&&yrSel.options.length<=1){
-    var yrs=[...new Set(allRecords.map(function(r){return r.date.getFullYear();}))].sort(function(a,b){return b-a;});
-    yrs.forEach(function(y){var o=document.createElement('option');o.value=y;o.textContent=y+'年';yrSel.appendChild(o);});
-  }
-  if(artSel&&artSel.options.length<=1){
-    var arts=[...new Set(allRecords.flatMap(function(r){return r.artists;}))].sort(function(a,b){return a.localeCompare(b,'ja');});
-    arts.forEach(function(a){var o=document.createElement('option');o.value=a;o.textContent=a;artSel.appendChild(o);});
-  }
-}
-
-function applyLivesFilters(){
-  var yr=document.getElementById('ll-year-sel').value;
-  var art=document.getElementById('ll-artist-sel').value;
-  var fmt=document.getElementById('ll-format-sel').value;
-  var srt=document.getElementById('ll-sort-sel').value;
-  var r=allRecords.slice();
-  if(yr)r=r.filter(function(x){return String(x.date.getFullYear())===yr;});
-  if(art)r=r.filter(function(x){return x.artists.indexOf(art)>=0;});
-  if(fmt)r=r.filter(function(x){return x.format===fmt;});
-  if(srt==='old')r.sort(function(a,b){return a.date-b.date;});
-  else if(srt==='rating')r.sort(function(a,b){return (b.rating||0)-(a.rating||0);});
-  else r.sort(function(a,b){return b.date-a.date;});
-  return r;
-}
-
-function mkLlCard(r){
-  var d=r.date;var ds=d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
-  var ln=(notesByLiveId.get(r.id)||[])[0]||null;
-  var sl=r.setlistUrl?'<a class="ap-link" href="'+escAttr(r.setlistUrl)+'" target="_blank" rel="noopener">セットリスト</a>':'';
-  var nl=ln?'<a class="ap-link" href="'+escAttr(ln.noteUrl)+'" target="_blank" rel="noopener">Note</a>':'';
-  var acts=(sl||nl)?'<div class="ll-actions">'+sl+nl+'</div>':'';
-  var thumb=r.imageUrl?'<img src="'+escAttr(r.imageUrl)+'" alt="" class="ll-thumb" onerror="this.parentElement.innerHTML=\'<div class=ll-thumb-ph>🎵</div>\'">':'<div class="ll-thumb-ph">🎵</div>';
-  return '<div class="ll-card">'+thumb+
-    '<div class="ll-body">'+
-      '<div class="ll-date">'+ds+'</div>'+
-      '<div class="ll-name">'+esc(r.liveName||'—')+'</div>'+
-      '<div class="ll-venue">📍 '+esc(r.venue||'—')+'</div>'+
-      '<div class="ll-row2">'+
-        '<span class="ll-fmt">'+esc(r.format||'—')+'</span>'+
-        '<span class="ll-rating">'+(r.rating?'★'+r.rating:'')+'</span>'+
-      '</div>'+
-    '</div>'+
-    acts+
-  '</div>';
-}
-
 function renderLivesPage(){
-  initLivesFilters();
-  _llFiltered=applyLivesFilters();
+  /* グローバルフィルター適用 */
+  var srt=document.getElementById('ll-sort-sel');
+  var srtVal=srt?srt.value:'new';
+  var r=getFilteredRecords().slice();
+  if(srtVal==='old')r.sort(function(a,b){return a.date-b.date;});
+  else if(srtVal==='rating')r.sort(function(a,b){return(b.rating||0)-(a.rating||0);});
+  else r.sort(function(a,b){return b.date-a.date;});
+  _llFiltered=r;
   _llShown=Math.min(LL_STEP,_llFiltered.length);
+  /* フィルターラベル更新 */
+  var fl=document.getElementById('lives-filter-label');if(fl)fl.textContent='表示条件：'+getConditionText();
   var grid=document.getElementById('ll-grid');
   var more=document.getElementById('ll-more');
   var cnt=document.getElementById('ll-count');
   if(cnt)cnt.textContent=_llFiltered.length+'件';
   if(grid)grid.innerHTML=_llFiltered.slice(0,_llShown).map(mkLlCard).join('');
   if(more){
-    if(_llShown<_llFiltered.length){
-      more.classList.remove('hidden');
-      more.textContent='もっと見る（あと'+(_llFiltered.length-_llShown)+'件）';
-      more.onclick=function(){
-        _llShown=Math.min(_llShown+LL_STEP,_llFiltered.length);
-        if(grid)grid.innerHTML=_llFiltered.slice(0,_llShown).map(mkLlCard).join('');
-        if(_llShown>=_llFiltered.length)more.classList.add('hidden');
-        else more.textContent='もっと見る（あと'+(_llFiltered.length-_llShown)+'件）';
-      };
-    } else more.classList.add('hidden');
+    var refresh=function(){
+      if(_llShown<_llFiltered.length){
+        more.classList.remove('hidden');
+        more.textContent='もっと見る（あと'+(_llFiltered.length-_llShown)+'件）';
+        more.onclick=function(){_llShown=Math.min(_llShown+LL_STEP,_llFiltered.length);if(grid)grid.innerHTML=_llFiltered.slice(0,_llShown).map(mkLlCard).join('');refresh();};
+      } else more.classList.add('hidden');
+    };
+    refresh();
   }
 }
-
 /* ─── NOTE PAGE ─── */
 var NP_STEP=20;
 var _npFiltered=[];
 var _npShown=0;
 
-function applyNotesFilters(){
-  var typ=document.getElementById('np-type-sel').value;
-  var srt=document.getElementById('np-sort-sel').value;
-  var n=allNotes.filter(function(x){return x.publishedDate;});
-  if(typ)n=n.filter(function(x){return x.noteType===typ;});
-  if(srt==='old')n.sort(function(a,b){return a.publishedDate-b.publishedDate;});
-  else n.sort(function(a,b){return b.publishedDate-a.publishedDate;});
-  return n;
-}
-
 function renderNotesPage(){
-  _npFiltered=applyNotesFilters();
+  /* グローバルフィルター（期間・アーティスト）を反映 */
+  var srt=document.getElementById('np-sort-sel');
+  var srtVal=srt?srt.value:'new';
+  var n=getFilteredNotes().slice();
+  if(srtVal==='old')n.sort(function(a,b){return a.publishedDate-b.publishedDate;});
+  else n.sort(function(a,b){return b.publishedDate-a.publishedDate;});
+  _npFiltered=n;
   _npShown=Math.min(NP_STEP,_npFiltered.length);
+  /* フィルターラベル更新 */
+  var fl=document.getElementById('notes-filter-label');if(fl)fl.textContent='表示条件：'+getConditionText();
   var grid=document.getElementById('np-grid');
   var more=document.getElementById('np-more');
   var cnt=document.getElementById('np-count');
@@ -2025,16 +1960,14 @@ function renderNotesPage(){
   };
   if(grid)grid.innerHTML=_npFiltered.slice(0,_npShown).map(mkNote).join('');
   if(more){
-    if(_npShown<_npFiltered.length){
-      more.classList.remove('hidden');
-      more.textContent='もっと見る（あと'+(_npFiltered.length-_npShown)+'件）';
-      more.onclick=function(){
-        _npShown=Math.min(_npShown+NP_STEP,_npFiltered.length);
-        if(grid)grid.innerHTML=_npFiltered.slice(0,_npShown).map(mkNote).join('');
-        if(_npShown>=_npFiltered.length)more.classList.add('hidden');
-        else more.textContent='もっと見る（あと'+(_npFiltered.length-_npShown)+'件）';
-      };
-    } else more.classList.add('hidden');
+    var refresh=function(){
+      if(_npShown<_npFiltered.length){
+        more.classList.remove('hidden');
+        more.textContent='もっと見る（あと'+(_npFiltered.length-_npShown)+'件）';
+        more.onclick=function(){_npShown=Math.min(_npShown+NP_STEP,_npFiltered.length);if(grid)grid.innerHTML=_npFiltered.slice(0,_npShown).map(mkNote).join('');refresh();};
+      } else more.classList.add('hidden');
+    };
+    refresh();
   }
   if(!_npFiltered.length&&grid)grid.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:20px 0">Note記事がありません</div>';
 }
@@ -2304,7 +2237,9 @@ var AP_LIST_PAGE=20;
 
 function buildArtistItems(){
   var map={};
-  allRecords.forEach(function(r){r.artists.forEach(function(a){if(!map[a])map[a]=[];map[a].push(r);});});
+  /* グローバルフィルター適用 */
+  var base=getFilteredRecords();
+  base.forEach(function(r){r.artists.forEach(function(a){if(!map[a])map[a]=[];map[a].push(r);});});
   return Object.entries(map).map(function(e){
     var recs=e[1].slice().sort(function(a,b){return a.date-b.date;});
     var rated=recs.filter(function(r){return r.rating>0;});
@@ -2337,7 +2272,11 @@ function sortArtistItems(items,mode){
 
 function renderArtistList(){
   var grid=document.getElementById('ap-list-grid');if(!grid)return;
-  if(!_apAllItems.length)_apAllItems=buildArtistItems();
+  /* グローバルフィルター適用：フィルター済みレコードからアーティスト集計 */
+  _apAllItems=buildArtistItems();
+  /* フィルターラベル更新 */
+  var fl=document.getElementById('artist-filter-label');
+  if(fl){var ct=getConditionText();fl.textContent=ct!=='全アーティスト / 今年'&&ct?'表示条件：'+ct:'アーティスト名をクリックすると詳細ページへ';}
 
   /* currentFormat に応じてソートを自動決定 */
   var fmtSortMap={'ワンマン':'wanman','フェス':'fes','対バン':'taiban','サーキット':'circuit'};
@@ -2864,16 +2803,13 @@ document.getElementById('nav-lives').addEventListener('click',function(){openLiv
 document.getElementById('nav-notes').addEventListener('click',function(){openNotesPage();});
 document.getElementById('nav-venues').addEventListener('click',function(){openVenuePage();});
 
-/* Live list filter changes */
-['ll-year-sel','ll-artist-sel','ll-format-sel','ll-sort-sel'].forEach(function(id){
-  var el=document.getElementById(id);
-  if(el)el.addEventListener('change',function(){renderLivesPage();});
-});
-/* Note page filter changes */
-['np-type-sel','np-sort-sel'].forEach(function(id){
-  var el=document.getElementById(id);
-  if(el)el.addEventListener('change',function(){renderNotesPage();});
-});
+/* ライブ履歴・Note履歴のソートselect */
+(function(){
+  var ls=document.getElementById('ll-sort-sel');
+  if(ls)ls.addEventListener('change',function(){renderLivesPage();});
+  var ns=document.getElementById('np-sort-sel');
+  if(ns)ns.addEventListener('change',function(){renderNotesPage();});
+})();
 /* Venue search */
 (function(){
   var vs=document.getElementById('venue-search-input');
