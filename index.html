@@ -1806,17 +1806,18 @@ function switchPage(pageId,navId){
     var el=document.getElementById(n);if(el)el.classList.toggle('active',n===navId);
   });
   window.scrollTo(0,0);
-  closeSidebar();
 }
 
 function openLivesPage(){
   switchPage('page-lives','nav-lives');
-  _apAllItems=[];/* reset artist cache */
-  renderLivesPage();
+  closeSidebar();
+  _apAllItems=[];
+  try{renderLivesPage();}catch(e){console.error('renderLivesPage',e);}
 }
 function openNotesPage(){
   switchPage('page-notes','nav-notes');
-  renderNotesPage();
+  closeSidebar();
+  try{renderNotesPage();}catch(e){console.error('renderNotesPage',e);}
 }
 
 /* ─── ON THIS DAY ─── */
@@ -1970,7 +1971,8 @@ function renderNotesPage(){
 }
 function openVenuePage(){
   switchPage('page-venues','nav-venues');
-  renderVenuePage();
+  closeSidebar();
+  try{renderVenuePage();}catch(e){console.error('renderVenuePage',e);}
 }
 
 /* ─── VENUE PAGE ─── */
@@ -2098,19 +2100,19 @@ var currentArtistPage='';
 
 function openArtistPageSection(){
   switchPage('page-artist','nav-artist');
+  closeSidebar();
 }
 
 /* Open artist list (no artist selected) */
 function openArtistListView(){
   openArtistPageSection();
   currentArtistPage='';
-  /* Reset cache so data is fresh */
   _apAllItems=buildArtistItems();
   _apSearchQuery='';
   var si=document.getElementById('ap-search-input');if(si)si.value='';
-  document.getElementById('ap-list-view').style.display='block';
-  document.getElementById('ap-detail-view').style.display='none';
-  renderArtistList();
+  var lv=document.getElementById('ap-list-view');if(lv)lv.style.display='block';
+  var dv=document.getElementById('ap-detail-view');if(dv)dv.style.display='none';
+  try{renderArtistList();}catch(e){console.error('renderArtistList',e);}
   window.scrollTo(0,0);
 }
 
