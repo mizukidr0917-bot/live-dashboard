@@ -1198,9 +1198,9 @@ a:hover{text-decoration:underline}
 <div class="toast" id="toast"></div>
 
 <script>
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    STATE
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 var allRecords=[],allNotes=[],allArtists=[];
 var notesByLiveId=new Map();
 var barChart=null,lineChart=null,venueDonutChart=null,apChart=null,noteMonthlyChart=null;
@@ -1231,9 +1231,9 @@ var NOTE_TYPES={
 };
 function getNTC(type){return NOTE_TYPES[type]||{icon:'📝',cls:'nt-misc',ph:'rgba(139,147,184,.2)'};}
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    NORMALIZE
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 function normalizeApiRecords(api){
   return api.map(function(r){
     if(!r.date)return null;
@@ -1255,9 +1255,9 @@ function buildNotesByLiveIdMap(notes){
   return map;
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    FILTERS
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 function getPeriodFilteredRecords(){
   var now=new Date();
   return allRecords.filter(function(r){
@@ -1297,9 +1297,9 @@ function getConditionText(){
   return parts.join(' / ');
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    UTILS
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function escAttr(s){return esc(s).replace(/'/g,'&#39;');}
 function setEl(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
@@ -1323,9 +1323,9 @@ function getActivePage(){
   return 'page-dashboard';
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    DASHBOARD RENDERS
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 function renderHeader(){
   var ct=getConditionText();
   setEl('condition-text',ct);
@@ -1439,9 +1439,9 @@ function renderRecentLives(){
   }).join('');
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    LIVE LIST PAGE
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 var LL_STEP=20;
 function mkLlCard(r){
   var ds=fmtDate(r.date);
@@ -1471,9 +1471,9 @@ function renderLivesPage(){
   }
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    NOTE PAGE — 月別投稿数グラフ付き
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 var NP_STEP=20;
 function renderNotesPage(){
   var srtVal=(document.getElementById('np-sort-sel')||{}).value||'new';
@@ -1542,12 +1542,12 @@ function renderNoteMonthlyChart(){
   });
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    VENUE PAGE — 完全リニューアル
    ・アーティストランキングは表示しない
    ・「よく行く会場 TOP◯」がメイン
    ・全フィルターに連動
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 function openVenuePage(){
   switchPage('page-venues','nav-venues');
   closeSidebar();
@@ -1750,9 +1750,9 @@ function closeVenueDetail(){
   var vds=document.getElementById('vd-section');if(vds)vds.style.display='none';
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    ARTIST PAGE
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 function openArtistPageSection(){switchPage('page-artist','nav-artist');closeSidebar();}
 function openArtistListView(){
   openArtistPageSection();currentArtistPage='';
@@ -1971,14 +1971,14 @@ function renderArtistPage(artistName){
   }
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    ★追加: CALENDAR PAGE
    「いつ音楽に触れているか」を月カレンダーで振り返るページ。
    ・年を跨いだ同月日のライブを累計集計（MM-DD単位）
    ・グローバルフィルター完全連動
    ・カレンダーページ表示時のみ描画
    ・日付クリックでその日のライブ一覧をモーダル表示
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 function openCalendarPage(){
   switchPage('page-calendar','nav-calendar');
   closeSidebar();
@@ -1997,7 +1997,7 @@ function renderCalendarPage(){
   var monthNames=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
   setEl('cal-month-label',_calYear+'年 '+monthNames[_calMonth]);
 
-  /* ─── MM-DD単位で集計（年跨ぎOK） ─── */
+  /* --- MM-DD単位で集計（年跨ぎOK） --- */
   /* key: "MM-DD" → {count, lives[]} */
   var dayMap={};
   records.forEach(function(r){
@@ -2009,7 +2009,7 @@ function renderCalendarPage(){
     dayMap[key].lives.push(r);
   });
 
-  /* ─── 表示月のサマリー（この年月に限らない：MM-DDで集計した全年分） ─── */
+  /* --- 表示月のサマリー（この年月に限らない：MM-DDで集計した全年分） --- */
   var calMonthKey=String(_calMonth+1).padStart(2,'0');
   var thisMonthTotal=0;
   Object.entries(dayMap).forEach(function(e){
@@ -2031,7 +2031,7 @@ function renderCalendarPage(){
       (maxCount>0?'<div class="cal-chip">最多日<span class="cal-chip-val">'+maxCount+'回</span></div>':'');
   }
 
-  /* ─── カレンダーグリッド生成 ─── */
+  /* --- カレンダーグリッド生成 --- */
   var firstDay=new Date(_calYear,_calMonth,1).getDay(); /* 0=日 */
   var daysInMonth=new Date(_calYear,_calMonth+1,0).getDate();
   var todayY=now.getFullYear(),todayM=now.getMonth(),todayD=now.getDate();
@@ -2118,11 +2118,12 @@ function closeCalModal(){
 }
 
 
+/* ================================================================
    自分の音楽活動の傾向・流れを見るページ。
    ・グローバルフィルター（currentArtist / currentPeriod / currentFormat / currentRating）に完全連動
    ・分析ページ表示時のみ描画（非表示状態でcanvasにアクセスしない）
    ・アーティストTOP / 会場TOP / 星5一覧は含まない（専用ページと役割分担）
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 function openAnalysisPage(){
   switchPage('page-analysis','nav-analysis');
   closeSidebar();
@@ -2139,7 +2140,7 @@ function renderAnalysisPage(){
   /* 表示条件テキスト更新 */
   setEl('an-cond-text',getConditionText());
 
-  /* ─── ① 期間サマリー ─── */
+  /* --- ① 期間サマリー --- */
   var total=records.length;
   var rated=records.filter(function(r){return r.rating>0;});
   var avg=rated.length?(rated.reduce(function(s,r){return s+r.rating;},0)/rated.length):0;
@@ -2164,7 +2165,7 @@ function renderAnalysisPage(){
   setHtml('an-interval',intervalDays>0?intervalDays+'<span class="unit">日</span>':'—');
   setEl('an-interval-sub',intervalSub);
 
-  /* ─── バケット共通計算（月別 or 年別） ─── */
+  /* --- バケット共通計算（月別 or 年別） --- */
   var now=new Date();
   var buckets=[];
   if(currentPeriod==='thisYear'||currentPeriod==='year'){
@@ -2204,7 +2205,7 @@ function renderAnalysisPage(){
   setEl('an-bar-title',currentPeriod==='all'?'年別ライブ回数':'月別ライブ回数');
   setEl('an-line-title',currentPeriod==='all'?'年別平均評価の推移':'月別平均評価の推移');
 
-  /* ─── ② 月別ライブ回数（積み上げ棒グラフ） ─── */
+  /* --- ② 月別ライブ回数（積み上げ棒グラフ） --- */
   var bcvs=document.getElementById('an-bar-chart');
   if(bcvs&&typeof Chart!=='undefined'){
     if(anBarChart)anBarChart.destroy();
@@ -2235,7 +2236,7 @@ function renderAnalysisPage(){
     anBarIns.textContent=insightText;anBarIns.style.display='block';
   } else if(anBarIns){anBarIns.style.display='none';}
 
-  /* ─── ④ 月別平均評価（折れ線グラフ） ─── */
+  /* --- ④ 月別平均評価（折れ線グラフ） --- */
   var lcvs=document.getElementById('an-line-chart');
   if(lcvs&&typeof Chart!=='undefined'){
     if(anLineChart)anLineChart.destroy();
@@ -2264,7 +2265,7 @@ function renderAnalysisPage(){
     anLineIns.style.display='block';
   } else if(anLineIns){anLineIns.style.display='none';}
 
-  /* ─── ③ 形式別構成（円グラフ） ─── */
+  /* --- ③ 形式別構成（円グラフ） --- */
   var fmtColors=['rgba(59,130,246,.85)','rgba(124,110,247,.85)','rgba(251,191,36,.85)','rgba(52,211,153,.85)'];
   var fmtData=fmtKeys.map(function(k,i){return{name:k,count:fmtTotals[k],color:fmtColors[i]};}).filter(function(f){return f.count>0;});
   setEl('an-pie-total',fmtTotal);
@@ -2296,7 +2297,7 @@ function renderAnalysisPage(){
     anPieIns.textContent=insMsg;anPieIns.style.display='block';
   } else if(anPieIns){anPieIns.style.display='none';}
 
-  /* ─── 形式別詳細カード（平均評価 × 形式） ─── */
+  /* --- 形式別詳細カード（平均評価 × 形式） --- */
   var detailEl=document.getElementById('an-format-detail');
   if(detailEl){
     if(!fmtData.length){detailEl.innerHTML='<div style="font-size:12px;color:var(--text-3)">データなし</div>';}
@@ -2330,9 +2331,9 @@ function openDashboardPage(){switchPage('page-dashboard','nav-dashboard');curren
 function openLivesPage(){switchPage('page-lives','nav-lives');closeSidebar();try{renderLivesPage();}catch(e){console.error(e);}}
 function openNotesPage(){switchPage('page-notes','nav-notes');closeSidebar();try{renderNotesPage();}catch(e){console.error(e);}}
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    MAIN RENDER DISPATCHER（修正①②③）
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 function renderDashboard(){
   renderHeader();
   var activePage=getActivePage();
@@ -2369,9 +2370,9 @@ function showDashboard(){
   ALL_NAVS.forEach(function(n){var el=document.getElementById(n);if(el)el.classList.toggle('active',n==='nav-dashboard');});
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    THEME
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 /* ★修正③ applyTheme — allRecords.length で判定 */
 function applyTheme(theme){
   document.documentElement.setAttribute('data-theme',theme);
@@ -2382,9 +2383,9 @@ function applyTheme(theme){
 }
 (function(){try{var t=localStorage.getItem('ll-theme');if(t)applyTheme(t);}catch(e){}})();
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    DRAWER / SIDEBAR
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 function openDrawer(){document.getElementById('filter-drawer').classList.add('open');document.getElementById('drawer-backdrop').classList.add('open');renderArtistOptions(document.getElementById('artist-search-input').value||'');}
 function closeDrawer(){document.getElementById('filter-drawer').classList.remove('open');document.getElementById('drawer-backdrop').classList.remove('open');document.getElementById('artist-options').classList.remove('show');}
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-backdrop').classList.add('open');}
@@ -2415,9 +2416,9 @@ function updatePeriodControls(){
   document.getElementById('year-select').value=currentPeriod==='year'?String(selectedYear):'';
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    API LOAD
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 async function loadFromApi(){
   try{
     var res=await Promise.all([fetch('/api/live-log'),fetch('/api/note-log')]);
@@ -2438,9 +2439,9 @@ async function loadFromApi(){
   }catch(err){console.error(err);showToast('読み込み失敗: '+err.message);}
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* ================================================================
    EVENTS
-════════════════════════════════════════════════════════════════ */
+================================================================ */
 document.getElementById('fab-filter').addEventListener('click',openDrawer);
 document.getElementById('topbar-filter-btn').addEventListener('click',openDrawer);
 document.getElementById('filter-status-pill').addEventListener('click',openDrawer);
