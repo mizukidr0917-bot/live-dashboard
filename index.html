@@ -1214,7 +1214,7 @@ var _llFiltered=[],_llShown=0;
 var _npFiltered=[],_npShown=0;
 var _vrItems=[],_vrShown=0,_venueSearchQuery='',_venueTypeFilter='all';
 /* ★追加: カレンダー表示月（year/month） */
-var _calYear=new Date().getFullYear();
+/* ★修正: カレンダーは月日(MM-DD)単位の集計なので _calYear は不要。_calMonth のみ管理 */
 var _calMonth=new Date().getMonth(); /* 0-indexed */
 /* ★追加: ALL_PAGES / ALL_NAVS にカレンダーと分析を含める */
 var ALL_PAGES=['page-dashboard','page-artist','page-analysis','page-calendar','page-lives','page-notes','page-venues'];
@@ -1993,12 +1993,13 @@ function renderCalendarPage(){
   var fl=document.getElementById('cal-filter-label');
   if(fl)fl.textContent='表示条件：'+getConditionText();
 
-  /* 月ラベル更新 */
+  /* ★修正: 月ラベルは「5月」形式（年なし） */
   var monthNames=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-  setEl('cal-month-label',_calYear+'年 '+monthNames[_calMonth]);
+  setEl('cal-month-label',monthNames[_calMonth]);
 
-  /* --- MM-DD単位で集計（年跨ぎOK） --- */
-  /* key: "MM-DD" → {count, lives[]} */
+  /* ★修正: MM-DD単位で集計（年跨ぎ累計 / グローバルフィルター連動）
+     key: "MM-DD" → {count, lives[]}
+     「5/1 に2025年と2026年にライブがあれば 2」 */
   var dayMap={};
   records.forEach(function(r){
     var m=String(r.date.getMonth()+1).padStart(2,'0');
@@ -2009,50 +2010,48 @@ function renderCalendarPage(){
     dayMap[key].lives.push(r);
   });
 
-  /* --- 表示月のサマリー（この年月に限らない：MM-DDで集計した全年分） --- */
+  /* サマリー：この月に含まれる日付の累計回数と最多日 */
   var calMonthKey=String(_calMonth+1).padStart(2,'0');
   var thisMonthTotal=0;
   Object.entries(dayMap).forEach(function(e){
     if(e[0].startsWith(calMonthKey+'-'))thisMonthTotal+=e[1].count;
   });
-  /* 最多ライブ日を特定 */
   var maxCount=0;
   Object.values(dayMap).forEach(function(v){if(v.count>maxCount)maxCount=v.count;});
-  /* サマリーチップ */
+  /* ライブがある日数（この月） */
+  var activeDaysInMonth=Object.keys(dayMap).filter(function(k){return k.startsWith(calMonthKey+'-');}).length;
+
   var chips=document.getElementById('cal-summary-chips');
   if(chips){
-    /* この月の合計（年跨ぎ累計）と今月実績（currentPeriod内）を表示 */
-    var thisMonthReal=records.filter(function(r){
-      return r.date.getFullYear()===_calYear&&r.date.getMonth()===_calMonth;
-    }).length;
     chips.innerHTML=
-      '<div class="cal-chip">📅 この月の累計<span class="cal-chip-val">'+thisMonthTotal+'回</span></div>'+
-      (thisMonthReal>0?'<div class="cal-chip">'+_calYear+'年実績<span class="cal-chip-val">'+thisMonthReal+'回</span></div>':'')+
+      '<div class="cal-chip">📅 '+monthNames[_calMonth]+'の累計<span class="cal-chip-val">'+thisMonthTotal+'回</span></div>'+
+      (activeDaysInMonth>0?'<div class="cal-chip">ライブがある日<span class="cal-chip-val">'+activeDaysInMonth+'日</span></div>':'')+
       (maxCount>0?'<div class="cal-chip">最多日<span class="cal-chip-val">'+maxCount+'回</span></div>':'');
   }
 
-  /* --- カレンダーグリッド生成 --- */
-  var firstDay=new Date(_calYear,_calMonth,1).getDay(); /* 0=日 */
-  var daysInMonth=new Date(_calYear,_calMonth+1,0).getDate();
-  var todayY=now.getFullYear(),todayM=now.getMonth(),todayD=now.getDate();
+  /* ★修正: カレンダーグリッド生成
+     曜日計算のみ今年を参照（うるう年対応: 2月は今年で計算）
+     ライブ数の集計は dayMap（MM-DD）なので年に依存しない */
+  var refYear=now.getFullYear(); /* 曜日計算用の基準年（今年） */
+  var firstDay=new Date(refYear,_calMonth,1).getDay(); /* 0=日 */
+  var daysInMonth=new Date(refYear,_calMonth+1,0).getDate(); /* うるう年: 2月は今年基準 */
+  var todayM=now.getMonth(),todayD=now.getDate();
 
   var cells='';
-  /* 空白セル（月初前） */
   for(var i=0;i<firstDay;i++){
     cells+='<div class="cal-cell empty"></div>';
   }
-  /* 日付セル */
   for(var day=1;day<=daysInMonth;day++){
     var dd=String(day).padStart(2,'0');
     var key=calMonthKey+'-'+dd;
     var info=dayMap[key]||{count:0,lives:[]};
     var cnt=info.count;
-    var dow=new Date(_calYear,_calMonth,day).getDay();
-    var isToday=(_calYear===todayY&&_calMonth===todayM&&day===todayD);
+    var dow=new Date(refYear,_calMonth,day).getDay();
+    /* 今日の月日と一致するセルにマーク（年は関係なく月日で判定） */
+    var isToday=(_calMonth===todayM&&day===todayD);
     var dowCls=dow===0?' sun':dow===6?' sat':'';
     var hasLiveCls=cnt>0?' has-live':'';
     var todayCls=isToday?' today':'';
-    /* バッジ色クラス */
     var badgeCls=cnt===1?'cnt-1':cnt===2?'cnt-2':cnt===3?'cnt-3':cnt>=4?'cnt-hi':'';
     var badge=cnt>0?'<div class="cal-badge '+badgeCls+'">'+cnt+'回</div>':'';
     cells+='<div class="cal-cell'+hasLiveCls+todayCls+dowCls+'"'
@@ -2065,7 +2064,6 @@ function renderCalendarPage(){
   var daysEl=document.getElementById('cal-days');
   if(daysEl)daysEl.innerHTML=cells;
 
-  /* dayMapをグローバルに保持（モーダル参照用） */
   window._calDayMap=dayMap;
 }
 
@@ -2494,15 +2492,15 @@ document.getElementById('nav-lives').addEventListener('click',function(){openLiv
 document.getElementById('nav-notes').addEventListener('click',function(){openNotesPage();});
 document.getElementById('nav-venues').addEventListener('click',function(){openVenuePage();});
 
-/* ★追加: カレンダー前月/次月ボタン */
+/* ★修正: 月移動は _calMonth のみ。_calYear は不要なので削除 */
 document.getElementById('cal-prev').addEventListener('click',function(){
   _calMonth--;
-  if(_calMonth<0){_calMonth=11;_calYear--;}
+  if(_calMonth<0){_calMonth=11;}
   try{renderCalendarPage();}catch(e){}
 });
 document.getElementById('cal-next').addEventListener('click',function(){
   _calMonth++;
-  if(_calMonth>11){_calMonth=0;_calYear++;}
+  if(_calMonth>11){_calMonth=0;}
   try{renderCalendarPage();}catch(e){}
 });
 /* ★追加: カレンダーモーダル閉じ */
