@@ -1726,7 +1726,8 @@ function openVenueDetail(venueName){
   var vds=document.getElementById('vd-section');if(!vds)return;
   vds.style.display='block';
   setEl('vd-name',venueName);
-  var recs=allRecords.filter(function(r){return r.venue===venueName;}).sort(function(a,b){return b.date-a.date;});
+  /* ★修正③: allRecords → getFilteredRecords() でフィルター状態を反映 */
+  var recs=getFilteredRecords().filter(function(r){return r.venue===venueName;}).sort(function(a,b){return b.date-a.date;});
   setEl('vd-count',recs.length+'回');
   var artMap={};recs.forEach(function(r){r.artists.forEach(function(a){artMap[a]=(artMap[a]||0)+1;});});
   var topArts=Object.entries(artMap).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(x){return '<strong>'+esc(x[0])+'</strong> '+x[1]+'回';}).join(' / ');
@@ -1804,6 +1805,11 @@ function sortArtistItems(items,mode){
   else if(mode==='recent')s.sort(function(a,b){return(b.last?b.last.date.getTime():0)-(a.last?a.last.date.getTime():0);});
   else if(mode==='rating')s.sort(function(a,b){return b.avg-a.avg;});
   else if(mode==='kana')s.sort(function(a,b){return a.name.localeCompare(b.name,'ja');});
+  /* ★修正①: フォーマット別ソート（effectiveSortから渡される） */
+  else if(mode==='wanman')s.sort(function(a,b){return(b.wanman||0)-(a.wanman||0);});
+  else if(mode==='fes')s.sort(function(a,b){return(b.fes||0)-(a.fes||0);});
+  else if(mode==='taiban')s.sort(function(a,b){return(b.taiban||0)-(a.taiban||0);});
+  else if(mode==='circuit')s.sort(function(a,b){return(b.circuit||0)-(a.circuit||0);});
   return s;
 }
 function renderArtistList(){
@@ -2043,7 +2049,10 @@ function renderCalendarPage(){
      ライブ数の集計は dayMap（MM-DD）なので年に依存しない */
   var refYear=now.getFullYear(); /* 曜日計算用の基準年（今年） */
   var firstDay=new Date(refYear,_calMonth,1).getDay(); /* 0=日 */
-  var daysInMonth=new Date(refYear,_calMonth+1,0).getDate(); /* うるう年: 2月は今年基準 */
+  var daysInMonth=new Date(refYear,_calMonth+1,0).getDate();
+  /* ★修正②: 2月は常に29日まで生成する（過去の2/29ライブを表示できるようにする）
+     うるう年でない年でも 2/29 セルを表示し、データがあればバッジを出す */
+  if(_calMonth===1&&daysInMonth===28)daysInMonth=29;
   var todayM=now.getMonth(),todayD=now.getDate();
 
   var cells='';
