@@ -868,10 +868,10 @@ a:hover{text-decoration:underline}
             <div class="an-sum-sub" id="an-note-sub">—</div>
           </div>
           <div class="an-sum-card c-purple">
-            <div class="an-sum-icon">📅</div>
-            <div class="an-sum-val" id="an-active-days">—<span class="unit">日</span></div>
-            <div class="an-sum-label">ライブ活動日数</div>
-            <div class="an-sum-sub" id="an-days-sub">—</div>
+            <div class="an-sum-icon">📆</div>
+            <div class="an-sum-val" id="an-interval">—<span class="unit">日</span></div>
+            <div class="an-sum-label">平均ライブ間隔</div>
+            <div class="an-sum-sub" id="an-interval-sub">—</div>
           </div>
         </div>
 
@@ -1827,19 +1827,25 @@ function renderAnalysisPage(){
   var rated=records.filter(function(r){return r.rating>0;});
   var avg=rated.length?(rated.reduce(function(s,r){return s+r.rating;},0)/rated.length):0;
   var star5=records.filter(function(r){return r.rating===5;}).length;
-  /* ユニーク日数（同じ日に複数ライブがあっても1日） */
-  var uniqueDays=new Set(records.map(function(r){return r.date.getFullYear()+'-'+(r.date.getMonth()+1)+'-'+r.date.getDate();})).size;
-  /* Note化率 */
-  var noteRate=total>0?Math.round((notes.length/total)*100):0;
-
   setHtml('an-live-count',total+'<span class="unit">本</span>');
   setEl('an-live-sub',star5+'回 ★5あり（'+Math.round(star5/Math.max(1,total)*100)+'%）');
   setHtml('an-avg-rating',avg>0?avg.toFixed(1)+'<span class="unit">★</span>':'—');
   setEl('an-avg-sub',avg>0?'最高評価 ★'+(records.reduce(function(m,r){return Math.max(m,r.rating);},0)):'評価データなし');
   setHtml('an-note-count',notes.length+'<span class="unit">件</span>');
+  var noteRate=total>0?Math.round((notes.length/total)*100):0;
   setEl('an-note-sub','Note化率 '+noteRate+'%');
-  setHtml('an-active-days',uniqueDays+'<span class="unit">日</span>');
-  setEl('an-days-sub',total>0?'1日あたり '+(total/Math.max(1,uniqueDays)).toFixed(1)+'本':'—');
+  /* 平均ライブ間隔 */
+  var sortedByDate=records.slice().sort(function(a,b){return a.date-b.date;});
+  var intervalDays=0,intervalSub='—';
+  if(total>=2){
+    var spanDays=Math.round((sortedByDate[total-1].date-sortedByDate[0].date)/(1000*60*60*24));
+    intervalDays=Math.round(spanDays/(total-1));
+    intervalSub=intervalDays<=7?'週1ペース以上':intervalDays<=14?'2週に1回ペース':intervalDays<=31?'月1ペース':'月1以下のペース';
+  } else {
+    intervalSub=total===1?'2本以上で計算できます':'データなし';
+  }
+  setHtml('an-interval',intervalDays>0?intervalDays+'<span class="unit">日</span>':'—');
+  setEl('an-interval-sub',intervalSub);
 
   /* ─── バケット共通計算（月別 or 年別） ─── */
   var now=new Date();
