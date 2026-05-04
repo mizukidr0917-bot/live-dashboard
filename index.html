@@ -578,7 +578,10 @@ a:hover{text-decoration:underline}
 
   /* タイプ分布: ドーナツを中央寄せ、凡例を下に */
   .vtype-donut-wrap{gap:12px}
-  .vtype-donut-center{width:140px;height:140px}
+  /* ★修正: スマホ時、親・canvas・ラベルのサイズを完全一致させてズレを解消 */
+  .vtype-donut-center{width:140px;height:140px;position:relative}
+  .vtype-donut-center canvas{width:140px !important;height:140px !important;display:block}
+  .vtype-donut-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap}
   .vtype-legend-row{font-size:10px}
   .vtype-legend-name{font-size:10px}
   .vtype-legend-count{font-size:10px}
