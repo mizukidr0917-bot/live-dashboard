@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ja" data-theme="dark">
 <head>
 <meta charset="UTF-8">
@@ -64,14 +65,14 @@ a:hover{text-decoration:underline}
 
 /* ═══════════════════════════════════════  SIDEBAR  */
 .sidebar{
-  position:fixed;top:0;left:0;
-  width:220px;height:100vh;
-  background:var(--bg-2);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  padding:20px 14px 18px;
-  z-index:80;/* バックドロップ(70)より高く */
-  overflow-y:auto;overflow-x:hidden;
-  transition:background .25s,transform .24s;
+position:fixed;top:0;left:0;
+width:220px;height:100vh;
+background:var(--bg-2);border-right:1px solid var(--border);
+display:flex;flex-direction:column;
+padding:20px 14px 18px;
+z-index:80;/* バックドロップ(70)より高く */
+overflow-y:auto;overflow-x:hidden;
+transition:background .25s,transform .24s;
 }
 .sidebar::before{content:'';position:absolute;top:-80px;left:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(124,110,247,.12) 0%,transparent 70%);pointer-events:none}
 .logo{display:flex;align-items:center;gap:10px;margin-bottom:24px}
@@ -132,15 +133,15 @@ a:hover{text-decoration:underline}
 .sec-label .sub{font-size:10px;color:var(--text-3);font-weight:400;letter-spacing:0;text-transform:none;margin-left:4px}
 
 /* ═══════════════════════════════════════
-   ① TODAY ZONE
+① TODAY ZONE
 ═══════════════════════════════════════ */
 
 /* Story headline */
 .story-headline{
-  background:linear-gradient(130deg,rgba(124,110,247,.1),rgba(74,158,255,.06));
-  border:1px solid rgba(124,110,247,.2);border-radius:14px;
-  padding:14px 20px;margin-bottom:16px;
-  display:flex;align-items:center;gap:12px;
+background:linear-gradient(130deg,rgba(124,110,247,.1),rgba(74,158,255,.06));
+border:1px solid rgba(124,110,247,.2);border-radius:14px;
+padding:14px 20px;margin-bottom:16px;
+display:flex;align-items:center;gap:12px;
 }
 .story-emoji{font-size:22px;flex-shrink:0;line-height:1}
 .story-text{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:16px;font-weight:700;color:var(--text);line-height:1.4}
@@ -198,32 +199,32 @@ a:hover{text-decoration:underline}
 .nprog-row-text{font-size:11px;color:var(--amber);font-weight:600}
 
 /* ═══════════════════════════════════════
-   NOTE CARDS — "作品一覧UI"
+NOTE CARDS — "作品一覧UI"
 ═══════════════════════════════════════ */
 .notes-grid{display:flex;flex-direction:column;gap:10px}
 .note-card{
-  display:flex;gap:14px;padding:14px 16px;border-radius:14px;
-  background:var(--bg-card);border:1px solid var(--border);
-  text-decoration:none;color:inherit;
-  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
-  box-shadow:var(--shadow-card);position:relative;overflow:hidden;
+display:flex;gap:14px;padding:14px 16px;border-radius:14px;
+background:var(--bg-card);border:1px solid var(--border);
+text-decoration:none;color:inherit;
+transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+box-shadow:var(--shadow-card);position:relative;overflow:hidden;
 }
 .note-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:99px 0 0 99px;background:transparent;transition:background .18s}
 /* PC-only hover lift */
 @media(hover:hover){
-  .note-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.3);box-shadow:0 8px 28px rgba(0,0,0,.22);text-decoration:none}
-  .note-card:hover::before{background:var(--accent)}
-  .note-card:hover .note-card-title{color:var(--accent-2)}
+.note-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.3);box-shadow:0 8px 28px rgba(0,0,0,.22);text-decoration:none}
+.note-card:hover::before{background:var(--accent)}
+.note-card:hover .note-card-title{color:var(--accent-2)}
 }
 .note-card-thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;background:var(--bg-3);border:1px solid var(--border);flex-shrink:0;display:block}
 .note-card-ph{width:56px;height:56px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid var(--border)}
 .note-card-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;justify-content:center}
 /* ③ Title larger, bolder */
 .note-card-title{
-  font-size:14px;font-weight:700;color:var(--text);line-height:1.45;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  font-family:'Space Grotesk','Noto Sans JP',sans-serif;
-  transition:color .18s;
+font-size:14px;font-weight:700;color:var(--text);line-height:1.45;
+display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+font-family:'Space Grotesk','Noto Sans JP',sans-serif;
+transition:color .18s;
 }
 /* ③ Date smaller/dimmer */
 .note-card-date{font-size:10px;color:var(--text-3);letter-spacing:.02em}
@@ -238,7 +239,7 @@ a:hover{text-decoration:underline}
 .notes-empty{font-size:12px;color:var(--text-3);padding:16px 0;text-align:center}
 
 /* ═══════════════════════════════════════
-   ② ANALYSIS ZONE (collapsible, muted)
+② ANALYSIS ZONE (collapsible, muted)
 ═══════════════════════════════════════ */
 .analysis-zone-wrap{margin-bottom:28px}
 .analysis-toggle-btn{width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:10px 16px;cursor:pointer;color:var(--text-2);font-size:12px;font-weight:600;font-family:'Space Grotesk',sans-serif;transition:all .15s;margin-bottom:0}
@@ -283,7 +284,7 @@ a:hover{text-decoration:underline}
 .rank-comment{font-size:11px;color:var(--accent-2);margin-top:8px;padding:4px 9px;background:rgba(124,110,247,.07);border-radius:7px}
 
 /* ═══════════════════════════════════════
-   STAR5 GRID
+STAR5 GRID
 ═══════════════════════════════════════ */
 .star5-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:12px;margin-top:0}
 .s5-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform .18s,border-color .2s,box-shadow .2s;position:relative;box-shadow:var(--shadow-card)}
@@ -335,32 +336,32 @@ a:hover{text-decoration:underline}
 
 /* ④ LIGHT MODE — complete overhaul */
 [data-theme="light"]{
-  --bg:#f7f8fa;
-  --bg-2:#ffffff;
-  --bg-3:#f0f2f7;
-  --bg-card:#ffffff;
-  --bg-card-hover:#fafbff;
-  --border:rgba(0,0,0,.08);
-  --border-s:rgba(0,0,0,.14);
-  --text:#1a1d35;
-  --text-2:#5a6080;
-  --text-3:#9299b8;
-  --accent:#6d5ce0;
-  --accent-2:#8b75f0;
-  --blue:#2563eb;
-  --blue-soft:rgba(37,99,235,.09);
-  --green:#059669;
-  --green-soft:rgba(5,150,105,.09);
-  --amber:#d97706;
-  --amber-soft:rgba(217,119,6,.09);
-  --pink:#db2777;
-  --shadow-card:0 1px 4px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
-  --topbar-bg:rgba(255,255,255,.96);
-  --nt-live-bg:rgba(109,92,224,.08);--nt-live-c:#6d5ce0;--nt-live-b:rgba(109,92,224,.18);
-  --nt-song-bg:rgba(37,99,235,.07);--nt-song-c:#2563eb;--nt-song-b:rgba(37,99,235,.16);
-  --nt-album-bg:rgba(5,150,105,.07);--nt-album-c:#059669;--nt-album-b:rgba(5,150,105,.16);
-  --nt-sum-bg:rgba(217,119,6,.07);--nt-sum-c:#d97706;--nt-sum-b:rgba(217,119,6,.16);
-  --nt-misc-bg:rgba(90,96,128,.06);--nt-misc-c:#5a6080;--nt-misc-b:rgba(90,96,128,.14);
+--bg:#f7f8fa;
+--bg-2:#ffffff;
+--bg-3:#f0f2f7;
+--bg-card:#ffffff;
+--bg-card-hover:#fafbff;
+--border:rgba(0,0,0,.08);
+--border-s:rgba(0,0,0,.14);
+--text:#1a1d35;
+--text-2:#5a6080;
+--text-3:#9299b8;
+--accent:#6d5ce0;
+--accent-2:#8b75f0;
+--blue:#2563eb;
+--blue-soft:rgba(37,99,235,.09);
+--green:#059669;
+--green-soft:rgba(5,150,105,.09);
+--amber:#d97706;
+--amber-soft:rgba(217,119,6,.09);
+--pink:#db2777;
+--shadow-card:0 1px 4px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
+--topbar-bg:rgba(255,255,255,.96);
+--nt-live-bg:rgba(109,92,224,.08);--nt-live-c:#6d5ce0;--nt-live-b:rgba(109,92,224,.18);
+--nt-song-bg:rgba(37,99,235,.07);--nt-song-c:#2563eb;--nt-song-b:rgba(37,99,235,.16);
+--nt-album-bg:rgba(5,150,105,.07);--nt-album-c:#059669;--nt-album-b:rgba(5,150,105,.16);
+--nt-sum-bg:rgba(217,119,6,.07);--nt-sum-c:#d97706;--nt-sum-b:rgba(217,119,6,.16);
+--nt-misc-bg:rgba(90,96,128,.06);--nt-misc-c:#5a6080;--nt-misc-b:rgba(90,96,128,.14);
 }
 [data-theme="light"] body{background:var(--bg)}
 [data-theme="light"] .sidebar{background:var(--bg-2);border-color:var(--border)}
@@ -377,9 +378,9 @@ a:hover{text-decoration:underline}
 [data-theme="light"] .kpi-delta.zero{background:rgba(90,96,128,.08);color:var(--text-3)}
 /* Best live — warm gradient for light */
 [data-theme="light"] .best-live-card{
-  background:linear-gradient(145deg,#fffbf0,#fff8e4,#fffdf5);
-  border-color:rgba(217,119,6,.35);
-  box-shadow:0 2px 8px rgba(217,119,6,.1),0 6px 20px rgba(0,0,0,.06);
+background:linear-gradient(145deg,#fffbf0,#fff8e4,#fffdf5);
+border-color:rgba(217,119,6,.35);
+box-shadow:0 2px 8px rgba(217,119,6,.1),0 6px 20px rgba(0,0,0,.06);
 }
 [data-theme="light"] .best-live-card::before{background:radial-gradient(circle,rgba(217,119,6,.12) 0%,transparent 65%)}
 [data-theme="light"] .best-live-card::after{background:linear-gradient(90deg,var(--amber),rgba(217,119,6,.25),transparent)}
@@ -426,40 +427,39 @@ a:hover{text-decoration:underline}
 
 /* ══ Story banner — 今月の一言 ══ */
 .story-banner{
-  display:flex;align-items:center;justify-content:space-between;
-  background:linear-gradient(130deg,rgba(124,110,247,.18) 0%,rgba(74,158,255,.1) 60%,rgba(124,110,247,.05) 100%);
-  border:1px solid rgba(124,110,247,.28);border-radius:20px;
-  padding:22px 28px;margin-bottom:16px;position:relative;overflow:hidden;
-  min-height:110px;
+display:flex;align-items:center;justify-content:space-between;
+background:linear-gradient(130deg,rgba(124,110,247,.18) 0%,rgba(74,158,255,.1) 60%,rgba(124,110,247,.05) 100%);
+border:1px solid rgba(124,110,247,.28);border-radius:20px;
+padding:22px 28px;margin-bottom:16px;position:relative;overflow:hidden;
+min-height:110px;
 }
 [data-theme="light"] .story-banner{
-  background:linear-gradient(130deg,rgba(109,92,224,.1),rgba(37,99,235,.06),rgba(109,92,224,.03));
-  border-color:rgba(109,92,224,.22);
+background:linear-gradient(130deg,rgba(109,92,224,.1),rgba(37,99,235,.06),rgba(109,92,224,.03));
+border-color:rgba(109,92,224,.22);
 }
 .story-banner-body{position:relative;z-index:1;flex:1;min-width:0}
 .story-banner-eyebrow{
-  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--accent-2);margin-bottom:8px;display:flex;align-items:center;gap:6px;
+font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+color:var(--accent-2);margin-bottom:8px;display:flex;align-items:center;gap:6px;
 }
 .story-banner-month{font-weight:400;letter-spacing:0;text-transform:none;color:var(--text-3);font-size:10px}
 .story-banner-headline{
-  font-family:'Space Grotesk','Noto Sans JP',sans-serif;
-  font-size:26px;font-weight:700;color:var(--text);
-  line-height:1.3;margin-bottom:6px;
-  /* 長い場合は折り返す */
-  word-break:break-word;
+font-family:'Space Grotesk','Noto Sans JP',sans-serif;
+font-size:26px;font-weight:700;color:var(--text);
+line-height:1.3;margin-bottom:6px;
+word-break:break-word;
 }
 .story-banner-sub{font-size:12px;color:var(--text-2);line-height:1.5}
 .story-banner-deco{
-  width:120px;height:120px;flex-shrink:0;
-  background:radial-gradient(circle,rgba(124,110,247,.22) 0%,transparent 65%);
-  border-radius:50%;position:absolute;right:-20px;top:50%;transform:translateY(-50%);
+width:120px;height:120px;flex-shrink:0;
+background:radial-gradient(circle,rgba(124,110,247,.22) 0%,transparent 65%);
+border-radius:50%;position:absolute;right:-20px;top:50%;transform:translateY(-50%);
 }
 [data-theme="light"] .story-banner-headline{color:var(--text)}
 @media(max-width:640px){
-  .story-banner{padding:16px 18px;min-height:auto}
-  .story-banner-headline{font-size:20px}
-  .story-banner-deco{width:80px;height:80px;right:-10px}
+.story-banner{padding:16px 18px;min-height:auto}
+.story-banner-headline{font-size:20px}
+.story-banner-deco{width:80px;height:80px;right:-10px}
 }
 
 /* ══ KPI + total counter layout ══ */
@@ -469,18 +469,18 @@ a:hover{text-decoration:underline}
 .kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch;height:100%}
 .kpi-card{display:flex;flex-direction:column;height:100%}
 @media(max-width:640px){
-  .kpi-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;height:auto}
-  .kpi-and-total{grid-template-columns:1fr;gap:10px}
-  .kpi-card{height:auto}
+.kpi-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;height:auto}
+.kpi-and-total{grid-template-columns:1fr;gap:10px}
+.kpi-card{height:auto}
 }
 
 /* ══ Total counter card ══ */
 .total-counter-card{
-  background:linear-gradient(145deg,rgba(124,110,247,.14),rgba(74,158,255,.08));
-  border:1px solid rgba(124,110,247,.25);border-radius:16px;
-  padding:20px;text-align:center;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:4px;
-  box-shadow:var(--shadow-card);
+background:linear-gradient(145deg,rgba(124,110,247,.14),rgba(74,158,255,.08));
+border:1px solid rgba(124,110,247,.25);border-radius:16px;
+padding:20px;text-align:center;display:flex;flex-direction:column;
+align-items:center;justify-content:center;gap:4px;
+box-shadow:var(--shadow-card);
 }
 [data-theme="light"] .total-counter-card{background:linear-gradient(145deg,rgba(109,92,224,.08),rgba(37,99,235,.05));border-color:rgba(109,92,224,.2)}
 .tc-icon{font-size:24px;line-height:1;margin-bottom:4px}
@@ -489,27 +489,27 @@ a:hover{text-decoration:underline}
 .tc-label{font-size:11px;color:var(--text-2);line-height:1.6;margin-top:6px}
 .tc-label strong{color:var(--text);font-weight:700}
 @media(max-width:960px){
-  .total-counter-card{flex-direction:row;text-align:left;gap:12px;padding:16px}
-  .tc-icon{font-size:20px}
-  .tc-value{font-size:40px}
-  .tc-label{margin-top:0}
+.total-counter-card{flex-direction:row;text-align:left;gap:12px;padding:16px}
+.tc-icon{font-size:20px}
+.tc-value{font-size:40px}
+.tc-label{margin-top:0}
 }
 @media(max-width:640px){
-  .total-counter-card{padding:14px 16px}
-  .tc-value{font-size:34px}
+.total-counter-card{padding:14px 16px}
+.tc-value{font-size:34px}
 }
 
 /* ══ Recent lives row ══ */
 .recent-lives-row{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:12px;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+gap:12px;
 }
 .rl-card{
-  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
-  overflow:hidden;box-shadow:var(--shadow-card);
-  transition:transform .16s,border-color .16s;
-  display:flex;flex-direction:column;
+background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+overflow:hidden;box-shadow:var(--shadow-card);
+transition:transform .16s,border-color .16s;
+display:flex;flex-direction:column;
 }
 .rl-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.28)}
 [data-theme="light"] .rl-card{background:#fff}
@@ -525,11 +525,11 @@ a:hover{text-decoration:underline}
 .rl-rating{font-size:11px;color:var(--amber);font-weight:700;white-space:nowrap}
 .rl-actions{display:flex;gap:4px;flex-wrap:wrap;padding:0 12px 10px}
 @media(max-width:640px){
-  .recent-lives-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  /* ① スマホは高さ抑制 + center center */
-  .rl-thumb{height:65px;object-position:center center}
-  .rl-thumb-ph{height:65px}
-  .rl-name{font-size:11px}
+.recent-lives-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+/* ① スマホは高さ抑制 + center center */
+.rl-thumb{height:65px;object-position:center center}
+.rl-thumb-ph{height:65px}
+.rl-name{font-size:11px}
 }
 
 /* ②-2 Sidebar scrollbar style */
@@ -540,17 +540,17 @@ a:hover{text-decoration:underline}
 .otd-section{}
 .otd-row{display:flex;flex-direction:column;gap:8px}
 .otd-card{
-  display:flex;align-items:center;gap:12px;
-  background:var(--bg-card);border:1px solid rgba(124,110,247,.2);border-radius:12px;
-  padding:12px 14px;box-shadow:var(--shadow-card);
-  transition:transform .15s,border-color .15s;
+display:flex;align-items:center;gap:12px;
+background:var(--bg-card);border:1px solid rgba(124,110,247,.2);border-radius:12px;
+padding:12px 14px;box-shadow:var(--shadow-card);
+transition:transform .15s,border-color .15s;
 }
 .otd-card:hover{transform:translateY(-2px);border-color:rgba(124,110,247,.35)}
 [data-theme="light"] .otd-card{background:#fff}
 .otd-years{
-  background:rgba(124,110,247,.12);color:var(--accent-2);
-  border-radius:99px;padding:4px 11px;font-size:11px;font-weight:700;
-  white-space:nowrap;flex-shrink:0;border:1px solid rgba(124,110,247,.2);
+background:rgba(124,110,247,.12);color:var(--accent-2);
+border-radius:99px;padding:4px 11px;font-size:11px;font-weight:700;
+white-space:nowrap;flex-shrink:0;border:1px solid rgba(124,110,247,.2);
 }
 .otd-body{flex:1;min-width:0}
 .otd-name{font-size:13px;font-weight:700;color:var(--text);font-family:'Space Grotesk','Noto Sans JP',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -563,30 +563,30 @@ a:hover{text-decoration:underline}
 .ll-sub{font-size:11px;color:var(--text-2)}
 .ll-filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
 .ll-select{
-  background:var(--bg-card);border:1px solid var(--border-s);border-radius:8px;
-  color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:6px 10px;
-  outline:none;cursor:pointer;transition:border-color .15s;
+background:var(--bg-card);border:1px solid var(--border-s);border-radius:8px;
+color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:6px 10px;
+outline:none;cursor:pointer;transition:border-color .15s;
 }
 .ll-select:focus,.ll-select:hover{border-color:var(--accent)}
 [data-theme="light"] .ll-select{background:#fff}
 .ll-count{font-size:11px;color:var(--text-3);margin-left:auto;white-space:nowrap}
 .ll-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:12px;margin-bottom:8px;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:12px;margin-bottom:8px;
 }
 @media(max-width:640px){
-  .ll-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .ll-filter-row{gap:6px}
-  .ll-select{font-size:10px;padding:5px 8px}
+.ll-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ll-filter-row{gap:6px}
+.ll-select{font-size:10px;padding:5px 8px}
 }
 
 /* ① Live card (list page) */
 .ll-card{
-  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
-  overflow:hidden;box-shadow:var(--shadow-card);
-  display:flex;flex-direction:column;
-  transition:transform .16s,border-color .16s;
+background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+overflow:hidden;box-shadow:var(--shadow-card);
+display:flex;flex-direction:column;
+transition:transform .16s,border-color .16s;
 }
 .ll-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.28)}
 [data-theme="light"] .ll-card{background:#fff}
@@ -601,11 +601,11 @@ a:hover{text-decoration:underline}
 .ll-rating{font-size:11px;color:var(--amber);font-weight:700}
 .ll-actions{display:flex;gap:4px;padding:0 11px 9px;flex-wrap:wrap}
 @media(max-width:640px){
-  .ll-thumb,.ll-thumb-ph{height:75px}
-  /* ① スマホはさらに高さを抑えてトリミングを弱める */
-  .ll-thumb{height:70px;object-position:center center}
-  .ll-name{font-size:11px}
-  .ll-thumb-ph{font-size:24px;height:70px}
+.ll-thumb,.ll-thumb-ph{height:75px}
+/* ① スマホはさらに高さを抑えてトリミングを弱める */
+.ll-thumb{height:70px;object-position:center center}
+.ll-name{font-size:11px}
+.ll-thumb-ph{font-size:24px;height:70px}
 }
 
 /* ⑤ Note page additions */
@@ -628,10 +628,10 @@ a:hover{text-decoration:underline}
 .vt-table-venues{color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Ranking horizontal scroll cards */
 .vr-rank-card{
-  flex-shrink:0;width:150px;scroll-snap-align:start;
-  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
-  padding:12px 12px 10px;cursor:pointer;
-  transition:transform .15s,border-color .15s;box-shadow:var(--shadow-card);
+flex-shrink:0;width:150px;scroll-snap-align:start;
+background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+padding:12px 12px 10px;cursor:pointer;
+transition:transform .15s,border-color .15s;box-shadow:var(--shadow-card);
 }
 .vr-rank-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.3)}
 [data-theme="light"] .vr-rank-card{background:#fff}
@@ -643,10 +643,10 @@ a:hover{text-decoration:underline}
 .vrrc-type{display:inline-block;font-size:9px;padding:1px 7px;border-radius:99px;background:var(--bg-3);color:var(--text-2);border:1px solid var(--border);margin-top:5px;white-space:nowrap}
 /* Venue list rows */
 .vr-list-row{
-  display:flex;align-items:center;gap:12px;
-  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
-  padding:12px 14px;cursor:pointer;
-  transition:transform .15s,border-color .15s;box-shadow:var(--shadow-card);
+display:flex;align-items:center;gap:12px;
+background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+padding:12px 14px;cursor:pointer;
+transition:transform .15s,border-color .15s;box-shadow:var(--shadow-card);
 }
 .vr-list-row:hover{transform:translateY(-1px);border-color:rgba(124,110,247,.28)}
 [data-theme="light"] .vr-list-row{background:#fff}
@@ -664,9 +664,9 @@ a:hover{text-decoration:underline}
 /* vt-analysis responsive */
 @media(max-width:800px){#vt-inner{grid-template-columns:1fr;gap:14px}#vt-inner>div:first-child{margin:0 auto}}
 @media(max-width:640px){
-  #venue-kpi-row{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .vkpi-val{font-size:20px}
-  .vrl-dates,.vrl-artists{display:none}
+#venue-kpi-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+.vkpi-val{font-size:20px}
+.vrl-dates,.vrl-artists{display:none}
 }
 
 /* vt-grid and vr-grid kept as fallback */
@@ -696,62 +696,62 @@ a:hover{text-decoration:underline}
 
 /* ═══════════════════════════════════════  RESPONSIVE  */
 @media(max-width:1280px){
-  .analysis-inner{grid-template-columns:1fr}
-  .analysis-ranks{grid-template-columns:1fr}
-  .today-bottom{grid-template-columns:1fr 1fr}
-  .period-mini{grid-template-columns:repeat(3,minmax(0,1fr))}
+.analysis-inner{grid-template-columns:1fr}
+.analysis-ranks{grid-template-columns:1fr}
+.today-bottom{grid-template-columns:1fr 1fr}
+.period-mini{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(max-width:960px){
-  .content-area{margin-left:0}
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0);box-shadow:8px 0 32px rgba(0,0,0,.5)}
-  .sidebar-toggle{display:flex}
-  .fab-filter{display:inline-flex}
-  .topbar-filter-btn{display:none}
-  .kpi-row{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .kpi-value{font-size:34px}
-  .today-bottom{grid-template-columns:1fr 1fr}
+.content-area{margin-left:0}
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0);box-shadow:8px 0 32px rgba(0,0,0,.5)}
+.sidebar-toggle{display:flex}
+.fab-filter{display:inline-flex}
+.topbar-filter-btn{display:none}
+.kpi-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kpi-value{font-size:34px}
+.today-bottom{grid-template-columns:1fr 1fr}
 }
 /* ① ライトモード：モバイル閉じた状態の影帯を完全消去 */
 @media(max-width:960px){
-  [data-theme="light"] .sidebar{box-shadow:none}
-  [data-theme="light"] .sidebar.open{box-shadow:4px 0 20px rgba(0,0,0,.12)}
+[data-theme="light"] .sidebar{box-shadow:none}
+[data-theme="light"] .sidebar.open{box-shadow:4px 0 20px rgba(0,0,0,.12)}
 }
 @media(max-width:640px){
-  body{padding-bottom:env(safe-area-inset-bottom,0px)}
-  .main{padding:10px 12px calc(68px + env(safe-area-inset-bottom,12px))}
-  .topbar{padding:9px 12px;gap:8px}
-  .topbar-sub,.topbar-filter-btn{display:none}
-  .filter-status{max-width:150px;font-size:10px}
-  /* ① KPI: コンパクト3列横並び */
-  .kpi-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-  .kpi-card{padding:10px 8px 8px;border-radius:12px}
-  .kpi-card::after{border-radius:12px 12px 0 0}
-  .kpi-head{margin-bottom:6px}
-  .kpi-icon{width:26px;height:26px;font-size:12px;border-radius:6px}
-  .kpi-delta{font-size:9px;padding:1px 5px}
-  .kpi-value{font-size:22px;margin-bottom:2px}
-  .kpi-value .unit{font-size:11px}
-  .kpi-label{font-size:10px}
-  .kpi-hint{font-size:10px;margin-top:3px;min-height:12px}
-  .today-bottom{grid-template-columns:1fr}
-  .analysis-ranks{grid-template-columns:1fr}
-  .star5-grid{display:flex;overflow-x:auto;gap:10px;padding-bottom:8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-  .s5-card{flex-shrink:0;width:175px;scroll-snap-align:start}
-  .s5-empty{width:auto}
-  .story-text{font-size:14px}
-  .story-headline{padding:11px 14px}
-  .period-mini{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .fab-filter{padding:7px 12px;font-size:10px}
+body{padding-bottom:env(safe-area-inset-bottom,0px)}
+.main{padding:10px 12px calc(68px + env(safe-area-inset-bottom,12px))}
+.topbar{padding:9px 12px;gap:8px}
+.topbar-sub,.topbar-filter-btn{display:none}
+.filter-status{max-width:150px;font-size:10px}
+/* ① KPI: コンパクト3列横並び */
+.kpi-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.kpi-card{padding:10px 8px 8px;border-radius:12px}
+.kpi-card::after{border-radius:12px 12px 0 0}
+.kpi-head{margin-bottom:6px}
+.kpi-icon{width:26px;height:26px;font-size:12px;border-radius:6px}
+.kpi-delta{font-size:9px;padding:1px 5px}
+.kpi-value{font-size:22px;margin-bottom:2px}
+.kpi-value .unit{font-size:11px}
+.kpi-label{font-size:10px}
+.kpi-hint{font-size:10px;margin-top:3px;min-height:12px}
+.today-bottom{grid-template-columns:1fr}
+.analysis-ranks{grid-template-columns:1fr}
+.star5-grid{display:flex;overflow-x:auto;gap:10px;padding-bottom:8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.s5-card{flex-shrink:0;width:175px;scroll-snap-align:start}
+.s5-empty{width:auto}
+.story-text{font-size:14px}
+.story-headline{padding:11px 14px}
+.period-mini{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fab-filter{padding:7px 12px;font-size:10px}
 }
 @media(max-width:400px){
-  .kpi-row{gap:4px}
-  .kpi-card{padding:8px 6px 6px}
-  .kpi-value{font-size:19px}
-  .s5-card{width:160px}
+.kpi-row{gap:4px}
+.kpi-card{padding:8px 6px 6px}
+.kpi-value{font-size:19px}
+.s5-card{width:160px}
 }
 /* ═══════════════════════════════════════
-   ARTIST PAGE
+ARTIST PAGE
 ═══════════════════════════════════════ */
 
 /* ── List: search + sort bar ── */
@@ -760,16 +760,16 @@ a:hover{text-decoration:underline}
 .ap-list-sub{font-size:11px;color:var(--text-2);margin-bottom:12px}
 .ap-search-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
 .ap-search-input{
-  flex:1;min-width:160px;background:var(--bg-card);border:1px solid var(--border-s);border-radius:8px;
-  color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 10px;outline:none;
-  transition:border-color .15s;
+flex:1;min-width:160px;background:var(--bg-card);border:1px solid var(--border-s);border-radius:8px;
+color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 10px;outline:none;
+transition:border-color .15s;
 }
 .ap-search-input:focus{border-color:var(--accent)}
 .ap-sort-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
 .ap-sort-btn{
-  border:1px solid var(--border-s);background:transparent;border-radius:99px;
-  padding:3px 10px;font-size:11px;color:var(--text-2);cursor:pointer;
-  font-family:'DM Sans',sans-serif;transition:all .15s;
+border:1px solid var(--border-s);background:transparent;border-radius:99px;
+padding:3px 10px;font-size:11px;color:var(--text-2);cursor:pointer;
+font-family:'DM Sans',sans-serif;transition:all .15s;
 }
 .ap-sort-btn:hover{border-color:var(--accent);color:var(--accent-2)}
 .ap-sort-btn.active{background:rgba(124,110,247,.18);border-color:rgba(124,110,247,.4);color:var(--accent-2);font-weight:600}
@@ -777,71 +777,71 @@ a:hover{text-decoration:underline}
 
 /* ── List: card grid — PC 3〜4列 / SP 2列固定 ── */
 .ap-list-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:12px;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+gap:12px;
 }
 @media(max-width:640px){
-  .ap-list-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:8px;
-  }
+.ap-list-grid{
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:8px;
+}
 }
 
 /* アーティスト一覧カード */
 .ap-list-card{
-  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
-  cursor:pointer;
-  transition:transform .16s,border-color .16s,box-shadow .16s;
-  box-shadow:var(--shadow-card);
-  display:flex;flex-direction:column;
-  min-width:0;overflow:hidden;
+background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+cursor:pointer;
+transition:transform .16s,border-color .16s,box-shadow .16s;
+box-shadow:var(--shadow-card);
+display:flex;flex-direction:column;
+min-width:0;overflow:hidden;
 }
 .ap-list-card:hover{transform:translateY(-3px);border-color:rgba(124,110,247,.3);box-shadow:0 8px 24px rgba(0,0,0,.22)}
 [data-theme="light"] .ap-list-card{background:#fff}
 
 /* カード上部サムネイル（最新ワンマン画像がある場合のみ表示） */
 .ap-card-thumb{
-  width:100%;height:90px;
-  object-fit:cover;object-position:center center;
-  display:block;border-radius:14px 14px 0 0;
-  flex-shrink:0;
+width:100%;height:90px;
+object-fit:cover;object-position:center center;
+display:block;border-radius:14px 14px 0 0;
+flex-shrink:0;
 }
 @media(max-width:640px){
-  .ap-card-thumb{height:70px}
+.ap-card-thumb{height:70px}
 }
 
 /* カード本体 */
 .ap-card-body{
-  padding:12px 12px 10px;
-  flex:1;display:flex;flex-direction:column;
+padding:12px 12px 10px;
+flex:1;display:flex;flex-direction:column;
 }
 
 /* ② アーティスト名を強調 */
 .ap-card-name{
-  font-family:'Space Grotesk','Noto Sans JP',sans-serif;
-  font-size:16px;font-weight:800;
-  color:var(--text);margin-bottom:10px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
-  line-height:1.25;
+font-family:'Space Grotesk','Noto Sans JP',sans-serif;
+font-size:16px;font-weight:800;
+color:var(--text);margin-bottom:10px;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+line-height:1.25;
 }
 @media(max-width:640px){
-  .ap-card-name{font-size:13px;margin-bottom:7px}
+.ap-card-name{font-size:13px;margin-bottom:7px}
 }
 
 .ap-card-stats{
-  display:grid;grid-template-columns:1fr 1fr;gap:5px 8px;margin-bottom:8px;
-  min-width:0;
+display:grid;grid-template-columns:1fr 1fr;gap:5px 8px;margin-bottom:8px;
+min-width:0;
 }
 .ap-card-stat{display:flex;flex-direction:column;min-width:0}
 .ap-card-stat-val{
-  font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;
-  color:var(--text);line-height:1.2;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;
+color:var(--text);line-height:1.2;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
 }
 .ap-card-stat-key{font-size:9px;color:var(--text-3);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:640px){
-  .ap-card-stat-val{font-size:12px}
+.ap-card-stat-val{font-size:12px}
 }
 
 .ap-card-dates{display:flex;gap:4px 6px;font-size:9px;color:var(--text-3);margin-bottom:7px;flex-wrap:wrap;min-width:0}
@@ -849,19 +849,19 @@ a:hover{text-decoration:underline}
 
 /* ワンマン回数バッジ */
 .ap-card-wanman{
-  display:inline-flex;align-items:center;gap:3px;
-  font-size:10px;font-weight:600;color:var(--accent-2);
-  background:rgba(124,110,247,.1);border:1px solid rgba(124,110,247,.2);
-  border-radius:99px;padding:2px 8px;margin-bottom:7px;
-  white-space:nowrap;width:fit-content;
+display:inline-flex;align-items:center;gap:3px;
+font-size:10px;font-weight:600;color:var(--accent-2);
+background:rgba(124,110,247,.1);border:1px solid rgba(124,110,247,.2);
+border-radius:99px;padding:2px 8px;margin-bottom:7px;
+white-space:nowrap;width:fit-content;
 }
 [data-theme="light"] .ap-card-wanman{background:rgba(109,92,224,.08);border-color:rgba(109,92,224,.18)}
 
 .ap-card-last-live{
-  font-size:10px;color:var(--text-2);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  border-top:1px solid var(--border);padding-top:7px;margin-top:auto;
-  max-width:100%;
+font-size:10px;color:var(--text-2);
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+border-top:1px solid var(--border);padding-top:7px;margin-top:auto;
+max-width:100%;
 }
 .ap-card-last-live::before{content:'🎵 ';font-size:9px}
 [data-theme="light"] .ap-card-last-live{border-color:var(--border)}
@@ -872,11 +872,10 @@ a:hover{text-decoration:underline}
 /* ── Detail: first/last cards ── */
 .ap-firstlast{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
 .ap-fl-card{
-  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
-  position:relative;overflow:hidden;box-shadow:var(--shadow-card);
-  transition:transform .16s,border-color .16s;min-width:0;
-  display:flex;flex-direction:column;
-  /* padding は画像なし時にのみ apl-fl-body が持つ */
+background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+position:relative;overflow:hidden;box-shadow:var(--shadow-card);
+transition:transform .16px,border-color .16px;min-width:0;
+display:flex;flex-direction:column;
 }
 .ap-fl-card.first-card{border-color:rgba(74,158,255,.25)}
 .ap-fl-card.first-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),transparent);border-radius:14px 14px 0 0;z-index:1}
@@ -887,9 +886,9 @@ a:hover{text-decoration:underline}
 [data-theme="light"] .ap-fl-card.last-card{border-color:rgba(109,92,224,.2)}
 /* 初回/直近カードの画像 */
 .ap-fl-thumb{
-  width:100%;height:110px;
-  object-fit:cover;object-position:center center;
-  display:block;border-radius:14px 14px 0 0;flex-shrink:0;
+width:100%;height:110px;
+object-fit:cover;object-position:center center;
+display:block;border-radius:14px 14px 0 0;flex-shrink:0;
 }
 @media(max-width:640px){.ap-fl-thumb{height:75px}}
 /* テキスト部分 */
@@ -898,9 +897,9 @@ a:hover{text-decoration:underline}
 .ap-fl-card.first-card .ap-fl-label{color:var(--blue)}
 .ap-fl-card.last-card .ap-fl-label{color:var(--accent-2)}
 .ap-fl-name{
-  font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;
-  color:var(--text);line-height:1.4;margin-bottom:4px;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:13px;font-weight:700;
+color:var(--text);line-height:1.4;margin-bottom:4px;
+display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
 .ap-fl-meta{font-size:10px;color:var(--text-2);margin-bottom:4px;line-height:1.55;word-break:break-all}
 .ap-fl-rating{font-size:12px;color:var(--amber);font-weight:700;margin-bottom:6px}
@@ -914,72 +913,67 @@ a:hover{text-decoration:underline}
 
 /* Artist header — 画像ありのビジュアルヒーロー */
 .ap-header{
-  background:linear-gradient(135deg,rgba(124,110,247,.14) 0%,rgba(74,158,255,.08) 60%,transparent 100%);
-  border:1px solid rgba(124,110,247,.22);border-radius:18px;
-  padding:24px 26px;margin-bottom:18px;position:relative;overflow:hidden;
+background:linear-gradient(135deg,rgba(124,110,247,.14) 0%,rgba(74,158,255,.08) 60%,transparent 100%);
+border:1px solid rgba(124,110,247,.22);border-radius:18px;
+padding:24px 26px;margin-bottom:18px;position:relative;overflow:hidden;
 }
 .ap-header.has-img{
-  padding:0;border:none;
-  background:transparent;
+padding:0;border:none;
+background:transparent;
 }
 .ap-hero-img{
-  width:100%;height:220px;
-  object-fit:cover;
-  /* ① center center でトリミング対策 */
-  object-position:center center;
-  display:block;border-radius:18px 18px 0 0;
+width:100%;height:220px;
+object-fit:cover;
+object-position:center center;
+display:block;border-radius:18px 18px 0 0;
 }
 .ap-hero-overlay{
-  position:absolute;top:0;left:0;right:0;bottom:0;
-  /* ② オーバーレイを強めに — 文字が必ず読めるように */
-  background:linear-gradient(
-    to bottom,
-    rgba(0,0,0,.25) 0%,
-    rgba(0,0,0,.45) 40%,
-    rgba(0,0,0,.75) 100%
-  );
-  border-radius:18px;
+position:absolute;top:0;left:0;right:0;bottom:0;
+background:linear-gradient(
+to bottom,
+rgba(0,0,0,.25) 0%,
+rgba(0,0,0,.45) 40%,
+rgba(0,0,0,.75) 100%
+);
+border-radius:18px;
 }
 .ap-header.has-img .ap-header-body{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:20px 24px 22px;z-index:2;
+position:absolute;bottom:0;left:0;right:0;
+padding:20px 24px 22px;z-index:2;
 }
 .ap-header.has-img .ap-back{
-  position:absolute;top:14px;left:14px;z-index:3;
-  background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.35);color:#fff;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+position:absolute;top:14px;left:14px;z-index:3;
+background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.35);color:#fff;
+backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
 }
 .ap-header.has-img .ap-name{
-  color:#fff;
-  text-shadow:0 1px 8px rgba(0,0,0,.7),0 2px 16px rgba(0,0,0,.4);
+color:#fff;
+text-shadow:0 1px 8px rgba(0,0,0,.7),0 2px 16px rgba(0,0,0,.4);
 }
 .ap-header.has-img .ap-tagline{color:rgba(255,255,255,.85)}
 .ap-header.has-img .ap-stat{
-  background:rgba(0,0,0,.4);border-color:rgba(255,255,255,.25);
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+background:rgba(0,0,0,.4);border-color:rgba(255,255,255,.25);
+backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
 }
 .ap-header.has-img .ap-stat-val{color:#fff}
 .ap-header.has-img .ap-stat-label{color:rgba(255,255,255,.7)}
 @media(max-width:640px){
-  /* 画像高さを増やしてテキスト領域を確保 */
-  .ap-hero-img{height:240px;object-position:center center}
-  /* ap-header-body: 戻るボタン(高さ約30px + top14px = 44px)分 + 余白でpadding-top確保 */
-  .ap-header.has-img .ap-header-body{
-    padding:54px 14px 18px;/* top=54px で戻るボタンと被らない */
-  }
-  /* オーバーレイをスマホ向けに強化 */
-  .ap-header.has-img .ap-hero-overlay{
-    background:linear-gradient(
-      to bottom,
-      rgba(0,0,0,.55) 0%,
-      rgba(0,0,0,.55) 30%,
-      rgba(0,0,0,.82) 100%
-    );
-  }
-  .ap-header.has-img .ap-name{font-size:22px}
-  .ap-header.has-img .ap-stats-row{gap:5px}
-  .ap-header.has-img .ap-stat{min-width:60px;padding:5px 9px}
-  .ap-header.has-img .ap-stat-val{font-size:13px}
+.ap-hero-img{height:240px;object-position:center center}
+.ap-header.has-img .ap-header-body{
+padding:54px 14px 18px;
+}
+.ap-header.has-img .ap-hero-overlay{
+background:linear-gradient(
+to bottom,
+rgba(0,0,0,.55) 0%,
+rgba(0,0,0,.55) 30%,
+rgba(0,0,0,.82) 100%
+);
+}
+.ap-header.has-img .ap-name{font-size:22px}
+.ap-header.has-img .ap-stats-row{gap:5px}
+.ap-header.has-img .ap-stat{min-width:60px;padding:5px 9px}
+.ap-header.has-img .ap-stat-val{font-size:13px}
 }
 
 /* artist header body */
@@ -1005,54 +999,53 @@ a:hover{text-decoration:underline}
 
 /* Artist history — ll-card と同じ auto-fill グリッド */
 .ap-history-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:12px;
-  margin-bottom:8px;
-  width:100%;overflow:hidden;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:12px;
+margin-bottom:8px;
+width:100%;overflow:hidden;
 }
 @media(max-width:640px){
-  .ap-history-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ap-history-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 }
 .ap-live-card{
-  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
-  /* padding はサムネありの場合0にして apl-body が持つ */
-  padding:0;
-  box-shadow:var(--shadow-card);transition:transform .15s,border-color .15s;
-  display:flex;flex-direction:column;
-  min-width:0;overflow:hidden;
+background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+padding:0;
+box-shadow:var(--shadow-card);transition:transform .15s,border-color .15s;
+display:flex;flex-direction:column;
+min-width:0;overflow:hidden;
 }
 .ap-live-card:hover{transform:translateY(-2px);border-color:var(--border-s)}
 [data-theme="light"] .ap-live-card{background:#fff}
 /* ライブカードのサムネイル画像 — ll-card と同サイズ */
 .apl-thumb{
-  width:100%;height:130px;
-  object-fit:cover;object-position:center center;
-  display:block;border-radius:12px 12px 0 0;
-  flex-shrink:0;
+width:100%;height:130px;
+object-fit:cover;object-position:center center;
+display:block;border-radius:12px 12px 0 0;
+flex-shrink:0;
 }
 @media(max-width:640px){.apl-thumb{height:85px}}
 /* テキストボディ */
 .apl-body{
-  padding:9px 10px 8px;
-  flex:1;display:flex;flex-direction:column;
+padding:9px 10px 8px;
+flex:1;display:flex;flex-direction:column;
 }
 .apl-date{font-size:10px;color:var(--text-3);margin-bottom:3px;white-space:nowrap}
 .apl-name{
-  font-size:12px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:4px;
-  font-family:'Space Grotesk','Noto Sans JP',sans-serif;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  word-break:break-all;
+font-size:12px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:4px;
+font-family:'Space Grotesk','Noto Sans JP',sans-serif;
+display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+word-break:break-all;
 }
 .apl-venue{
-  font-size:10px;color:var(--text-2);margin-bottom:5px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+font-size:10px;color:var(--text-2);margin-bottom:5px;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
 }
 .apl-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:4px}
 .apl-format{
-  font-size:9px;background:var(--bg-3);color:var(--text-2);border-radius:99px;
-  padding:2px 7px;border:1px solid var(--border);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;
+font-size:9px;background:var(--bg-3);color:var(--text-2);border-radius:99px;
+padding:2px 7px;border:1px solid var(--border);
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;
 }
 .apl-rating{font-size:11px;color:var(--amber);font-weight:700;white-space:nowrap;flex-shrink:0}
 .apl-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
@@ -1063,30 +1056,32 @@ a:hover{text-decoration:underline}
 .ap-notes-grid{display:flex;flex-direction:column;gap:8px}
 
 @media(max-width:640px){
-  .ap-name{font-size:22px}
-  .ap-stats-row{gap:6px}
-  .ap-stat{padding:6px 10px;min-width:60px;max-width:calc(50% - 4px)}
-  .ap-stat-val{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ap-firstlast{grid-template-columns:1fr 1fr;gap:8px}
-  .ap-fl-card{padding:11px 10px}
-  .ap-fl-name{font-size:11px}
-  .ap-fl-meta{font-size:9px}
-  .ap-fl-rating{font-size:11px;margin-bottom:5px}
-  .ap-fl-label{font-size:8px}
-  .ap-link{font-size:9px;padding:2px 7px}
-  .apl-name{font-size:11px}
-  .apl-venue{font-size:9px}
-  #page-artist{padding-bottom:calc(80px + env(safe-area-inset-bottom,12px))}
+.ap-name{font-size:22px}
+.ap-stats-row{gap:6px}
+.ap-stat{padding:6px 10px;min-width:60px;max-width:calc(50% - 4px)}
+.ap-stat-val{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-firstlast{grid-template-columns:1fr 1fr;gap:8px}
+.ap-fl-card{padding:11px 10px}
+.ap-fl-name{font-size:11px}
+.ap-fl-meta{font-size:9px}
+.ap-fl-rating{font-size:11px;margin-bottom:5px}
+.ap-fl-label{font-size:8px}
+.ap-link{font-size:9px;padding:2px 7px}
+.apl-name{font-size:11px}
+.apl-venue{font-size:9px}
+#page-artist{padding-bottom:calc(80px + env(safe-area-inset-bottom,12px))}
 }
 /* body global overflow guard */
 body{overflow-x:hidden}
 .app-shell{overflow-x:hidden;max-width:100vw}
 </style>
+
 </head>
 <body>
 <div class="app-shell">
 
 <!-- SIDEBAR -->
+
 <aside class="sidebar" id="sidebar">
   <div class="logo">
     <div class="logo-icon">🎵</div>
@@ -1114,6 +1109,7 @@ body{overflow-x:hidden}
 <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
 <!-- CONTENT -->
+
 <div class="content-area">
   <div class="topbar">
     <div class="topbar-left">
@@ -1431,6 +1427,7 @@ body{overflow-x:hidden}
         </div>
       </section>
     </div>
+
   </div>
 </div>
 </div>
@@ -1858,6 +1855,19 @@ function switchPage(pageId,navId){
   window.scrollTo(0,0);
 }
 
+/* ★修正①: アクティブページ判定ヘルパー
+   style.display==='block' のみだと初期値 '' を見落とす可能性があるため
+   'none' と '' 以外を "表示中" と判定するロジックに変更 */
+function getActivePage(){
+  for(var i=0;i<ALL_PAGES.length;i++){
+    var el=document.getElementById(ALL_PAGES[i]);
+    if(el&&el.style.display!=='none'&&el.style.display!==''){
+      return ALL_PAGES[i];
+    }
+  }
+  return 'page-dashboard';
+}
+
 function openLivesPage(){
   switchPage('page-lives','nav-lives');
   closeSidebar();
@@ -1953,6 +1963,7 @@ function renderLivesPage(){
     refresh();
   }
 }
+
 /* ─── NOTE PAGE ─── */
 var NP_STEP=20;
 var _npFiltered=[];
@@ -1993,6 +2004,7 @@ function renderNotesPage(){
   }
   if(!_npFiltered.length&&grid)grid.innerHTML='<div style="font-size:12px;color:var(--text-3);padding:20px 0">Note記事がありません</div>';
 }
+
 function openVenuePage(){
   switchPage('page-venues','nav-venues');
   closeSidebar();
@@ -2000,9 +2012,7 @@ function openVenuePage(){
 }
 
 /* ─── VENUE PAGE ─── */
-var VR_STEP=20;var _vrShown=0;var _vrItems=[];
-
-/* ─── VENUE PAGE ─── */
+/* ★修正②: 重複していた var VR_STEP/var _vrShown/var _vrItems の宣言を1か所に統一（元コードで2重宣言されていたものを削除） */
 var VR_STEP=20;var _vrShown=0;var _vrItems=[];
 var _venueDonutChart=null;
 var _venueSearchQuery='';var _venueTypeFilter='all';
@@ -2634,22 +2644,34 @@ function renderHeader(){
   setEl('filter-status-text',ct);
 }
 function renderTotals(){}
+
+/* ★修正①②③: renderDashboard() を修正
+   【問題】元コードでは renderCharts() 等が常に実行されており、
+   ライブ履歴やNote履歴ページでフィルター変更すると
+   非表示の canvas に対して Chart.js がアクセスしてエラーになっていた。
+   【修正】アクティブページを先頭で判定し、
+   ダッシュボード以外では chart 系の重い処理を実行しないようにした。
+   これにより各ページでのフィルター再描画が確実に動作するようになる。 */
 function renderDashboard(){
   var records=getFilteredRecords();
   try{renderHeader();}catch(e){console.error('header',e);}
-  try{renderQualityInline();}catch(e){console.error('quality',e);}
-  try{renderThisMonth();}catch(e){console.error('thisMonth',e);}
-  try{renderCharts(records);}catch(e){console.error('charts',e);}
-  try{renderRecentNotes();}catch(e){console.error('notes',e);}
-  try{renderLeftPanel(records);}catch(e){console.error('artist',e);}
-  try{renderVenueRanking(records);}catch(e){console.error('venue',e);}
-  try{renderPeriodSummary(records);}catch(e){console.error('periodSummary',e);}
-  try{renderOnThisDay();}catch(e){console.error('onThisDay',e);}
-  try{renderRecentLives();}catch(e){console.error('recentLives',e);}
-  try{renderStar5List(records);}catch(e){console.error('star5',e);}
-  /* アクティブなページを連動更新 */
-  var activePage=ALL_PAGES.find(function(p){var el=document.getElementById(p);return el&&el.style.display==='block';});
-  if(activePage==='page-artist'){
+
+  /* ★修正①: アクティブページを先に判定 */
+  var activePage=getActivePage();
+
+  if(activePage==='page-dashboard'){
+    /* ダッシュボードのときだけ重い処理（canvas含む）を実行 */
+    try{renderQualityInline();}catch(e){console.error('quality',e);}
+    try{renderThisMonth();}catch(e){console.error('thisMonth',e);}
+    try{renderCharts(records);}catch(e){console.error('charts',e);}
+    try{renderRecentNotes();}catch(e){console.error('notes',e);}
+    try{renderLeftPanel(records);}catch(e){console.error('artist',e);}
+    try{renderVenueRanking(records);}catch(e){console.error('venue',e);}
+    try{renderPeriodSummary(records);}catch(e){console.error('periodSummary',e);}
+    try{renderOnThisDay();}catch(e){console.error('onThisDay',e);}
+    try{renderRecentLives();}catch(e){console.error('recentLives',e);}
+    try{renderStar5List(records);}catch(e){console.error('star5',e);}
+  } else if(activePage==='page-artist'){
     if(currentArtistPage){try{renderArtistPage(currentArtistPage);}catch(e){console.error('artistPage',e);}}
     else{try{_apAllItems=[];renderArtistList();}catch(e){console.error('artistList',e);}}
   } else if(activePage==='page-venues'){
@@ -2662,6 +2684,7 @@ function renderDashboard(){
     try{renderNotesPage();}catch(e){console.error('notesPage',e);}
   }
 }
+
 function showDashboard(){
   document.getElementById('no-data-screen').classList.add('hidden');
   document.getElementById('app-pages').classList.remove('hidden');
@@ -2720,12 +2743,16 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function escAttr(s){return esc(s).replace(/'/g,'&#39;');}
 
 /* ─── THEME TOGGLE ─── */
+/* ★修正③: applyTheme() を修正
+   元コードでは if(barChart||lineChart) の条件で renderDashboard() を呼んでいたが、
+   これだとライブ履歴ページ等でテーマ変更しても再描画されなかった。
+   allRecords.length で判定するよう変更し、アクティブページが正しく再描画されるようにした。 */
 function applyTheme(theme){
   document.documentElement.setAttribute('data-theme',theme);
   var btn=document.getElementById('theme-toggle');
   if(btn)btn.textContent=theme==='dark'?'☀️ ライト':'🌙 ダーク';
   try{localStorage.setItem('ll-theme',theme);}catch(e){}
-  if(barChart||lineChart)renderDashboard();
+  if(allRecords.length)renderDashboard();
 }
 (function(){try{var t=localStorage.getItem('ll-theme');if(t)applyTheme(t);}catch(e){}})();
 
@@ -2847,5 +2874,6 @@ document.getElementById('ap-back-btn').addEventListener('click',function(){
 });
 loadFromApi();
 </script>
+
 </body>
 </html>
