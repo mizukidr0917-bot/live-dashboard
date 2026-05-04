@@ -488,6 +488,114 @@ a:hover{text-decoration:underline}
   .an-sum-val{font-size:28px}
   .an-two-col{gap:12px}
 }
+
+/* ═══════════════════════════════════════ CALENDAR PAGE ═══════════════════════════════════════ */
+/* ★追加: カレンダーページ専用スタイル */
+
+/* ヘッダー操作行 */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px}
+.cal-nav-btn{border:1px solid var(--border-s);background:var(--bg-card);color:var(--text-2);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.cal-nav-btn:hover{border-color:var(--accent);color:var(--accent-2)}
+[data-theme="light"] .cal-nav-btn{background:#fff}
+.cal-month-label{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:20px;font-weight:700;color:var(--text);text-align:center;flex:1}
+.cal-summary-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.cal-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 12px;border-radius:99px;border:1px solid var(--border-s);color:var(--text-2);background:var(--bg-card)}
+[data-theme="light"] .cal-chip{background:#fff}
+.cal-chip-val{color:var(--accent-2);font-weight:700}
+
+/* カレンダーグリッド */
+.cal-grid-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-card);margin-bottom:20px}
+[data-theme="light"] .cal-grid-wrap{background:#fff}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);background:var(--bg-3);border-bottom:1px solid var(--border)}
+.cal-weekday{text-align:center;font-size:10px;font-weight:700;color:var(--text-3);padding:8px 4px;letter-spacing:.06em}
+.cal-weekday.sun{color:rgba(244,114,182,.7)}
+.cal-weekday.sat{color:rgba(74,158,255,.7)}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:72px;padding:6px;cursor:pointer;transition:background .15s;position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.cal-cell:nth-child(7n){border-right:none}
+.cal-cell:hover{background:rgba(124,110,247,.06)}
+.cal-cell.empty{background:transparent;cursor:default;min-height:72px}
+.cal-cell.empty:hover{background:transparent}
+.cal-cell.today .cal-day-num{background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.cal-cell.has-live{background:rgba(124,110,247,.04)}
+.cal-cell.has-live:hover{background:rgba(124,110,247,.1)}
+.cal-day-num{font-size:12px;font-weight:600;color:var(--text-2);line-height:1;flex-shrink:0}
+.cal-cell.sun .cal-day-num{color:rgba(244,114,182,.8)}
+.cal-cell.sat .cal-day-num{color:rgba(74,158,255,.8)}
+/* ライブ数バッジ：回数に応じて色が濃くなる */
+.cal-badge{font-size:10px;font-weight:700;border-radius:6px;padding:2px 6px;white-space:nowrap;line-height:1.4}
+.cal-badge.cnt-1{background:rgba(124,110,247,.18);color:var(--accent-2)}
+.cal-badge.cnt-2{background:rgba(124,110,247,.32);color:var(--accent-2)}
+.cal-badge.cnt-3{background:rgba(124,110,247,.48);color:#fff}
+.cal-badge.cnt-hi{background:rgba(124,110,247,.72);color:#fff}
+[data-theme="light"] .cal-badge.cnt-1{background:rgba(109,92,224,.12);color:var(--accent)}
+[data-theme="light"] .cal-badge.cnt-2{background:rgba(109,92,224,.24);color:var(--accent)}
+[data-theme="light"] .cal-badge.cnt-3{background:rgba(109,92,224,.42);color:var(--accent)}
+[data-theme="light"] .cal-badge.cnt-hi{background:rgba(109,92,224,.65);color:#fff}
+/* スマホ: セル高を縮める */
+@media(max-width:640px){
+  .cal-cell{min-height:52px;padding:4px}
+  .cal-day-num{font-size:11px}
+  .cal-badge{font-size:9px;padding:1px 4px}
+  .cal-month-label{font-size:16px}
+}
+
+/* 日別ライブ一覧モーダル */
+.cal-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .22s}
+.cal-modal-overlay.open{opacity:1;visibility:visible}
+.cal-modal{background:var(--bg-2);border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:80vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+.cal-modal-overlay.open .cal-modal{transform:translateY(0)}
+.cal-modal-header{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.cal-modal-title{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+.cal-modal-close{border:1px solid var(--border-s);background:var(--bg-card);color:var(--text-2);border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.cal-modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+.cal-modal-live-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.cal-modal-live-item:last-child{border-bottom:none}
+.cal-modal-live-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;background:var(--bg-3);flex-shrink:0;display:block}
+.cal-modal-live-ph{width:52px;height:52px;border-radius:8px;background:var(--bg-3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+.cal-modal-live-body{flex:1;min-width:0}
+.cal-modal-live-name{font-size:13px;font-weight:700;color:var(--text);font-family:'Space Grotesk','Noto Sans JP',sans-serif;line-height:1.35;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cal-modal-live-meta{font-size:11px;color:var(--text-2);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-modal-live-year{font-size:10px;color:var(--text-3);margin-bottom:6px}
+.cal-modal-live-actions{display:flex;gap:6px;flex-wrap:wrap}
+[data-theme="light"] .cal-modal{background:#fff}
+[data-theme="light"] .cal-modal-live-ph{background:var(--bg-3)}
+
+/* ═══════════════════════════════════════ VENUE PAGE — スマホ最適化 ═══════════════════════════════════════ */
+/* ★修正: 会場ページスマホ対応強化（PC版はそのまま） */
+@media(max-width:640px){
+  /* KPIカード: 高さを揃え文字サイズ安定化 */
+  .venue-kpi-card{padding:12px 11px}
+  .vkpi-val{font-size:20px}
+  .vkpi-label{font-size:10px;margin-bottom:4px}
+  .vkpi-sub{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* タイプ分布: ドーナツを中央寄せ、凡例を下に */
+  .vtype-donut-wrap{gap:12px}
+  .vtype-donut-center{width:140px;height:140px}
+  .vtype-legend-row{font-size:10px}
+  .vtype-legend-name{font-size:10px}
+  .vtype-legend-count{font-size:10px}
+  .vtype-legend-pct{font-size:10px}
+
+  /* よく行く会場TOP: バッジ折り返し対応 */
+  .vtop-item{gap:7px;padding:7px 2px}
+  .vtop-rank{font-size:15px;width:22px}
+  .vtop-rank.rn{font-size:12px}
+  .vtop-name{font-size:12px}
+  .vtop-type{display:none}  /* スマホでは省略 */
+  .vtop-count{font-size:12px;min-width:34px}
+  .vtop-pct{min-width:28px;font-size:9px}
+
+  /* 会場一覧: 読みやすく */
+  .vr-list-row{gap:8px;padding:9px 10px}
+  .vrl-name{font-size:11px}
+  .vrl-count{font-size:12px}
+  .vrl-type-tag{display:none}  /* スマホでは省略 */
+
+  /* 会場詳細下部余白 */
+  #page-venues{padding-bottom:calc(80px + env(safe-area-inset-bottom,12px))}
+}
 /* ═══════════════════════════════════════ FILTER DRAWER ═══════════════════════════════════════ */
 .fab-filter{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));border:none;border-radius:99px;background:linear-gradient(135deg,var(--accent),#5b6ef0);color:#fff;font-size:11px;font-weight:700;padding:8px 13px;cursor:pointer;box-shadow:0 5px 18px rgba(124,110,247,.4);display:none;z-index:80;font-family:'DM Sans',sans-serif;align-items:center;gap:5px}
 .filter-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .2s;z-index:70}
@@ -582,6 +690,8 @@ a:hover{text-decoration:underline}
     <button class="sidebar-link" id="nav-venues"><span style="font-size:13px">📍</span>会場</button>
     <!-- ★追加②: 分析ページナビ -->
     <button class="sidebar-link" id="nav-analysis"><span style="font-size:13px">📊</span>分析</button>
+    <!-- ★追加: カレンダーページナビ -->
+    <button class="sidebar-link" id="nav-calendar"><span style="font-size:13px">📅</span>カレンダー</button>
     <button class="sidebar-link" id="nav-lives"><span style="font-size:13px">🎵</span>ライブ履歴</button>
     <button class="sidebar-link" id="nav-notes"><span style="font-size:13px">📝</span>Note履歴</button>
   </nav>
@@ -833,6 +943,54 @@ a:hover{text-decoration:underline}
       </section>
 
       <!-- ══════════════════════════════════════════════════════════
+           ★追加: CALENDAR PAGE — 日付ベースでライブを振り返る
+              「いつ音楽に触れているか」を月カレンダーで表示
+              年を跨いだ同月日の履歴を重ねて集計
+           ══════════════════════════════════════════════════════════ -->
+      <section id="page-calendar" style="display:none">
+        <div style="margin-bottom:14px">
+          <div class="ll-title">📅 カレンダー</div>
+          <div class="ll-sub" id="cal-filter-label">いつ音楽に触れているかを振り返る</div>
+        </div>
+
+        <!-- 月ナビ -->
+        <div class="cal-nav">
+          <button class="cal-nav-btn" id="cal-prev" title="前の月">‹</button>
+          <div class="cal-month-label" id="cal-month-label">—</div>
+          <button class="cal-nav-btn" id="cal-next" title="次の月">›</button>
+        </div>
+
+        <!-- サマリーチップ（この月のライブ数合計） -->
+        <div class="cal-summary-chips" id="cal-summary-chips"></div>
+
+        <!-- カレンダー本体 -->
+        <div class="cal-grid-wrap">
+          <div class="cal-weekdays">
+            <div class="cal-weekday sun">日</div>
+            <div class="cal-weekday">月</div>
+            <div class="cal-weekday">火</div>
+            <div class="cal-weekday">水</div>
+            <div class="cal-weekday">木</div>
+            <div class="cal-weekday">金</div>
+            <div class="cal-weekday sat">土</div>
+          </div>
+          <div class="cal-days" id="cal-days"></div>
+        </div>
+
+        <!-- 凡例 -->
+        <div style="display:flex;align-items:center;gap:10px;font-size:10px;color:var(--text-3);margin-bottom:24px;flex-wrap:wrap">
+          <span>ライブ数：</span>
+          <span class="cal-badge cnt-1">1回</span>
+          <span class="cal-badge cnt-2">2回</span>
+          <span class="cal-badge cnt-3">3回</span>
+          <span class="cal-badge cnt-hi">4回以上</span>
+          <span style="margin-left:4px">※年を跨いだ同日の累計</span>
+        </div>
+
+        <div class="page-footer">日付をクリックするとその日のライブ一覧が表示されます。<span>♥</span></div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════
            ★追加③ ANALYSIS PAGE — 傾向・流れを見るページ
               ダッシュボードから分離した詳細分析
               アーティストTOP / 会場TOP / 星5一覧は含まない（専用ページと役割分担）
@@ -1026,6 +1184,17 @@ a:hover{text-decoration:underline}
     </div>
   </div>
 </div>
+<!-- ★追加: カレンダー 日別ライブモーダル -->
+<div class="cal-modal-overlay" id="cal-modal-overlay">
+  <div class="cal-modal">
+    <div class="cal-modal-header">
+      <div class="cal-modal-title" id="cal-modal-title">—</div>
+      <button class="cal-modal-close" id="cal-modal-close">×</button>
+    </div>
+    <div class="cal-modal-body" id="cal-modal-body"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1044,9 +1213,12 @@ var _apAllItems=[],_apSortMode='count',_apSearchQuery='';
 var _llFiltered=[],_llShown=0;
 var _npFiltered=[],_npShown=0;
 var _vrItems=[],_vrShown=0,_venueSearchQuery='',_venueTypeFilter='all';
-/* ★追加④: ALL_PAGES / ALL_NAVS に page-analysis / nav-analysis を追加 */
-var ALL_PAGES=['page-dashboard','page-artist','page-analysis','page-lives','page-notes','page-venues'];
-var ALL_NAVS=['nav-dashboard','nav-artist','nav-analysis','nav-lives','nav-notes','nav-venues'];
+/* ★追加: カレンダー表示月（year/month） */
+var _calYear=new Date().getFullYear();
+var _calMonth=new Date().getMonth(); /* 0-indexed */
+/* ★追加: ALL_PAGES / ALL_NAVS にカレンダーと分析を含める */
+var ALL_PAGES=['page-dashboard','page-artist','page-analysis','page-calendar','page-lives','page-notes','page-venues'];
+var ALL_NAVS=['nav-dashboard','nav-artist','nav-analysis','nav-calendar','nav-lives','nav-notes','nav-venues'];
 var VENUE_TYPE_COLORS=['#7c6ef7','#4a9eff','#fbbf24','#34d399','#f472b6','#a78bfa','#fb923c','#38bdf8','#86efac','#fde68a'];
 
 /* NOTE TYPE CONFIG */
@@ -1800,7 +1972,152 @@ function renderArtistPage(artistName){
 }
 
 /* ════════════════════════════════════════════════════════════════
-   ★追加④: ANALYSIS PAGE
+   ★追加: CALENDAR PAGE
+   「いつ音楽に触れているか」を月カレンダーで振り返るページ。
+   ・年を跨いだ同月日のライブを累計集計（MM-DD単位）
+   ・グローバルフィルター完全連動
+   ・カレンダーページ表示時のみ描画
+   ・日付クリックでその日のライブ一覧をモーダル表示
+════════════════════════════════════════════════════════════════ */
+function openCalendarPage(){
+  switchPage('page-calendar','nav-calendar');
+  closeSidebar();
+  try{renderCalendarPage();}catch(e){console.error('renderCalendarPage',e);}
+}
+
+function renderCalendarPage(){
+  var records=getFilteredRecords();
+  var now=new Date();
+
+  /* フィルターラベル */
+  var fl=document.getElementById('cal-filter-label');
+  if(fl)fl.textContent='表示条件：'+getConditionText();
+
+  /* 月ラベル更新 */
+  var monthNames=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  setEl('cal-month-label',_calYear+'年 '+monthNames[_calMonth]);
+
+  /* ─── MM-DD単位で集計（年跨ぎOK） ─── */
+  /* key: "MM-DD" → {count, lives[]} */
+  var dayMap={};
+  records.forEach(function(r){
+    var m=String(r.date.getMonth()+1).padStart(2,'0');
+    var d=String(r.date.getDate()).padStart(2,'0');
+    var key=m+'-'+d;
+    if(!dayMap[key])dayMap[key]={count:0,lives:[]};
+    dayMap[key].count++;
+    dayMap[key].lives.push(r);
+  });
+
+  /* ─── 表示月のサマリー（この年月に限らない：MM-DDで集計した全年分） ─── */
+  var calMonthKey=String(_calMonth+1).padStart(2,'0');
+  var thisMonthTotal=0;
+  Object.entries(dayMap).forEach(function(e){
+    if(e[0].startsWith(calMonthKey+'-'))thisMonthTotal+=e[1].count;
+  });
+  /* 最多ライブ日を特定 */
+  var maxCount=0;
+  Object.values(dayMap).forEach(function(v){if(v.count>maxCount)maxCount=v.count;});
+  /* サマリーチップ */
+  var chips=document.getElementById('cal-summary-chips');
+  if(chips){
+    /* この月の合計（年跨ぎ累計）と今月実績（currentPeriod内）を表示 */
+    var thisMonthReal=records.filter(function(r){
+      return r.date.getFullYear()===_calYear&&r.date.getMonth()===_calMonth;
+    }).length;
+    chips.innerHTML=
+      '<div class="cal-chip">📅 この月の累計<span class="cal-chip-val">'+thisMonthTotal+'回</span></div>'+
+      (thisMonthReal>0?'<div class="cal-chip">'+_calYear+'年実績<span class="cal-chip-val">'+thisMonthReal+'回</span></div>':'')+
+      (maxCount>0?'<div class="cal-chip">最多日<span class="cal-chip-val">'+maxCount+'回</span></div>':'');
+  }
+
+  /* ─── カレンダーグリッド生成 ─── */
+  var firstDay=new Date(_calYear,_calMonth,1).getDay(); /* 0=日 */
+  var daysInMonth=new Date(_calYear,_calMonth+1,0).getDate();
+  var todayY=now.getFullYear(),todayM=now.getMonth(),todayD=now.getDate();
+
+  var cells='';
+  /* 空白セル（月初前） */
+  for(var i=0;i<firstDay;i++){
+    cells+='<div class="cal-cell empty"></div>';
+  }
+  /* 日付セル */
+  for(var day=1;day<=daysInMonth;day++){
+    var dd=String(day).padStart(2,'0');
+    var key=calMonthKey+'-'+dd;
+    var info=dayMap[key]||{count:0,lives:[]};
+    var cnt=info.count;
+    var dow=new Date(_calYear,_calMonth,day).getDay();
+    var isToday=(_calYear===todayY&&_calMonth===todayM&&day===todayD);
+    var dowCls=dow===0?' sun':dow===6?' sat':'';
+    var hasLiveCls=cnt>0?' has-live':'';
+    var todayCls=isToday?' today':'';
+    /* バッジ色クラス */
+    var badgeCls=cnt===1?'cnt-1':cnt===2?'cnt-2':cnt===3?'cnt-3':cnt>=4?'cnt-hi':'';
+    var badge=cnt>0?'<div class="cal-badge '+badgeCls+'">'+cnt+'回</div>':'';
+    cells+='<div class="cal-cell'+hasLiveCls+todayCls+dowCls+'"'
+      +(cnt>0?' onclick="openCalModal(\''+key+'\')"':'')+' data-day="'+day+'">'
+      +'<span class="cal-day-num">'+day+'</span>'
+      +badge
+      +'</div>';
+  }
+
+  var daysEl=document.getElementById('cal-days');
+  if(daysEl)daysEl.innerHTML=cells;
+
+  /* dayMapをグローバルに保持（モーダル参照用） */
+  window._calDayMap=dayMap;
+}
+
+/* カレンダーの日付クリック → モーダル表示 */
+function openCalModal(key){
+  var info=(window._calDayMap||{})[key];
+  if(!info||!info.lives.length)return;
+  var overlay=document.getElementById('cal-modal-overlay');
+  var title=document.getElementById('cal-modal-title');
+  var body=document.getElementById('cal-modal-body');
+  if(!overlay||!title||!body)return;
+
+  /* タイトル例: 5月2日 (累計6回) */
+  var parts=key.split('-');
+  var mNum=parseInt(parts[0],10);var dNum=parseInt(parts[1],10);
+  title.textContent=mNum+'月'+dNum+'日 — '+info.count+'回';
+
+  /* 年降順ソート */
+  var lives=info.lives.slice().sort(function(a,b){return b.date-a.date;});
+  body.innerHTML=lives.map(function(r){
+    var ln=(notesByLiveId.get(r.id)||[])[0]||null;
+    var sl=r.setlistUrl?'<a class="ap-link" href="'+escAttr(r.setlistUrl)+'" target="_blank" rel="noopener">セットリスト</a>':'';
+    var nl=ln?'<a class="ap-link" href="'+escAttr(ln.noteUrl)+'" target="_blank" rel="noopener">Note</a>':'';
+    var thumb=r.imageUrl
+      ?'<img src="'+escAttr(r.imageUrl)+'" alt="" class="cal-modal-live-thumb" onerror="this.style.display=\'none\'">'
+      :'<div class="cal-modal-live-ph">🎵</div>';
+    var artist=r.artists.length?r.artists.join('・'):'—';
+    return '<div class="cal-modal-live-item">'
+      +thumb
+      +'<div class="cal-modal-live-body">'
+        +'<div class="cal-modal-live-year">'+r.date.getFullYear()+'年</div>'
+        +'<div class="cal-modal-live-name">'+esc(r.liveName||'—')+'</div>'
+        +'<div class="cal-modal-live-meta">🎤 '+esc(artist)+'　📍 '+esc(r.venue||'—')+'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
+          +'<span style="font-size:9px;background:var(--bg-3);color:var(--text-2);border:1px solid var(--border);border-radius:99px;padding:1px 7px">'+esc(r.format||'—')+'</span>'
+          +(r.rating?'<span style="font-size:11px;color:var(--amber);font-weight:700">★'+r.rating+'</span>':'')
+        +'</div>'
+        +'<div class="cal-modal-live-actions">'+sl+nl+'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeCalModal(){
+  var overlay=document.getElementById('cal-modal-overlay');
+  if(overlay)overlay.classList.remove('open');
+  document.body.style.overflow='';
+}
+
+
    自分の音楽活動の傾向・流れを見るページ。
    ・グローバルフィルター（currentArtist / currentPeriod / currentFormat / currentRating）に完全連動
    ・分析ページ表示時のみ描画（非表示状態でcanvasにアクセスしない）
@@ -2031,6 +2348,9 @@ function renderDashboard(){
   } else if(activePage==='page-analysis'){
     /* ★追加: 分析ページ表示時のみ描画（canvasエラー防止） */
     try{renderAnalysisPage();}catch(e){console.error('renderAnalysisPage',e);}
+  } else if(activePage==='page-calendar'){
+    /* ★追加: カレンダーページ表示時のみ描画 */
+    try{renderCalendarPage();}catch(e){console.error('renderCalendarPage',e);}
   } else if(activePage==='page-venues'){
     _venueTypeFilter='all';_venueSearchQuery='';
     var vtf=document.getElementById('venue-type-filter');if(vtf)vtf.innerHTML='';
@@ -2167,9 +2487,28 @@ document.getElementById('nav-dashboard').addEventListener('click',function(){ope
 document.getElementById('nav-artist').addEventListener('click',function(){openArtistListView();});
 /* ★追加: 分析ページナビイベント */
 document.getElementById('nav-analysis').addEventListener('click',function(){openAnalysisPage();});
+/* ★追加: カレンダーページナビイベント */
+document.getElementById('nav-calendar').addEventListener('click',function(){openCalendarPage();});
 document.getElementById('nav-lives').addEventListener('click',function(){openLivesPage();});
 document.getElementById('nav-notes').addEventListener('click',function(){openNotesPage();});
 document.getElementById('nav-venues').addEventListener('click',function(){openVenuePage();});
+
+/* ★追加: カレンダー前月/次月ボタン */
+document.getElementById('cal-prev').addEventListener('click',function(){
+  _calMonth--;
+  if(_calMonth<0){_calMonth=11;_calYear--;}
+  try{renderCalendarPage();}catch(e){}
+});
+document.getElementById('cal-next').addEventListener('click',function(){
+  _calMonth++;
+  if(_calMonth>11){_calMonth=0;_calYear++;}
+  try{renderCalendarPage();}catch(e){}
+});
+/* ★追加: カレンダーモーダル閉じ */
+document.getElementById('cal-modal-close').addEventListener('click',closeCalModal);
+document.getElementById('cal-modal-overlay').addEventListener('click',function(e){
+  if(e.target===this)closeCalModal();
+});
 /* sort selects */
 (function(){
   var ls=document.getElementById('ll-sort-sel');if(ls)ls.addEventListener('change',function(){renderLivesPage();});
