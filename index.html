@@ -425,6 +425,69 @@ a:hover{text-decoration:underline}
 [data-theme="light"] .note-monthly-card{background:#fff}
 .note-bar-chart-wrap{position:relative;height:140px;margin-top:8px}
 
+/* ═══════════════════════════════════════ ANALYSIS PAGE ═══════════════════════════════════════ */
+/* ★追加①: 分析ページ専用スタイル */
+
+/* ヘッダーバナー */
+.an-hero{
+  background:linear-gradient(135deg,rgba(124,110,247,.16) 0%,rgba(74,158,255,.1) 60%,rgba(124,110,247,.04) 100%);
+  border:1px solid rgba(124,110,247,.24);border-radius:20px;
+  padding:24px 28px;margin-bottom:24px;position:relative;overflow:hidden;
+}
+[data-theme="light"] .an-hero{background:linear-gradient(135deg,rgba(109,92,224,.09),rgba(37,99,235,.05));border-color:rgba(109,92,224,.2);}
+.an-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(124,110,247,.18) 0%,transparent 65%);pointer-events:none}
+.an-hero-title{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;position:relative;z-index:1}
+.an-hero-sub{font-size:12px;color:var(--text-2);position:relative;z-index:1;line-height:1.6}
+.an-hero-cond{display:inline-block;font-size:11px;font-weight:600;color:var(--accent-2);background:rgba(124,110,247,.12);border:1px solid rgba(124,110,247,.22);border-radius:99px;padding:3px 12px;margin-top:8px;position:relative;z-index:1}
+
+/* サマリーカード行 */
+.an-summary-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:28px}
+@media(max-width:800px){.an-summary-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:400px){.an-summary-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
+.an-sum-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:18px 16px;box-shadow:var(--shadow-card);position:relative;overflow:hidden;transition:transform .16s,border-color .16s}
+.an-sum-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:16px 16px 0 0}
+.an-sum-card.c-blue::after{background:linear-gradient(90deg,var(--blue),transparent)}
+.an-sum-card.c-green::after{background:linear-gradient(90deg,var(--green),transparent)}
+.an-sum-card.c-amber::after{background:linear-gradient(90deg,var(--amber),transparent)}
+.an-sum-card.c-purple::after{background:linear-gradient(90deg,var(--accent),transparent)}
+.an-sum-card:hover{transform:translateY(-2px)}
+[data-theme="light"] .an-sum-card{background:#fff}
+.an-sum-icon{font-size:18px;margin-bottom:8px}
+.an-sum-val{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:36px;font-weight:700;line-height:1;color:var(--text);letter-spacing:-.02em}
+.an-sum-val .unit{font-size:13px;font-weight:500;color:var(--text-2);margin-left:2px}
+.an-sum-label{font-size:11px;color:var(--text-2);margin-top:4px}
+.an-sum-sub{font-size:10px;color:var(--text-3);margin-top:3px}
+
+/* グラフカード */
+.an-chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow-card);margin-bottom:16px}
+[data-theme="light"] .an-chart-card{background:#fff}
+.an-chart-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;gap:12px}
+.an-chart-title{font-family:'Space Grotesk','Noto Sans JP',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+.an-chart-sub{font-size:11px;color:var(--text-3);margin-bottom:16px}
+.an-chart-wrap{position:relative}
+.an-chart-insight{font-size:11px;color:var(--accent-2);background:rgba(124,110,247,.07);border:1px solid rgba(124,110,247,.14);border-radius:8px;padding:6px 12px;margin-top:12px;line-height:1.5}
+[data-theme="light"] .an-chart-insight{background:rgba(109,92,224,.06);border-color:rgba(109,92,224,.12)}
+
+/* 2カラム（グラフ2つ横並び） */
+.an-two-col{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;margin-bottom:16px;align-items:start}
+@media(max-width:860px){.an-two-col{grid-template-columns:1fr}}
+
+/* 円グラフ + 凡例 */
+.an-pie-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.an-pie-canvas{position:relative;flex-shrink:0}
+.an-pie-legend{flex:1;min-width:120px;display:flex;flex-direction:column;gap:8px}
+.an-pie-legend-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.an-pie-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.an-pie-name{flex:1;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.an-pie-cnt{color:var(--text-2);font-weight:600;white-space:nowrap;font-size:12px}
+.an-pie-pct{color:var(--text-3);white-space:nowrap;font-size:11px;min-width:34px;text-align:right}
+
+@media(max-width:640px){
+  .an-hero{padding:16px 18px;margin-bottom:18px}
+  .an-hero-title{font-size:18px}
+  .an-sum-val{font-size:28px}
+  .an-two-col{gap:12px}
+}
 /* ═══════════════════════════════════════ FILTER DRAWER ═══════════════════════════════════════ */
 .fab-filter{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));border:none;border-radius:99px;background:linear-gradient(135deg,var(--accent),#5b6ef0);color:#fff;font-size:11px;font-weight:700;padding:8px 13px;cursor:pointer;box-shadow:0 5px 18px rgba(124,110,247,.4);display:none;z-index:80;font-family:'DM Sans',sans-serif;align-items:center;gap:5px}
 .filter-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .2s;z-index:70}
@@ -517,6 +580,8 @@ a:hover{text-decoration:underline}
     <button class="sidebar-link active" id="nav-dashboard"><span style="font-size:13px">🏠</span>ダッシュボード</button>
     <button class="sidebar-link" id="nav-artist"><span style="font-size:13px">🎤</span>アーティスト</button>
     <button class="sidebar-link" id="nav-venues"><span style="font-size:13px">📍</span>会場</button>
+    <!-- ★追加②: 分析ページナビ -->
+    <button class="sidebar-link" id="nav-analysis"><span style="font-size:13px">📊</span>分析</button>
     <button class="sidebar-link" id="nav-lives"><span style="font-size:13px">🎵</span>ライブ履歴</button>
     <button class="sidebar-link" id="nav-notes"><span style="font-size:13px">📝</span>Note履歴</button>
   </nav>
@@ -768,6 +833,102 @@ a:hover{text-decoration:underline}
       </section>
 
       <!-- ══════════════════════════════════════════════════════════
+           ★追加③ ANALYSIS PAGE — 傾向・流れを見るページ
+              ダッシュボードから分離した詳細分析
+              アーティストTOP / 会場TOP / 星5一覧は含まない（専用ページと役割分担）
+           ══════════════════════════════════════════════════════════ -->
+      <section id="page-analysis" style="display:none">
+
+        <!-- ヒーローバナー：表示条件を明示 -->
+        <div class="an-hero">
+          <div class="an-hero-title">📊 分析</div>
+          <div class="an-hero-sub">自分の音楽活動の「傾向・流れ」を振り返るページ</div>
+          <div class="an-hero-cond" id="an-cond-text">全アーティスト / 今年</div>
+        </div>
+
+        <!-- ① 期間サマリー -->
+        <div class="sec-label" style="margin-bottom:14px">期間サマリー</div>
+        <div class="an-summary-row">
+          <div class="an-sum-card c-blue">
+            <div class="an-sum-icon">🎵</div>
+            <div class="an-sum-val" id="an-live-count">—<span class="unit">本</span></div>
+            <div class="an-sum-label">ライブ数</div>
+            <div class="an-sum-sub" id="an-live-sub">—</div>
+          </div>
+          <div class="an-sum-card c-amber">
+            <div class="an-sum-icon">⭐</div>
+            <div class="an-sum-val" id="an-avg-rating">—<span class="unit">★</span></div>
+            <div class="an-sum-label">平均評価</div>
+            <div class="an-sum-sub" id="an-avg-sub">—</div>
+          </div>
+          <div class="an-sum-card c-green">
+            <div class="an-sum-icon">📝</div>
+            <div class="an-sum-val" id="an-note-count">—<span class="unit">件</span></div>
+            <div class="an-sum-label">Note投稿数</div>
+            <div class="an-sum-sub" id="an-note-sub">—</div>
+          </div>
+          <div class="an-sum-card c-purple">
+            <div class="an-sum-icon">📅</div>
+            <div class="an-sum-val" id="an-active-days">—<span class="unit">日</span></div>
+            <div class="an-sum-label">ライブ活動日数</div>
+            <div class="an-sum-sub" id="an-days-sub">—</div>
+          </div>
+        </div>
+
+        <!-- ② 月別ライブ回数（棒グラフ） + ④ 月別平均評価（折れ線） -->
+        <div class="an-chart-card">
+          <div class="an-chart-header">
+            <div>
+              <div class="an-chart-title" id="an-bar-title">月別ライブ回数</div>
+              <div class="an-chart-sub">形式別の内訳（積み上げ）</div>
+            </div>
+          </div>
+          <div class="an-chart-wrap" style="height:200px"><canvas id="an-bar-chart"></canvas></div>
+          <div class="an-chart-insight" id="an-bar-insight" style="display:none"></div>
+        </div>
+
+        <div class="an-chart-card">
+          <div class="an-chart-header">
+            <div>
+              <div class="an-chart-title" id="an-line-title">月別平均評価の推移</div>
+              <div class="an-chart-sub">評価の流れ・波を見る</div>
+            </div>
+          </div>
+          <div class="an-chart-wrap" style="height:180px"><canvas id="an-line-chart"></canvas></div>
+          <div class="an-chart-insight" id="an-line-insight" style="display:none"></div>
+        </div>
+
+        <!-- ③ 形式別構成（円グラフ + 凡例） -->
+        <div class="sec-label" style="margin-bottom:14px;margin-top:4px">形式別構成</div>
+        <div class="an-two-col">
+          <div class="an-chart-card" style="margin-bottom:0">
+            <div class="an-chart-title" style="margin-bottom:4px">ライブ形式の内訳</div>
+            <div class="an-chart-sub">どんなスタイルで音楽を楽しんでいるか</div>
+            <div class="an-pie-wrap">
+              <div class="an-pie-canvas" style="position:relative;width:160px;height:160px">
+                <canvas id="an-pie-chart" width="160" height="160"></canvas>
+                <div id="an-pie-center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;line-height:1.3">
+                  <div style="font-size:10px;color:var(--text-3)">合計</div>
+                  <div id="an-pie-total" style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--text)">—</div>
+                  <div style="font-size:10px;color:var(--text-3)">回</div>
+                </div>
+              </div>
+              <div class="an-pie-legend" id="an-pie-legend"></div>
+            </div>
+            <div class="an-chart-insight" id="an-pie-insight" style="display:none;margin-top:14px"></div>
+          </div>
+          <!-- 形式別詳細テキストカード -->
+          <div class="an-chart-card" style="margin-bottom:0">
+            <div class="an-chart-title" style="margin-bottom:4px">形式別の傾向</div>
+            <div class="an-chart-sub">各形式の平均評価と回数</div>
+            <div id="an-format-detail" style="display:flex;flex-direction:column;gap:10px;margin-top:12px"></div>
+          </div>
+        </div>
+
+        <div class="page-footer" style="margin-top:28px">分析は振り返りの出発点。次のライブがもっと楽しみになります。<span>♥</span></div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════
            ④ LIVE LIST PAGE — 全記録
            ══════════════════════════════════════════════════════════ -->
       <section id="page-lives" style="display:none">
@@ -874,6 +1035,8 @@ a:hover{text-decoration:underline}
 var allRecords=[],allNotes=[],allArtists=[];
 var notesByLiveId=new Map();
 var barChart=null,lineChart=null,venueDonutChart=null,apChart=null,noteMonthlyChart=null;
+/* ★追加④: 分析ページ用Chart.jsインスタンス（非表示時に描画しないよう別管理） */
+var anBarChart=null,anLineChart=null,anPieChart=null;
 var currentArtist='all',currentPeriod='thisYear',selectedYear=new Date().getFullYear();
 var currentFormat='all',currentRating='all';
 var currentArtistPage='';
@@ -881,8 +1044,9 @@ var _apAllItems=[],_apSortMode='count',_apSearchQuery='';
 var _llFiltered=[],_llShown=0;
 var _npFiltered=[],_npShown=0;
 var _vrItems=[],_vrShown=0,_venueSearchQuery='',_venueTypeFilter='all';
-var ALL_PAGES=['page-dashboard','page-artist','page-lives','page-notes','page-venues'];
-var ALL_NAVS=['nav-dashboard','nav-artist','nav-lives','nav-notes','nav-venues'];
+/* ★追加④: ALL_PAGES / ALL_NAVS に page-analysis / nav-analysis を追加 */
+var ALL_PAGES=['page-dashboard','page-artist','page-analysis','page-lives','page-notes','page-venues'];
+var ALL_NAVS=['nav-dashboard','nav-artist','nav-analysis','nav-lives','nav-notes','nav-venues'];
 var VENUE_TYPE_COLORS=['#7c6ef7','#4a9eff','#fbbf24','#34d399','#f472b6','#a78bfa','#fb923c','#38bdf8','#86efac','#fde68a'];
 
 /* NOTE TYPE CONFIG */
@@ -1636,8 +1800,204 @@ function renderArtistPage(artistName){
 }
 
 /* ════════════════════════════════════════════════════════════════
-   PAGE NAVIGATION
+   ★追加④: ANALYSIS PAGE
+   自分の音楽活動の傾向・流れを見るページ。
+   ・グローバルフィルター（currentArtist / currentPeriod / currentFormat / currentRating）に完全連動
+   ・分析ページ表示時のみ描画（非表示状態でcanvasにアクセスしない）
+   ・アーティストTOP / 会場TOP / 星5一覧は含まない（専用ページと役割分担）
 ════════════════════════════════════════════════════════════════ */
+function openAnalysisPage(){
+  switchPage('page-analysis','nav-analysis');
+  closeSidebar();
+  try{renderAnalysisPage();}catch(e){console.error('renderAnalysisPage',e);}
+}
+
+function renderAnalysisPage(){
+  var records=getFilteredRecords();
+  var notes=getFilteredNotes();
+  var isDark=(document.documentElement.getAttribute('data-theme')||'dark')==='dark';
+  var tc=isDark?'#545c7e':'#9299b8';
+  var gridColor=isDark?'rgba(255,255,255,.04)':'rgba(0,0,0,.05)';
+
+  /* 表示条件テキスト更新 */
+  setEl('an-cond-text',getConditionText());
+
+  /* ─── ① 期間サマリー ─── */
+  var total=records.length;
+  var rated=records.filter(function(r){return r.rating>0;});
+  var avg=rated.length?(rated.reduce(function(s,r){return s+r.rating;},0)/rated.length):0;
+  var star5=records.filter(function(r){return r.rating===5;}).length;
+  /* ユニーク日数（同じ日に複数ライブがあっても1日） */
+  var uniqueDays=new Set(records.map(function(r){return r.date.getFullYear()+'-'+(r.date.getMonth()+1)+'-'+r.date.getDate();})).size;
+  /* Note化率 */
+  var noteRate=total>0?Math.round((notes.length/total)*100):0;
+
+  setHtml('an-live-count',total+'<span class="unit">本</span>');
+  setEl('an-live-sub',star5+'回 ★5あり（'+Math.round(star5/Math.max(1,total)*100)+'%）');
+  setHtml('an-avg-rating',avg>0?avg.toFixed(1)+'<span class="unit">★</span>':'—');
+  setEl('an-avg-sub',avg>0?'最高評価 ★'+(records.reduce(function(m,r){return Math.max(m,r.rating);},0)):'評価データなし');
+  setHtml('an-note-count',notes.length+'<span class="unit">件</span>');
+  setEl('an-note-sub','Note化率 '+noteRate+'%');
+  setHtml('an-active-days',uniqueDays+'<span class="unit">日</span>');
+  setEl('an-days-sub',total>0?'1日あたり '+(total/Math.max(1,uniqueDays)).toFixed(1)+'本':'—');
+
+  /* ─── バケット共通計算（月別 or 年別） ─── */
+  var now=new Date();
+  var buckets=[];
+  if(currentPeriod==='thisYear'||currentPeriod==='year'){
+    var y=currentPeriod==='year'?selectedYear:now.getFullYear();
+    for(var m=0;m<12;m++)buckets.push({y:y,m:m,key:y+'-'+String(m+1).padStart(2,'0'),label:(m+1)+'月'});
+  } else if(currentPeriod==='last12'){
+    for(var i=11;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);buckets.push({y:d.getFullYear(),m:d.getMonth(),key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:(d.getMonth()+1)+'月'});}
+  } else {
+    var yrs=[...new Set(records.map(function(r){return r.date.getFullYear();}))].sort(function(a,b){return a-b;});
+    yrs.forEach(function(yr){buckets.push({y:yr,m:null,key:''+yr,label:''+yr});});
+  }
+
+  /* バケットにデータを集計 */
+  var fmtKeys=['ワンマン','対バン','フェス','サーキット'];
+  var bucketMap=new Map();
+  buckets.forEach(function(b){
+    var fo={};fmtKeys.forEach(function(k){fo[k]=0;});
+    bucketMap.set(b.key,{count:0,rTotal:0,rCount:0,formats:fo});
+  });
+  records.forEach(function(r){
+    var key=currentPeriod==='all'?(''+r.date.getFullYear()):(r.date.getFullYear()+'-'+String(r.date.getMonth()+1).padStart(2,'0'));
+    if(!bucketMap.has(key))return;
+    var row=bucketMap.get(key);row.count++;
+    if(r.rating>0){row.rTotal+=r.rating;row.rCount++;}
+    if(row.formats[r.format]!==undefined)row.formats[r.format]++;
+  });
+  var stats=buckets.map(function(b){
+    var row=bucketMap.get(b.key);
+    return{label:b.label,count:row.count,avgRating:row.rCount?+(row.rTotal/row.rCount).toFixed(2):null,formats:row.formats};
+  });
+  var labels=stats.map(function(s){return s.label;});
+  var maxTick=labels.length>18?2:1;
+  var tickCb=function(v,idx){return idx%maxTick===0?labels[idx]:'';};
+
+  /* 期間ラベル */
+  var pLabel=currentPeriod==='year'?(selectedYear+'年'):currentPeriod==='thisYear'?'今年':currentPeriod==='last12'?'直近12ヶ月':'全期間';
+  setEl('an-bar-title',currentPeriod==='all'?'年別ライブ回数':'月別ライブ回数');
+  setEl('an-line-title',currentPeriod==='all'?'年別平均評価の推移':'月別平均評価の推移');
+
+  /* ─── ② 月別ライブ回数（積み上げ棒グラフ） ─── */
+  var bcvs=document.getElementById('an-bar-chart');
+  if(bcvs&&typeof Chart!=='undefined'){
+    if(anBarChart)anBarChart.destroy();
+    anBarChart=new Chart(bcvs.getContext('2d'),{
+      type:'bar',
+      data:{labels:labels,datasets:[
+        {label:'ワンマン',data:stats.map(function(s){return s.formats['ワンマン'];}),backgroundColor:'rgba(59,130,246,.75)',stack:'l'},
+        {label:'対バン',data:stats.map(function(s){return s.formats['対バン'];}),backgroundColor:'rgba(124,110,247,.75)',stack:'l'},
+        {label:'フェス',data:stats.map(function(s){return s.formats['フェス'];}),backgroundColor:'rgba(251,191,36,.75)',stack:'l'},
+        {label:'サーキット',data:stats.map(function(s){return s.formats['サーキット'];}),backgroundColor:'rgba(52,211,153,.75)',stack:'l'}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:tc,boxWidth:10,usePointStyle:true,font:{size:10}}}},
+        scales:{x:{stacked:true,grid:{display:false},ticks:{color:tc,font:{size:10},maxRotation:45,callback:tickCb}},
+          y:{stacked:true,grid:{color:gridColor},ticks:{color:tc,font:{size:10},stepSize:1},beginAtZero:true}}}
+    });
+  }
+  /* 棒グラフのインサイト */
+  var fmtTotals={};fmtKeys.forEach(function(k){fmtTotals[k]=0;});
+  stats.forEach(function(s){fmtKeys.forEach(function(k){fmtTotals[k]+=s.formats[k];});});
+  var fmtTotal=Object.values(fmtTotals).reduce(function(a,b){return a+b;},0);
+  var anBarIns=document.getElementById('an-bar-insight');
+  if(anBarIns&&fmtTotal>0){
+    var topFmt=Object.entries(fmtTotals).sort(function(a,b){return b[1]-a[1];})[0];
+    var topPct=Math.round(topFmt[1]/fmtTotal*100);
+    var peakMonth=stats.reduce(function(a,b){return b.count>a.count?b:a;},{count:0,label:'—'});
+    var insightText='📊 '+topFmt[0]+'が最多（'+topPct+'%）';
+    if(peakMonth.count>0)insightText+='　📅 最多は'+peakMonth.label+'（'+peakMonth.count+'本）';
+    anBarIns.textContent=insightText;anBarIns.style.display='block';
+  } else if(anBarIns){anBarIns.style.display='none';}
+
+  /* ─── ④ 月別平均評価（折れ線グラフ） ─── */
+  var lcvs=document.getElementById('an-line-chart');
+  if(lcvs&&typeof Chart!=='undefined'){
+    if(anLineChart)anLineChart.destroy();
+    anLineChart=new Chart(lcvs.getContext('2d'),{
+      type:'line',
+      data:{labels:labels,datasets:[{
+        label:'平均評価',data:stats.map(function(s){return s.avgRating;}),
+        borderColor:'#7c6ef7',backgroundColor:'rgba(124,110,247,.08)',
+        pointBackgroundColor:'#a78bfa',pointRadius:4,pointHoverRadius:6,
+        fill:true,tension:0.35,spanGaps:true
+      }]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{x:{grid:{display:false},ticks:{color:tc,font:{size:10},maxRotation:45,callback:tickCb}},
+          y:{grid:{color:gridColor},min:1,max:5,ticks:{color:tc,font:{size:10},stepSize:1}}}}
+    });
+  }
+  /* 折れ線インサイト */
+  var validRatings=stats.filter(function(s){return s.avgRating!==null;});
+  var anLineIns=document.getElementById('an-line-insight');
+  if(anLineIns&&validRatings.length>=2){
+    var bestMonth=validRatings.reduce(function(a,b){return b.avgRating>a.avgRating?b:a;});
+    var worstMonth=validRatings.reduce(function(a,b){return b.avgRating<a.avgRating?b:a;});
+    var trend=validRatings.length>=3?validRatings[validRatings.length-1].avgRating-validRatings[0].avgRating:0;
+    var trendStr=trend>0.3?'📈 後半にかけて評価が上昇傾向':trend<-0.3?'📉 後半にかけてやや低下傾向':'→ 評価は安定して推移';
+    anLineIns.textContent=trendStr+'　⬆ 最高 '+bestMonth.label+'（★'+bestMonth.avgRating+'）　⬇ 最低 '+worstMonth.label+'（★'+worstMonth.avgRating+'）';
+    anLineIns.style.display='block';
+  } else if(anLineIns){anLineIns.style.display='none';}
+
+  /* ─── ③ 形式別構成（円グラフ） ─── */
+  var fmtColors=['rgba(59,130,246,.85)','rgba(124,110,247,.85)','rgba(251,191,36,.85)','rgba(52,211,153,.85)'];
+  var fmtData=fmtKeys.map(function(k,i){return{name:k,count:fmtTotals[k],color:fmtColors[i]};}).filter(function(f){return f.count>0;});
+  setEl('an-pie-total',fmtTotal);
+  var pcvs=document.getElementById('an-pie-chart');
+  if(pcvs&&typeof Chart!=='undefined'){
+    if(anPieChart)anPieChart.destroy();
+    anPieChart=new Chart(pcvs.getContext('2d'),{
+      type:'doughnut',
+      data:{
+        labels:fmtData.map(function(f){return f.name;}),
+        datasets:[{data:fmtData.map(function(f){return f.count;}),backgroundColor:fmtData.map(function(f){return f.color;}),borderWidth:2,borderColor:isDark?'#0c1025':'#ffffff'}]
+      },
+      options:{responsive:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ctx.label+': '+ctx.raw+'回 ('+Math.round(ctx.raw/fmtTotal*100)+'%)';}}}}}
+    });
+  }
+  /* 凡例 */
+  var legend=document.getElementById('an-pie-legend');
+  if(legend){
+    legend.innerHTML=fmtData.length?fmtData.map(function(f){
+      var pct=fmtTotal?Math.round(f.count/fmtTotal*100):0;
+      return '<div class="an-pie-legend-row"><span class="an-pie-dot" style="background:'+f.color+'"></span><span class="an-pie-name">'+esc(f.name)+'</span><span class="an-pie-cnt">'+f.count+'回</span><span class="an-pie-pct">'+pct+'%</span></div>';
+    }).join(''):'<div style="font-size:12px;color:var(--text-3)">データなし</div>';
+  }
+  /* 円グラフインサイト */
+  var anPieIns=document.getElementById('an-pie-insight');
+  if(anPieIns&&fmtData.length){
+    var topF=fmtData[0];var topFPct=Math.round(topF.count/fmtTotal*100);
+    var insMsg=topFPct>=60?'🎤 '+topF.name+'中心のスタイル（'+topFPct+'%）':topFPct>=40?'📊 '+topF.name+'が多め（'+topFPct+'%）':'複数の形式をバランスよく楽しんでいます';
+    anPieIns.textContent=insMsg;anPieIns.style.display='block';
+  } else if(anPieIns){anPieIns.style.display='none';}
+
+  /* ─── 形式別詳細カード（平均評価 × 形式） ─── */
+  var detailEl=document.getElementById('an-format-detail');
+  if(detailEl){
+    if(!fmtData.length){detailEl.innerHTML='<div style="font-size:12px;color:var(--text-3)">データなし</div>';}
+    else{
+      detailEl.innerHTML=fmtKeys.map(function(k,i){
+        var recs=records.filter(function(r){return r.format===k;});
+        if(!recs.length)return'';
+        var ratedF=recs.filter(function(r){return r.rating>0;});
+        var avgF=ratedF.length?(ratedF.reduce(function(s,r){return s+r.rating;},0)/ratedF.length).toFixed(1):'—';
+        var pctF=fmtTotal?Math.round(recs.length/fmtTotal*100):0;
+        var barW=fmtTotal?Math.round(recs.length/Math.max(...fmtKeys.map(function(kk){return fmtTotals[kk];}),1)*100):0;
+        return '<div style="padding:10px 0;border-bottom:1px solid var(--border)">'
+          +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+            +'<div style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:50%;background:'+fmtColors[i]+';display:inline-block;flex-shrink:0"></span><span style="font-size:12px;font-weight:700;color:var(--text)">'+esc(k)+'</span></div>'
+            +'<div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;font-weight:700;color:var(--text)">'+recs.length+'回</span><span style="font-size:11px;color:var(--text-3)">'+pctF+'%</span><span style="font-size:12px;color:var(--amber);font-weight:600">★'+avgF+'</span></div>'
+          +'</div>'
+          +'<div style="height:4px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden"><div style="height:100%;width:'+barW+'%;background:'+fmtColors[i]+';border-radius:99px;transition:width .5s"></div></div>'
+        +'</div>';
+      }).filter(Boolean).join('')+'<div style="padding-top:10px;font-size:10px;color:var(--text-3)">※形式未設定のライブは含まれません</div>';
+    }
+  }
+}
+
+
 function switchPage(pageId,navId){
   ALL_PAGES.forEach(function(p){var el=document.getElementById(p);if(el)el.style.display=(p===pageId?'block':'none');});
   ALL_NAVS.forEach(function(n){var el=document.getElementById(n);if(el)el.classList.toggle('active',n===navId);});
@@ -1662,6 +2022,9 @@ function renderDashboard(){
   } else if(activePage==='page-artist'){
     if(currentArtistPage){try{renderArtistPage(currentArtistPage);}catch(e){}}
     else{try{renderArtistList();}catch(e){}}
+  } else if(activePage==='page-analysis'){
+    /* ★追加: 分析ページ表示時のみ描画（canvasエラー防止） */
+    try{renderAnalysisPage();}catch(e){console.error('renderAnalysisPage',e);}
   } else if(activePage==='page-venues'){
     _venueTypeFilter='all';_venueSearchQuery='';
     var vtf=document.getElementById('venue-type-filter');if(vtf)vtf.innerHTML='';
@@ -1796,6 +2159,8 @@ document.getElementById('rating-filter').addEventListener('click',function(e){
 /* nav */
 document.getElementById('nav-dashboard').addEventListener('click',function(){openDashboardPage();});
 document.getElementById('nav-artist').addEventListener('click',function(){openArtistListView();});
+/* ★追加: 分析ページナビイベント */
+document.getElementById('nav-analysis').addEventListener('click',function(){openAnalysisPage();});
 document.getElementById('nav-lives').addEventListener('click',function(){openLivesPage();});
 document.getElementById('nav-notes').addEventListener('click',function(){openNotesPage();});
 document.getElementById('nav-venues').addEventListener('click',function(){openVenuePage();});
